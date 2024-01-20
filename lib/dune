@@ -1,0 +1,20 @@
+(library
+ (name mahout)
+ (preprocess
+  (pps ppx_deriving.show ppx_deriving.make ppx_deriving_yojson))
+ (libraries
+  base64
+  cohttp-eio
+  containers
+  containers-data
+  cstruct
+  eio.unix
+  fmt
+  logs
+  mirage-clock-unix
+  mirage-crypto-rng
+  mirage-crypto-rng-eio
+  ptime
+  safepass
+  uuidm
+  yojson))

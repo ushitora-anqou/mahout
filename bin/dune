@@ -1,0 +1,10 @@
+(executable
+ (public_name mahout)
+ (name main)
+ (libraries
+  cmdliner
+  cohttp-eio
+  eio.unix
+  eio_main
+  mirage-crypto-rng-eio
+  mahout))
