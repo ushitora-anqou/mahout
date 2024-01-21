@@ -13,7 +13,7 @@ type t = {
     azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@default None];
     azure_file: Io_k8s_api_core_v1_azure_file_persistent_volume_source.t option [@default None];
     (* capacity is the description of the persistent volume's resources and capacity. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity *)
-    capacity: (string * string) list [@default []];
+    capacity: Yojson.Safe.t list [@default []];
     cephfs: Io_k8s_api_core_v1_ceph_fs_persistent_volume_source.t option [@default None];
     cinder: Io_k8s_api_core_v1_cinder_persistent_volume_source.t option [@default None];
     claim_ref: Io_k8s_api_core_v1_object_reference.t option [@default None];

@@ -11,7 +11,7 @@ type t = {
     addresses: string list [@default []];
     conditions: Io_k8s_api_discovery_v1_endpoint_conditions.t option [@default None];
     (* deprecatedTopology contains topology information part of the v1beta1 API. This field is deprecated, and will be removed when the v1beta1 API is removed (no sooner than kubernetes v1.24).  While this field can hold values, it is not writable through the v1 API, and any attempts to write to it will be silently ignored. Topology information can be found in the zone and nodeName fields instead. *)
-    deprecated_topology: (string * string) list [@default []];
+    deprecated_topology: Yojson.Safe.t list [@default []];
     hints: Io_k8s_api_discovery_v1_endpoint_hints.t option [@default None];
     (* hostname of this endpoint. This field may be used by consumers of endpoints to distinguish endpoints from each other (e.g. in DNS names). Multiple endpoints which use the same hostname should be considered fungible (e.g. multiple A values in DNS). Must be lowercase and pass DNS Label (RFC 1123) validation. *)
     hostname: string option [@default None];
