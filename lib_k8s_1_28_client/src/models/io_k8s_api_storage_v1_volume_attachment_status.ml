@@ -11,7 +11,7 @@ type t = {
     (* attached indicates the volume is successfully attached. This field must only be set by the entity completing the attach operation, i.e. the external-attacher. *)
     attached: bool;
     (* attachmentMetadata is populated with any information returned by the attach operation, upon successful attach, that must be passed into subsequent WaitForAttach or Mount calls. This field must only be set by the entity completing the attach operation, i.e. the external-attacher. *)
-    attachment_metadata: (string * string) list;
+    attachment_metadata: (string * string) list [@default []];
     detach_error: Io_k8s_api_storage_v1_volume_error.t option [@default None];
 } [@@deriving yojson { strict = false }, show ];;
 

@@ -8,15 +8,15 @@
 
 type t = {
     (* Default resource requirement limit value by resource name if resource limit is omitted. *)
-    default: (string * string) list;
+    default: (string * string) list [@default []];
     (* DefaultRequest is the default resource requirement request value by resource name if resource request is omitted. *)
-    default_request: (string * string) list;
+    default_request: (string * string) list [@default []];
     (* Max usage constraints on this kind by resource name. *)
-    max: (string * string) list;
+    max: (string * string) list [@default []];
     (* MaxLimitRequestRatio if specified, the named resource must have a request and limit that are both non-zero where limit divided by request is less than or equal to the enumerated value; this represents the max burst for the named resource. *)
-    max_limit_request_ratio: (string * string) list;
+    max_limit_request_ratio: (string * string) list [@default []];
     (* Min usage constraints on this kind by resource name. *)
-    min: (string * string) list;
+    min: (string * string) list [@default []];
     (* Type of resource that this limit applies to. *)
     _type: string;
 } [@@deriving yojson { strict = false }, show ];;

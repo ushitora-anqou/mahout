@@ -12,7 +12,7 @@ type t = {
     (* Replicas is the number of desired replicas. This is a pointer to distinguish between explicit zero and unspecified. Defaults to 1. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#what-is-a-replicationcontroller *)
     replicas: int32 option [@default None];
     (* Selector is a label query over pods that should match the Replicas count. If Selector is empty, it is defaulted to the labels present on the Pod template. Label keys and values that must match in order to be controlled by this replication controller, if empty defaulted to labels on Pod template. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/#label-selectors *)
-    selector: (string * string) list;
+    selector: (string * string) list [@default []];
     template: Io_k8s_api_core_v1_pod_template_spec.t option [@default None];
 } [@@deriving yojson { strict = false }, show ];;
 

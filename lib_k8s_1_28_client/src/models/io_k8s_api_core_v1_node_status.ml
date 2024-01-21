@@ -10,9 +10,9 @@ type t = {
     (* List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example. Consumers should assume that addresses can change during the lifetime of a Node. However, there are some exceptions where this may not be possible, such as Pods that inherit a Node's address in its own status or consumers of the downward API (status.hostIP). *)
     addresses: Io_k8s_api_core_v1_node_address.t list [@default []];
     (* Allocatable represents the resources of a node that are available for scheduling. Defaults to Capacity. *)
-    allocatable: (string * string) list;
+    allocatable: (string * string) list [@default []];
     (* Capacity represents the total resources of a node. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity *)
-    capacity: (string * string) list;
+    capacity: (string * string) list [@default []];
     (* Conditions is an array of current observed node conditions. More info: https://kubernetes.io/docs/concepts/nodes/node/#condition *)
     conditions: Io_k8s_api_core_v1_node_condition.t list [@default []];
     config: Io_k8s_api_core_v1_node_config_status.t option [@default None];
