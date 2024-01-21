@@ -8,7 +8,7 @@
 
 type t = {
     (* A list of scope selector requirements by scope of the resources. *)
-    match_expressions: Io_k8s_api_core_v1_scoped_resource_selector_requirement.t list [@default []];
+    match_expressions: Io_k8s_api_core_v1_scoped_resource_selector_requirement.t list [@default []] [@key matchExpressions];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** A scope selector represents the AND of the selectors represented by the scoped-resource selector requirements. *)

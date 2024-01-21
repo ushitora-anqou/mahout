@@ -8,41 +8,41 @@
 
 type t = {
     (* accessModes contains all ways the volume can be mounted. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes *)
-    access_modes: string list [@default []];
-    aws_elastic_block_store: Io_k8s_api_core_v1_aws_elastic_block_store_volume_source.t option [@default None];
-    azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@default None];
-    azure_file: Io_k8s_api_core_v1_azure_file_persistent_volume_source.t option [@default None];
+    access_modes: string list [@default []] [@key accessModes];
+    aws_elastic_block_store: Io_k8s_api_core_v1_aws_elastic_block_store_volume_source.t option [@default None] [@key awsElasticBlockStore];
+    azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@default None] [@key azureDisk];
+    azure_file: Io_k8s_api_core_v1_azure_file_persistent_volume_source.t option [@default None] [@key azureFile];
     (* capacity is the description of the persistent volume's resources and capacity. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity *)
-    capacity: Yojson.Safe.t list [@default []];
-    cephfs: Io_k8s_api_core_v1_ceph_fs_persistent_volume_source.t option [@default None];
-    cinder: Io_k8s_api_core_v1_cinder_persistent_volume_source.t option [@default None];
-    claim_ref: Io_k8s_api_core_v1_object_reference.t option [@default None];
-    csi: Io_k8s_api_core_v1_csi_persistent_volume_source.t option [@default None];
-    fc: Io_k8s_api_core_v1_fc_volume_source.t option [@default None];
-    flex_volume: Io_k8s_api_core_v1_flex_persistent_volume_source.t option [@default None];
-    flocker: Io_k8s_api_core_v1_flocker_volume_source.t option [@default None];
-    gce_persistent_disk: Io_k8s_api_core_v1_gce_persistent_disk_volume_source.t option [@default None];
-    glusterfs: Io_k8s_api_core_v1_glusterfs_persistent_volume_source.t option [@default None];
-    host_path: Io_k8s_api_core_v1_host_path_volume_source.t option [@default None];
-    iscsi: Io_k8s_api_core_v1_iscsi_persistent_volume_source.t option [@default None];
-    local: Io_k8s_api_core_v1_local_volume_source.t option [@default None];
+    capacity: Yojson.Safe.t [@key capacity];
+    cephfs: Io_k8s_api_core_v1_ceph_fs_persistent_volume_source.t option [@default None] [@key cephfs];
+    cinder: Io_k8s_api_core_v1_cinder_persistent_volume_source.t option [@default None] [@key cinder];
+    claim_ref: Io_k8s_api_core_v1_object_reference.t option [@default None] [@key claimRef];
+    csi: Io_k8s_api_core_v1_csi_persistent_volume_source.t option [@default None] [@key csi];
+    fc: Io_k8s_api_core_v1_fc_volume_source.t option [@default None] [@key fc];
+    flex_volume: Io_k8s_api_core_v1_flex_persistent_volume_source.t option [@default None] [@key flexVolume];
+    flocker: Io_k8s_api_core_v1_flocker_volume_source.t option [@default None] [@key flocker];
+    gce_persistent_disk: Io_k8s_api_core_v1_gce_persistent_disk_volume_source.t option [@default None] [@key gcePersistentDisk];
+    glusterfs: Io_k8s_api_core_v1_glusterfs_persistent_volume_source.t option [@default None] [@key glusterfs];
+    host_path: Io_k8s_api_core_v1_host_path_volume_source.t option [@default None] [@key hostPath];
+    iscsi: Io_k8s_api_core_v1_iscsi_persistent_volume_source.t option [@default None] [@key iscsi];
+    local: Io_k8s_api_core_v1_local_volume_source.t option [@default None] [@key local];
     (* mountOptions is the list of mount options, e.g. [\''ro\'', \''soft\'']. Not validated - mount will simply fail if one is invalid. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options *)
-    mount_options: string list [@default []];
-    nfs: Io_k8s_api_core_v1_nfs_volume_source.t option [@default None];
-    node_affinity: Io_k8s_api_core_v1_volume_node_affinity.t option [@default None];
+    mount_options: string list [@default []] [@key mountOptions];
+    nfs: Io_k8s_api_core_v1_nfs_volume_source.t option [@default None] [@key nfs];
+    node_affinity: Io_k8s_api_core_v1_volume_node_affinity.t option [@default None] [@key nodeAffinity];
     (* persistentVolumeReclaimPolicy defines what happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming *)
-    persistent_volume_reclaim_policy: string option [@default None];
-    photon_persistent_disk: Io_k8s_api_core_v1_photon_persistent_disk_volume_source.t option [@default None];
-    portworx_volume: Io_k8s_api_core_v1_portworx_volume_source.t option [@default None];
-    quobyte: Io_k8s_api_core_v1_quobyte_volume_source.t option [@default None];
-    rbd: Io_k8s_api_core_v1_rbd_persistent_volume_source.t option [@default None];
-    scale_io: Io_k8s_api_core_v1_scale_io_persistent_volume_source.t option [@default None];
+    persistent_volume_reclaim_policy: string option [@default None] [@key persistentVolumeReclaimPolicy];
+    photon_persistent_disk: Io_k8s_api_core_v1_photon_persistent_disk_volume_source.t option [@default None] [@key photonPersistentDisk];
+    portworx_volume: Io_k8s_api_core_v1_portworx_volume_source.t option [@default None] [@key portworxVolume];
+    quobyte: Io_k8s_api_core_v1_quobyte_volume_source.t option [@default None] [@key quobyte];
+    rbd: Io_k8s_api_core_v1_rbd_persistent_volume_source.t option [@default None] [@key rbd];
+    scale_io: Io_k8s_api_core_v1_scale_io_persistent_volume_source.t option [@default None] [@key scaleIO];
     (* storageClassName is the name of StorageClass to which this persistent volume belongs. Empty value means that this volume does not belong to any StorageClass. *)
-    storage_class_name: string option [@default None];
-    storageos: Io_k8s_api_core_v1_storage_os_persistent_volume_source.t option [@default None];
+    storage_class_name: string option [@default None] [@key storageClassName];
+    storageos: Io_k8s_api_core_v1_storage_os_persistent_volume_source.t option [@default None] [@key storageos];
     (* volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state. Value of Filesystem is implied when not included in spec. *)
-    volume_mode: string option [@default None];
-    vsphere_volume: Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t option [@default None];
+    volume_mode: string option [@default None] [@key volumeMode];
+    vsphere_volume: Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t option [@default None] [@key vsphereVolume];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PersistentVolumeSpec is the specification of a persistent volume. *)
@@ -51,7 +51,7 @@ let create () : t = {
     aws_elastic_block_store = None;
     azure_disk = None;
     azure_file = None;
-    capacity = [];
+    capacity = `List [];
     cephfs = None;
     cinder = None;
     claim_ref = None;

@@ -8,11 +8,11 @@
 
 type t = {
     (* The key to select. *)
-    key: string;
+    key: string [@key key];
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
-    name: string option [@default None];
+    name: string option [@default None] [@key name];
     (* Specify whether the ConfigMap or its key must be defined *)
-    optional: bool option [@default None];
+    optional: bool option [@default None] [@key optional];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Selects a key from a ConfigMap. *)

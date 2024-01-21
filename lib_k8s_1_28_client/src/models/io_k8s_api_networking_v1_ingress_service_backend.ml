@@ -8,8 +8,8 @@
 
 type t = {
     (* name is the referenced service. The service must exist in the same namespace as the Ingress object. *)
-    name: string;
-    port: Io_k8s_api_networking_v1_service_backend_port.t option [@default None];
+    name: string [@key name];
+    port: Io_k8s_api_networking_v1_service_backend_port.t option [@default None] [@key port];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** IngressServiceBackend references a Kubernetes Service as a Backend. *)

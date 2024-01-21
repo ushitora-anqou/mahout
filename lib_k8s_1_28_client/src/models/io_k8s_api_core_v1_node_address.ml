@@ -8,9 +8,9 @@
 
 type t = {
     (* The node address. *)
-    address: string;
+    address: string [@key address];
     (* Node address type, one of Hostname, ExternalIP or InternalIP. *)
-    _type: string;
+    _type: string [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NodeAddress contains information for the node's address. *)

@@ -8,13 +8,13 @@
 
 type t = {
     (* APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. *)
-    api_group: string option [@default None];
+    api_group: string option [@default None] [@key apiGroup];
     (* Name is the name of resource being referenced. *)
-    name: string;
+    name: string [@key name];
     (* Resource is the type of resource being referenced, for example \''pods\''. *)
-    resource: string;
+    resource: string [@key resource];
     (* UID identifies exactly one incarnation of the resource. *)
-    uid: string;
+    uid: string [@key uid];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceClaimConsumerReference contains enough information to let you locate the consumer of a ResourceClaim. The user must be a resource in the same namespace as the ResourceClaim. *)

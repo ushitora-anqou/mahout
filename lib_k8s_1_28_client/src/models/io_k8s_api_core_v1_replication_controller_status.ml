@@ -8,17 +8,17 @@
 
 type t = {
     (* The number of available replicas (ready for at least minReadySeconds) for this replication controller. *)
-    available_replicas: int32 option [@default None];
+    available_replicas: int32 option [@default None] [@key availableReplicas];
     (* Represents the latest available observations of a replication controller's current state. *)
-    conditions: Io_k8s_api_core_v1_replication_controller_condition.t list [@default []];
+    conditions: Io_k8s_api_core_v1_replication_controller_condition.t list [@default []] [@key conditions];
     (* The number of pods that have labels matching the labels of the pod template of the replication controller. *)
-    fully_labeled_replicas: int32 option [@default None];
+    fully_labeled_replicas: int32 option [@default None] [@key fullyLabeledReplicas];
     (* ObservedGeneration reflects the generation of the most recently observed replication controller. *)
-    observed_generation: int64 option [@default None];
+    observed_generation: int64 option [@default None] [@key observedGeneration];
     (* The number of ready replicas for this replication controller. *)
-    ready_replicas: int32 option [@default None];
+    ready_replicas: int32 option [@default None] [@key readyReplicas];
     (* Replicas is the most recently observed number of replicas. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller#what-is-a-replicationcontroller *)
-    replicas: int32;
+    replicas: int32 [@key replicas];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ReplicationControllerStatus represents the current status of a replication controller. *)

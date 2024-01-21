@@ -8,12 +8,12 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None];
+    api_version: string option [@default None] [@key apiVersion];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
-    spec: Io_k8s_api_authorization_v1_subject_access_review_spec.t;
-    status: Io_k8s_api_authorization_v1_subject_access_review_status.t option [@default None];
+    kind: string option [@default None] [@key kind];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key metadata];
+    spec: Io_k8s_api_authorization_v1_subject_access_review_spec.t [@key spec];
+    status: Io_k8s_api_authorization_v1_subject_access_review_status.t option [@default None] [@key status];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** LocalSubjectAccessReview checks whether or not a user or group can perform an action in a given namespace. Having a namespace scoped resource makes it much easier to grant namespace scoped policy that includes permissions checking. *)

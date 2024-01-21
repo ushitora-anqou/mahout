@@ -8,12 +8,12 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None];
+    api_version: string option [@default None] [@key apiVersion];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
-    spec: Io_k8s_api_certificates_v1_certificate_signing_request_spec.t;
-    status: Io_k8s_api_certificates_v1_certificate_signing_request_status.t option [@default None];
+    kind: string option [@default None] [@key kind];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key metadata];
+    spec: Io_k8s_api_certificates_v1_certificate_signing_request_spec.t [@key spec];
+    status: Io_k8s_api_certificates_v1_certificate_signing_request_status.t option [@default None] [@key status];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CertificateSigningRequest objects provide a mechanism to obtain x509 certificates by submitting a certificate signing request, and having it asynchronously approved and issued.  Kubelets use this API to obtain:  1. client certificates to authenticate to kube-apiserver (with the \''kubernetes.io/kube-apiserver-client-kubelet\'' signerName).  2. serving certificates for TLS endpoints kube-apiserver can connect to securely (with the \''kubernetes.io/kubelet-serving\'' signerName).  This API can be used to request client certificates to authenticate to kube-apiserver (with the \''kubernetes.io/kube-apiserver-client\'' signerName), or to obtain certificates from custom non-Kubernetes signers. *)

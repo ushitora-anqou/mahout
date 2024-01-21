@@ -8,7 +8,7 @@
 
 type t = {
     (* ResourceClaims describes resource availability for each pod.spec.resourceClaim entry where the corresponding ResourceClaim uses \''WaitForFirstConsumer\'' allocation mode. *)
-    resource_claims: Io_k8s_api_resource_v1alpha2_resource_claim_scheduling_status.t list [@default []];
+    resource_claims: Io_k8s_api_resource_v1alpha2_resource_claim_scheduling_status.t list [@default []] [@key resourceClaims];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodSchedulingContextStatus describes where resources for the Pod can be allocated. *)

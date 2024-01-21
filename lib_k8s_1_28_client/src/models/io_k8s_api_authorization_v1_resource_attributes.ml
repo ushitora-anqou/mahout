@@ -8,19 +8,19 @@
 
 type t = {
     (* Group is the API Group of the Resource.  \''*\'' means all. *)
-    group: string option [@default None];
+    group: string option [@default None] [@key group];
     (* Name is the name of the resource being requested for a \''get\'' or deleted for a \''delete\''. \''\'' (empty) means all. *)
-    name: string option [@default None];
+    name: string option [@default None] [@key name];
     (* Namespace is the namespace of the action being requested.  Currently, there is no distinction between no namespace and all namespaces \''\'' (empty) is defaulted for LocalSubjectAccessReviews \''\'' (empty) is empty for cluster-scoped resources \''\'' (empty) means \''all\'' for namespace scoped resources from a SubjectAccessReview or SelfSubjectAccessReview *)
-    namespace: string option [@default None];
+    namespace: string option [@default None] [@key namespace];
     (* Resource is one of the existing resource types.  \''*\'' means all. *)
-    resource: string option [@default None];
+    resource: string option [@default None] [@key resource];
     (* Subresource is one of the existing resource types.  \''\'' means none. *)
-    subresource: string option [@default None];
+    subresource: string option [@default None] [@key subresource];
     (* Verb is a kubernetes resource API verb, like: get, list, watch, create, update, delete, proxy.  \''*\'' means all. *)
-    verb: string option [@default None];
+    verb: string option [@default None] [@key verb];
     (* Version is the API Version of the Resource.  \''*\'' means all. *)
-    version: string option [@default None];
+    version: string option [@default None] [@key version];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceAttributes includes the authorization attributes available for resource requests to the Authorizer interface *)

@@ -8,9 +8,9 @@
 
 type t = {
     (* Specifies the target ResourceVersion *)
-    resource_version: string option [@default None];
+    resource_version: string option [@default None] [@key resourceVersion];
     (* Specifies the target UID. *)
-    uid: string option [@default None];
+    uid: string option [@default None] [@key uid];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Preconditions must be fulfilled before an operation (update, delete, etc.) is carried out. *)

@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    resource: Io_k8s_api_core_v1_typed_local_object_reference.t option [@default None];
-    service: Io_k8s_api_networking_v1_ingress_service_backend.t option [@default None];
+    resource: Io_k8s_api_core_v1_typed_local_object_reference.t option [@default None] [@key resource];
+    service: Io_k8s_api_networking_v1_ingress_service_backend.t option [@default None] [@key service];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** IngressBackend describes all endpoints for a given service and port. *)

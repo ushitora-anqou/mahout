@@ -8,7 +8,7 @@
 
 type t = {
     (* Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container. *)
-    name: string;
+    name: string [@key name];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceClaim references one entry in PodSpec.ResourceClaims. *)

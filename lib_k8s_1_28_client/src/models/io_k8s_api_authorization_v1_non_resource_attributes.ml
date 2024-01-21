@@ -8,9 +8,9 @@
 
 type t = {
     (* Path is the URL path of the request *)
-    path: string option [@default None];
+    path: string option [@default None] [@key path];
     (* Verb is the standard HTTP verb *)
-    verb: string option [@default None];
+    verb: string option [@default None] [@key verb];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NonResourceAttributes includes the authorization attributes available for non-resource requests to the Authorizer interface *)

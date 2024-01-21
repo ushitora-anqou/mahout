@@ -7,7 +7,7 @@
  *)
 
 type t = {
-    config_map: Io_k8s_api_core_v1_config_map_node_config_source.t option [@default None];
+    config_map: Io_k8s_api_core_v1_config_map_node_config_source.t option [@default None] [@key configMap];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NodeConfigSource specifies a source of node configuration. Exactly one subfield (excluding metadata) must be non-nil. This API is deprecated since 1.22 *)

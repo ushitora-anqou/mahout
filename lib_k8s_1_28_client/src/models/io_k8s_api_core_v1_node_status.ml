@@ -8,31 +8,31 @@
 
 type t = {
     (* List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example. Consumers should assume that addresses can change during the lifetime of a Node. However, there are some exceptions where this may not be possible, such as Pods that inherit a Node's address in its own status or consumers of the downward API (status.hostIP). *)
-    addresses: Io_k8s_api_core_v1_node_address.t list [@default []];
+    addresses: Io_k8s_api_core_v1_node_address.t list [@default []] [@key addresses];
     (* Allocatable represents the resources of a node that are available for scheduling. Defaults to Capacity. *)
-    allocatable: Yojson.Safe.t list [@default []];
+    allocatable: Yojson.Safe.t [@key allocatable];
     (* Capacity represents the total resources of a node. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity *)
-    capacity: Yojson.Safe.t list [@default []];
+    capacity: Yojson.Safe.t [@key capacity];
     (* Conditions is an array of current observed node conditions. More info: https://kubernetes.io/docs/concepts/nodes/node/#condition *)
-    conditions: Io_k8s_api_core_v1_node_condition.t list [@default []];
-    config: Io_k8s_api_core_v1_node_config_status.t option [@default None];
-    daemon_endpoints: Io_k8s_api_core_v1_node_daemon_endpoints.t option [@default None];
+    conditions: Io_k8s_api_core_v1_node_condition.t list [@default []] [@key conditions];
+    config: Io_k8s_api_core_v1_node_config_status.t option [@default None] [@key config];
+    daemon_endpoints: Io_k8s_api_core_v1_node_daemon_endpoints.t option [@default None] [@key daemonEndpoints];
     (* List of container images on this node *)
-    images: Io_k8s_api_core_v1_container_image.t list [@default []];
-    node_info: Io_k8s_api_core_v1_node_system_info.t option [@default None];
+    images: Io_k8s_api_core_v1_container_image.t list [@default []] [@key images];
+    node_info: Io_k8s_api_core_v1_node_system_info.t option [@default None] [@key nodeInfo];
     (* NodePhase is the recently observed lifecycle phase of the node. More info: https://kubernetes.io/docs/concepts/nodes/node/#phase The field is never populated, and now is deprecated. *)
-    phase: string option [@default None];
+    phase: string option [@default None] [@key phase];
     (* List of volumes that are attached to the node. *)
-    volumes_attached: Io_k8s_api_core_v1_attached_volume.t list [@default []];
+    volumes_attached: Io_k8s_api_core_v1_attached_volume.t list [@default []] [@key volumesAttached];
     (* List of attachable volumes in use (mounted) by the node. *)
-    volumes_in_use: string list [@default []];
+    volumes_in_use: string list [@default []] [@key volumesInUse];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NodeStatus is information about the current status of a node. *)
 let create () : t = {
     addresses = [];
-    allocatable = [];
-    capacity = [];
+    allocatable = `List [];
+    capacity = `List [];
     conditions = [];
     config = None;
     daemon_endpoints = None;

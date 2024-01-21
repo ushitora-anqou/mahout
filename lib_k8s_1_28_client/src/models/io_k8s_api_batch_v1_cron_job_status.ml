@@ -8,11 +8,11 @@
 
 type t = {
     (* A list of pointers to currently running jobs. *)
-    active: Io_k8s_api_core_v1_object_reference.t list [@default []];
+    active: Io_k8s_api_core_v1_object_reference.t list [@default []] [@key active];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_schedule_time: string option [@default None];
+    last_schedule_time: string option [@default None] [@key lastScheduleTime];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_successful_time: string option [@default None];
+    last_successful_time: string option [@default None] [@key lastSuccessfulTime];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CronJobStatus represents the current state of a cron job. *)

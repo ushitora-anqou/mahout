@@ -8,11 +8,11 @@
 
 type t = {
     (* hostname is set for load-balancer ingress points that are DNS based. *)
-    hostname: string option [@default None];
+    hostname: string option [@default None] [@key hostname];
     (* ip is set for load-balancer ingress points that are IP based. *)
-    ip: string option [@default None];
+    ip: string option [@default None] [@key ip];
     (* ports provides information about the ports exposed by this LoadBalancer. *)
-    ports: Io_k8s_api_networking_v1_ingress_port_status.t list [@default []];
+    ports: Io_k8s_api_networking_v1_ingress_port_status.t list [@default []] [@key ports];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** IngressLoadBalancerIngress represents the status of a load-balancer ingress point. *)

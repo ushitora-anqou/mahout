@@ -8,15 +8,15 @@
 
 type t = {
     (* apiGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required. *)
-    api_group: string option [@default None];
+    api_group: string option [@default None] [@key apiGroup];
     (* kind is the type of resource being referenced. *)
-    kind: string;
+    kind: string [@key kind];
     (* name is the name of resource being referenced. *)
-    name: string;
+    name: string [@key name];
     (* namespace is the namespace of the resource being referenced. This field is required when scope is set to \''Namespace\'' and must be unset when scope is set to \''Cluster\''. *)
-    namespace: string option [@default None];
+    namespace: string option [@default None] [@key namespace];
     (* scope represents if this refers to a cluster or namespace scoped resource. This may be set to \''Cluster\'' (default) or \''Namespace\''. *)
-    scope: string option [@default None];
+    scope: string option [@default None] [@key scope];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** IngressClassParametersReference identifies an API object. This can be used to specify a cluster or namespace-scoped resource. *)

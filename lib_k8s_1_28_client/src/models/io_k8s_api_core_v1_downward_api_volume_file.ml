@@ -7,12 +7,12 @@
  *)
 
 type t = {
-    field_ref: Io_k8s_api_core_v1_object_field_selector.t option [@default None];
+    field_ref: Io_k8s_api_core_v1_object_field_selector.t option [@default None] [@key fieldRef];
     (* Optional: mode bits used to set permissions on this file, must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set. *)
-    mode: int32 option [@default None];
+    mode: int32 option [@default None] [@key mode];
     (* Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..' *)
-    path: string;
-    resource_field_ref: Io_k8s_api_core_v1_resource_field_selector.t option [@default None];
+    path: string [@key path];
+    resource_field_ref: Io_k8s_api_core_v1_resource_field_selector.t option [@default None] [@key resourceFieldRef];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** DownwardAPIVolumeFile represents information to create the file containing the pod field *)

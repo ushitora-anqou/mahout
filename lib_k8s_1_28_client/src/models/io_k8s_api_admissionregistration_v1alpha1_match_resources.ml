@@ -8,13 +8,13 @@
 
 type t = {
     (* ExcludeResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy should not care about. The exclude rules take precedence over include rules (if a resource matches both, it is excluded) *)
-    exclude_resource_rules: Io_k8s_api_admissionregistration_v1alpha1_named_rule_with_operations.t list [@default []];
+    exclude_resource_rules: Io_k8s_api_admissionregistration_v1alpha1_named_rule_with_operations.t list [@default []] [@key excludeResourceRules];
     (* matchPolicy defines how the \''MatchResources\'' list is used to match incoming requests. Allowed values are \''Exact\'' or \''Equivalent\''.  - Exact: match a request only if it exactly matches a specified rule. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, but \''rules\'' only included `apiGroups:[\''apps\''], apiVersions:[\''v1\''], resources: [\''deployments\'']`, a request to apps/v1beta1 or extensions/v1beta1 would not be sent to the ValidatingAdmissionPolicy.  - Equivalent: match a request if modifies a resource listed in rules, even via another API group or version. For example, if deployments can be modified via apps/v1, apps/v1beta1, and extensions/v1beta1, and \''rules\'' only included `apiGroups:[\''apps\''], apiVersions:[\''v1\''], resources: [\''deployments\'']`, a request to apps/v1beta1 or extensions/v1beta1 would be converted to apps/v1 and sent to the ValidatingAdmissionPolicy.  Defaults to \''Equivalent\'' *)
-    match_policy: string option [@default None];
-    namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None];
-    object_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None];
+    match_policy: string option [@default None] [@key matchPolicy];
+    namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None] [@key namespaceSelector];
+    object_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None] [@key objectSelector];
     (* ResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy matches. The policy cares about an operation if it matches _any_ Rule. *)
-    resource_rules: Io_k8s_api_admissionregistration_v1alpha1_named_rule_with_operations.t list [@default []];
+    resource_rules: Io_k8s_api_admissionregistration_v1alpha1_named_rule_with_operations.t list [@default []] [@key resourceRules];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** MatchResources decides whether to run the admission control policy on an object based on whether it meets the match criteria. The exclude rules take precedence over include rules (if a resource matches both, it is excluded) *)

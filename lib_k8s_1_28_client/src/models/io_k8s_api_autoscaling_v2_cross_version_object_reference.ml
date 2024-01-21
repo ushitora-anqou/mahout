@@ -8,11 +8,11 @@
 
 type t = {
     (* apiVersion is the API version of the referent *)
-    api_version: string option [@default None];
+    api_version: string option [@default None] [@key apiVersion];
     (* kind is the kind of the referent; More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string;
+    kind: string [@key kind];
     (* name is the name of the referent; More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
-    name: string;
+    name: string [@key name];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CrossVersionObjectReference contains enough information to let you identify the referred resource. *)

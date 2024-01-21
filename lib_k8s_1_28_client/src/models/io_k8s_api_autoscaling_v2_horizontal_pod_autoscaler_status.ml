@@ -8,17 +8,17 @@
 
 type t = {
     (* conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. *)
-    conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list [@default []];
+    conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list [@default []] [@key conditions];
     (* currentMetrics is the last read state of the metrics used by this autoscaler. *)
-    current_metrics: Io_k8s_api_autoscaling_v2_metric_status.t list [@default []];
+    current_metrics: Io_k8s_api_autoscaling_v2_metric_status.t list [@default []] [@key currentMetrics];
     (* currentReplicas is current number of replicas of pods managed by this autoscaler, as last seen by the autoscaler. *)
-    current_replicas: int32 option [@default None];
+    current_replicas: int32 option [@default None] [@key currentReplicas];
     (* desiredReplicas is the desired number of replicas of pods managed by this autoscaler, as last calculated by the autoscaler. *)
-    desired_replicas: int32;
+    desired_replicas: int32 [@key desiredReplicas];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_scale_time: string option [@default None];
+    last_scale_time: string option [@default None] [@key lastScaleTime];
     (* observedGeneration is the most recent generation observed by this autoscaler. *)
-    observed_generation: int64 option [@default None];
+    observed_generation: int64 option [@default None] [@key observedGeneration];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** HorizontalPodAutoscalerStatus describes the current status of a horizontal pod autoscaler. *)

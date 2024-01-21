@@ -8,9 +8,9 @@
 
 type t = {
     (* Represents the latest available observations of a namespace's current state. *)
-    conditions: Io_k8s_api_core_v1_namespace_condition.t list [@default []];
+    conditions: Io_k8s_api_core_v1_namespace_condition.t list [@default []] [@key conditions];
     (* Phase is the current lifecycle phase of the namespace. More info: https://kubernetes.io/docs/tasks/administer-cluster/namespaces/ *)
-    phase: string option [@default None];
+    phase: string option [@default None] [@key phase];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NamespaceStatus is information about the current status of a Namespace. *)

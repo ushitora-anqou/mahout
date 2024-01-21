@@ -8,9 +8,9 @@
 
 type t = {
     (* name is unique within a namespace to reference a secret resource. *)
-    name: string option [@default None];
+    name: string option [@default None] [@key name];
     (* namespace defines the space within which the secret name must be unique. *)
-    namespace: string option [@default None];
+    namespace: string option [@default None] [@key namespace];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SecretReference represents a Secret Reference. It has enough information to retrieve secret in any namespace *)

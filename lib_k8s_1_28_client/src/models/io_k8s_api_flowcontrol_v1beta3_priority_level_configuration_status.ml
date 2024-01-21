@@ -8,7 +8,7 @@
 
 type t = {
     (* `conditions` is the current state of \''request-priority\''. *)
-    conditions: Io_k8s_api_flowcontrol_v1beta3_priority_level_configuration_condition.t list [@default []];
+    conditions: Io_k8s_api_flowcontrol_v1beta3_priority_level_configuration_condition.t list [@default []] [@key conditions];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PriorityLevelConfigurationStatus represents the current state of a \''request-priority\''. *)

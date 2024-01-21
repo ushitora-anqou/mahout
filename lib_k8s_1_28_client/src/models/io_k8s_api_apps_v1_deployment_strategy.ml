@@ -7,9 +7,9 @@
  *)
 
 type t = {
-    rolling_update: Io_k8s_api_apps_v1_rolling_update_deployment.t option [@default None];
+    rolling_update: Io_k8s_api_apps_v1_rolling_update_deployment.t option [@default None] [@key rollingUpdate];
     (* Type of deployment. Can be \''Recreate\'' or \''RollingUpdate\''. Default is RollingUpdate. *)
-    _type: string option [@default None];
+    _type: string option [@default None] [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** DeploymentStrategy describes how to replace existing pods with new ones. *)

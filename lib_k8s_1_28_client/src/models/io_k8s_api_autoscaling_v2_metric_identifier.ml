@@ -8,8 +8,8 @@
 
 type t = {
     (* name is the name of the given metric *)
-    name: string;
-    selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None];
+    name: string [@key name];
+    selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None] [@key selector];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** MetricIdentifier defines the name and optionally selector for a metric *)

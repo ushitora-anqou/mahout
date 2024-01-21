@@ -8,26 +8,26 @@
 
 type t = {
     (* chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication *)
-    chap_auth_discovery: bool option [@default None];
+    chap_auth_discovery: bool option [@default None] [@key chapAuthDiscovery];
     (* chapAuthSession defines whether support iSCSI Session CHAP authentication *)
-    chap_auth_session: bool option [@default None];
+    chap_auth_session: bool option [@default None] [@key chapAuthSession];
     (* fsType is the filesystem type of the volume that you want to mount. Tip: Ensure that the filesystem type is supported by the host operating system. Examples: \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. More info: https://kubernetes.io/docs/concepts/storage/volumes#iscsi *)
-    fs_type: string option [@default None];
+    fs_type: string option [@default None] [@key fsType];
     (* initiatorName is the custom iSCSI Initiator Name. If initiatorName is specified with iscsiInterface simultaneously, new iSCSI interface <target portal>:<volume name> will be created for the connection. *)
-    initiator_name: string option [@default None];
+    initiator_name: string option [@default None] [@key initiatorName];
     (* iqn is the target iSCSI Qualified Name. *)
-    iqn: string;
+    iqn: string [@key iqn];
     (* iscsiInterface is the interface Name that uses an iSCSI transport. Defaults to 'default' (tcp). *)
-    iscsi_interface: string option [@default None];
+    iscsi_interface: string option [@default None] [@key iscsiInterface];
     (* lun represents iSCSI Target Lun number. *)
-    lun: int32;
+    lun: int32 [@key lun];
     (* portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260). *)
-    portals: string list [@default []];
+    portals: string list [@default []] [@key portals];
     (* readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. *)
-    read_only: bool option [@default None];
-    secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None];
+    read_only: bool option [@default None] [@key readOnly];
+    secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None] [@key secretRef];
     (* targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260). *)
-    target_portal: string;
+    target_portal: string [@key targetPortal];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents an ISCSI disk. ISCSI volumes can only be mounted as read/write once. ISCSI volumes support ownership management and SELinux relabeling. *)

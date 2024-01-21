@@ -8,26 +8,26 @@
 
 type t = {
     (* Default resource requirement limit value by resource name if resource limit is omitted. *)
-    default: Yojson.Safe.t list [@default []];
+    default: Yojson.Safe.t [@key default];
     (* DefaultRequest is the default resource requirement request value by resource name if resource request is omitted. *)
-    default_request: Yojson.Safe.t list [@default []];
+    default_request: Yojson.Safe.t [@key defaultRequest];
     (* Max usage constraints on this kind by resource name. *)
-    max: Yojson.Safe.t list [@default []];
+    max: Yojson.Safe.t [@key max];
     (* MaxLimitRequestRatio if specified, the named resource must have a request and limit that are both non-zero where limit divided by request is less than or equal to the enumerated value; this represents the max burst for the named resource. *)
-    max_limit_request_ratio: Yojson.Safe.t list [@default []];
+    max_limit_request_ratio: Yojson.Safe.t [@key maxLimitRequestRatio];
     (* Min usage constraints on this kind by resource name. *)
-    min: Yojson.Safe.t list [@default []];
+    min: Yojson.Safe.t [@key min];
     (* Type of resource that this limit applies to. *)
-    _type: string;
+    _type: string [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** LimitRangeItem defines a min/max usage limit for any resource that matches on kind. *)
 let create (_type : string) : t = {
-    default = [];
-    default_request = [];
-    max = [];
-    max_limit_request_ratio = [];
-    min = [];
+    default = `List [];
+    default_request = `List [];
+    max = `List [];
+    max_limit_request_ratio = `List [];
+    min = `List [];
     _type = _type;
 }
 

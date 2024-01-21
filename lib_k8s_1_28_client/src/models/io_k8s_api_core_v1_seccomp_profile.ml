@@ -8,9 +8,9 @@
 
 type t = {
     (* localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is \''Localhost\''. Must NOT be set for any other type. *)
-    localhost_profile: string option [@default None];
+    localhost_profile: string option [@default None] [@key localhostProfile];
     (* type indicates which kind of seccomp profile will be applied. Valid options are:  Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied. *)
-    _type: string;
+    _type: string [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SeccompProfile defines a pod/container's seccomp profile settings. Only one profile source may be set. *)

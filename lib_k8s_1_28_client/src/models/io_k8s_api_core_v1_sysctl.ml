@@ -8,9 +8,9 @@
 
 type t = {
     (* Name of a property to set *)
-    name: string;
+    name: string [@key name];
     (* Value of a property to set *)
-    value: string;
+    value: string [@key value];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Sysctl defines a kernel parameter to be set *)

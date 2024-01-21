@@ -8,15 +8,15 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None];
+    last_transition_time: string option [@default None] [@key lastTransitionTime];
     (* A human readable message indicating details about the transition. *)
-    message: string option [@default None];
+    message: string option [@default None] [@key message];
     (* The reason for the condition's last transition. *)
-    reason: string option [@default None];
+    reason: string option [@default None] [@key reason];
     (* Status of the condition, one of True, False, Unknown. *)
-    status: string;
+    status: string [@key status];
     (* Type of statefulset condition. *)
-    _type: string;
+    _type: string [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** StatefulSetCondition describes the state of a statefulset at a certain point. *)

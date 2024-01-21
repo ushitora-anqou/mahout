@@ -7,10 +7,10 @@
  *)
 
 type t = {
-    config_map_key_ref: Io_k8s_api_core_v1_config_map_key_selector.t option [@default None];
-    field_ref: Io_k8s_api_core_v1_object_field_selector.t option [@default None];
-    resource_field_ref: Io_k8s_api_core_v1_resource_field_selector.t option [@default None];
-    secret_key_ref: Io_k8s_api_core_v1_secret_key_selector.t option [@default None];
+    config_map_key_ref: Io_k8s_api_core_v1_config_map_key_selector.t option [@default None] [@key configMapKeyRef];
+    field_ref: Io_k8s_api_core_v1_object_field_selector.t option [@default None] [@key fieldRef];
+    resource_field_ref: Io_k8s_api_core_v1_resource_field_selector.t option [@default None] [@key resourceFieldRef];
+    secret_key_ref: Io_k8s_api_core_v1_secret_key_selector.t option [@default None] [@key secretKeyRef];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** EnvVarSource represents a source for the value of an EnvVar. *)

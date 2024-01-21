@@ -8,15 +8,15 @@
 
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
-    fs_type: string option [@default None];
+    fs_type: string option [@default None] [@key fsType];
     (* lun is Optional: FC target lun number *)
-    lun: int32 option [@default None];
+    lun: int32 option [@default None] [@key lun];
     (* readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None];
+    read_only: bool option [@default None] [@key readOnly];
     (* targetWWNs is Optional: FC target worldwide names (WWNs) *)
-    target_wwns: string list [@default []];
+    target_wwns: string list [@default []] [@key targetWWNs];
     (* wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously. *)
-    wwids: string list [@default []];
+    wwids: string list [@default []] [@key wwids];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents a Fibre Channel volume. Fibre Channel volumes can only be mounted as read/write once. Fibre Channel volumes support ownership management and SELinux relabeling. *)

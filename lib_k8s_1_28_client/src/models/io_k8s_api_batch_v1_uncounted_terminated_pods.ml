@@ -8,9 +8,9 @@
 
 type t = {
     (* failed holds UIDs of failed Pods. *)
-    failed: string list [@default []];
+    failed: string list [@default []] [@key failed];
     (* succeeded holds UIDs of succeeded Pods. *)
-    succeeded: string list [@default []];
+    succeeded: string list [@default []] [@key succeeded];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** UncountedTerminatedPods holds UIDs of Pods that have terminated but haven't been accounted in Job status counters. *)

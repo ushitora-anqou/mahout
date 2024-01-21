@@ -8,19 +8,19 @@
 
 type t = {
     (* Container's ID in the format '<type>://<container_id>' *)
-    container_id: string option [@default None];
+    container_id: string option [@default None] [@key containerID];
     (* Exit status from the last termination of the container *)
-    exit_code: int32;
+    exit_code: int32 [@key exitCode];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    finished_at: string option [@default None];
+    finished_at: string option [@default None] [@key finishedAt];
     (* Message regarding the last termination of the container *)
-    message: string option [@default None];
+    message: string option [@default None] [@key message];
     (* (brief) reason from the last termination of the container *)
-    reason: string option [@default None];
+    reason: string option [@default None] [@key reason];
     (* Signal from the last termination of the container *)
-    signal: int32 option [@default None];
+    signal: int32 option [@default None] [@key signal];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    started_at: string option [@default None];
+    started_at: string option [@default None] [@key startedAt];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ContainerStateTerminated is a terminated state of a container. *)

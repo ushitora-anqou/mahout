@@ -7,7 +7,7 @@
  *)
 
 type t = {
-    load_balancer: Io_k8s_api_networking_v1_ingress_load_balancer_status.t option [@default None];
+    load_balancer: Io_k8s_api_networking_v1_ingress_load_balancer_status.t option [@default None] [@key loadBalancer];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** IngressStatus describe the current state of the Ingress. *)

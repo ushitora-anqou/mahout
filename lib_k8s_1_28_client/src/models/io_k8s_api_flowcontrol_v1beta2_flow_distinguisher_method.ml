@@ -8,7 +8,7 @@
 
 type t = {
     (* `type` is the type of flow distinguisher method The supported types are \''ByUser\'' and \''ByNamespace\''. Required. *)
-    _type: string;
+    _type: string [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** FlowDistinguisherMethod specifies the method of a flow distinguisher. *)

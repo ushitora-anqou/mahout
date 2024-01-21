@@ -8,9 +8,9 @@
 
 type t = {
     (* Component from which the event is generated. *)
-    component: string option [@default None];
+    component: string option [@default None] [@key component];
     (* Node name on which the event is generated. *)
-    host: string option [@default None];
+    host: string option [@default None] [@key host];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** EventSource contains information for an event. *)

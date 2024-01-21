@@ -8,9 +8,9 @@
 
 type t = {
     (* Message regarding why the container is not yet running. *)
-    message: string option [@default None];
+    message: string option [@default None] [@key message];
     (* (brief) reason the container is not yet running. *)
-    reason: string option [@default None];
+    reason: string option [@default None] [@key reason];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ContainerStateWaiting is a waiting state of a container. *)

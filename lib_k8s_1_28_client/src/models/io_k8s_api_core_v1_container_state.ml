@@ -7,9 +7,9 @@
  *)
 
 type t = {
-    running: Io_k8s_api_core_v1_container_state_running.t option [@default None];
-    terminated: Io_k8s_api_core_v1_container_state_terminated.t option [@default None];
-    waiting: Io_k8s_api_core_v1_container_state_waiting.t option [@default None];
+    running: Io_k8s_api_core_v1_container_state_running.t option [@default None] [@key running];
+    terminated: Io_k8s_api_core_v1_container_state_terminated.t option [@default None] [@key terminated];
+    waiting: Io_k8s_api_core_v1_container_state_waiting.t option [@default None] [@key waiting];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ContainerState holds a possible state of container. Only one of its members may be specified. If none of them is specified, the default one is ContainerStateWaiting. *)

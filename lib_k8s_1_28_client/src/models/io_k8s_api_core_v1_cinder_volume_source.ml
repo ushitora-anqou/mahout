@@ -8,12 +8,12 @@
 
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Examples: \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. More info: https://examples.k8s.io/mysql-cinder-pd/README.md *)
-    fs_type: string option [@default None];
+    fs_type: string option [@default None] [@key fsType];
     (* readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/mysql-cinder-pd/README.md *)
-    read_only: bool option [@default None];
-    secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None];
+    read_only: bool option [@default None] [@key readOnly];
+    secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None] [@key secretRef];
     (* volumeID used to identify the volume in cinder. More info: https://examples.k8s.io/mysql-cinder-pd/README.md *)
-    volume_id: string;
+    volume_id: string [@key volumeID];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents a cinder volume resource in Openstack. A Cinder volume must exist before mounting to a container. The volume must also be in the same region as the kubelet. Cinder volumes support ownership management and SELinux relabeling. *)

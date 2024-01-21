@@ -8,13 +8,13 @@
 
 type t = {
     (* name is the name of the service. Required *)
-    name: string;
+    name: string [@key name];
     (* namespace is the namespace of the service. Required *)
-    namespace: string;
+    namespace: string [@key namespace];
     (* path is an optional URL path at which the webhook will be contacted. *)
-    path: string option [@default None];
+    path: string option [@default None] [@key path];
     (* port is an optional service port at which the webhook will be contacted. `port` should be a valid port number (1-65535, inclusive). Defaults to 443 for backward compatibility. *)
-    port: int32 option [@default None];
+    port: int32 option [@default None] [@key port];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ServiceReference holds a reference to Service.legacy.k8s.io *)

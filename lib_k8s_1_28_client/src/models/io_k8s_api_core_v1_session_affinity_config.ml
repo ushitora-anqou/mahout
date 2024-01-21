@@ -7,7 +7,7 @@
  *)
 
 type t = {
-    client_ip: Io_k8s_api_core_v1_client_ip_config.t option [@default None];
+    client_ip: Io_k8s_api_core_v1_client_ip_config.t option [@default None] [@key clientIP];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SessionAffinityConfig represents the configurations of session affinity. *)

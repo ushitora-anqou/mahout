@@ -8,15 +8,15 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None];
+    last_transition_time: string option [@default None] [@key lastTransitionTime];
     (* message is a human-readable message indicating details about last transition. *)
-    message: string option [@default None];
+    message: string option [@default None] [@key message];
     (* reason is a unique, one-word, CamelCase reason for the condition's last transition. *)
-    reason: string option [@default None];
+    reason: string option [@default None] [@key reason];
     (* status is the status of the condition. Can be True, False, Unknown. *)
-    status: string;
+    status: string [@key status];
     (* type is the type of the condition. Types include Established, NamesAccepted and Terminating. *)
-    _type: string;
+    _type: string [@key type];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CustomResourceDefinitionCondition contains details for the current condition of this pod. *)

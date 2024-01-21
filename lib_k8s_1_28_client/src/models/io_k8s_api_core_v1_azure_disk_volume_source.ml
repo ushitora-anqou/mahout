@@ -8,17 +8,17 @@
 
 type t = {
     (* cachingMode is the Host Caching mode: None, Read Only, Read Write. *)
-    caching_mode: string option [@default None];
+    caching_mode: string option [@default None] [@key cachingMode];
     (* diskName is the Name of the data disk in the blob storage *)
-    disk_name: string;
+    disk_name: string [@key diskName];
     (* diskURI is the URI of data disk in the blob storage *)
-    disk_uri: string;
+    disk_uri: string [@key diskURI];
     (* fsType is Filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
-    fs_type: string option [@default None];
+    fs_type: string option [@default None] [@key fsType];
     (* kind expected values are Shared: multiple blob disks per storage account  Dedicated: single blob disk per storage account  Managed: azure managed data disk (only in managed availability set). defaults to shared *)
-    kind: string option [@default None];
+    kind: string option [@default None] [@key kind];
     (* readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None];
+    read_only: bool option [@default None] [@key readOnly];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod. *)

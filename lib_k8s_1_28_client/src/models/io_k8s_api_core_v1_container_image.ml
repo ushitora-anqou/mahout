@@ -8,9 +8,9 @@
 
 type t = {
     (* Names by which this image is known. e.g. [\''kubernetes.example/hyperkube:v1.0.7\'', \''cloud-vendor.registry.example/cloud-vendor/hyperkube:v1.0.7\''] *)
-    names: string list [@default []];
+    names: string list [@default []] [@key names];
     (* The size of the image in bytes. *)
-    size_bytes: int64 option [@default None];
+    size_bytes: int64 option [@default None] [@key sizeBytes];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Describe a container image *)

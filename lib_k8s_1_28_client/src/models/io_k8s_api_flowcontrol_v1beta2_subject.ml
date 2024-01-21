@@ -7,11 +7,11 @@
  *)
 
 type t = {
-    group: Io_k8s_api_flowcontrol_v1beta2_group_subject.t option [@default None];
+    group: Io_k8s_api_flowcontrol_v1beta2_group_subject.t option [@default None] [@key group];
     (* `kind` indicates which one of the other fields is non-empty. Required *)
-    kind: string;
-    service_account: Io_k8s_api_flowcontrol_v1beta2_service_account_subject.t option [@default None];
-    user: Io_k8s_api_flowcontrol_v1beta2_user_subject.t option [@default None];
+    kind: string [@key kind];
+    service_account: Io_k8s_api_flowcontrol_v1beta2_service_account_subject.t option [@default None] [@key serviceAccount];
+    user: Io_k8s_api_flowcontrol_v1beta2_user_subject.t option [@default None] [@key user];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Subject matches the originator of a request, as identified by the request authentication system. There are three ways of matching an originator; by user, group, or service account. *)

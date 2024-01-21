@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None];
-    resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@default None];
+    non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None] [@key nonResourceAttributes];
+    resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@default None] [@key resourceAttributes];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SelfSubjectAccessReviewSpec is a description of the access request.  Exactly one of ResourceAuthorizationAttributes and NonResourceAuthorizationAttributes must be set *)

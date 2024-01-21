@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    description: string option [@default None];
-    url: string option [@default None];
+    description: string option [@default None] [@key description];
+    url: string option [@default None] [@key url];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ExternalDocumentation allows referencing an external resource for extended documentation. *)

@@ -8,10 +8,10 @@
 
 type t = {
     (* Specifies the action taken on a pod failure when the requirements are satisfied. Possible values are:  - FailJob: indicates that the pod's job is marked as Failed and all   running pods are terminated. - FailIndex: indicates that the pod's index is marked as Failed and will   not be restarted.   This value is alpha-level. It can be used when the   `JobBackoffLimitPerIndex` feature gate is enabled (disabled by default). - Ignore: indicates that the counter towards the .backoffLimit is not   incremented and a replacement pod is created. - Count: indicates that the pod is handled in the default way - the   counter towards the .backoffLimit is incremented. Additional values are considered to be added in the future. Clients should react to an unknown action by skipping the rule. *)
-    action: string;
-    on_exit_codes: Io_k8s_api_batch_v1_pod_failure_policy_on_exit_codes_requirement.t option [@default None];
+    action: string [@key action];
+    on_exit_codes: Io_k8s_api_batch_v1_pod_failure_policy_on_exit_codes_requirement.t option [@default None] [@key onExitCodes];
     (* Represents the requirement on the pod conditions. The requirement is represented as a list of pod condition patterns. The requirement is satisfied if at least one pattern matches an actual pod condition. At most 20 elements are allowed. *)
-    on_pod_conditions: Io_k8s_api_batch_v1_pod_failure_policy_on_pod_conditions_pattern.t list [@default []];
+    on_pod_conditions: Io_k8s_api_batch_v1_pod_failure_policy_on_pod_conditions_pattern.t list [@default []] [@key onPodConditions];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodFailurePolicyRule describes how a pod failure is handled when the requirements are met. One of onExitCodes and onPodConditions, but not both, can be used in each rule. *)

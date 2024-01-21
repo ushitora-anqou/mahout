@@ -8,7 +8,7 @@
 
 type t = {
     (* The type checking warnings for each expression. *)
-    expression_warnings: Io_k8s_api_admissionregistration_v1alpha1_expression_warning.t list [@default []];
+    expression_warnings: Io_k8s_api_admissionregistration_v1alpha1_expression_warning.t list [@default []] [@key expressionWarnings];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** TypeChecking contains results of type checking the expressions in the ValidatingAdmissionPolicy *)

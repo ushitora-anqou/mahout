@@ -8,18 +8,18 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None];
+    api_version: string option [@default None] [@key apiVersion];
     (* description is an arbitrary string that usually provides guidelines on when this priority class should be used. *)
-    description: string option [@default None];
+    description: string option [@default None] [@key description];
     (* globalDefault specifies whether this PriorityClass should be considered as the default priority for pods that do not have any priority class. Only one PriorityClass can be marked as `globalDefault`. However, if more than one PriorityClasses exists with their `globalDefault` field set to true, the smallest value of such global default PriorityClasses will be used as the default priority. *)
-    global_default: bool option [@default None];
+    global_default: bool option [@default None] [@key globalDefault];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
+    kind: string option [@default None] [@key kind];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key metadata];
     (* preemptionPolicy is the Policy for preempting pods with lower priority. One of Never, PreemptLowerPriority. Defaults to PreemptLowerPriority if unset. *)
-    preemption_policy: string option [@default None];
+    preemption_policy: string option [@default None] [@key preemptionPolicy];
     (* value represents the integer value of this priority class. This is the actual priority that pods receive when they have the name of this class in their pod spec. *)
-    value: int32;
+    value: int32 [@key value];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PriorityClass defines mapping from a priority class name to the priority integer value. The value can be any valid integer. *)

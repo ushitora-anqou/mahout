@@ -8,10 +8,10 @@
 
 type t = {
     (* container is the name of the container in the pods of the scaling target *)
-    container: string;
-    current: Io_k8s_api_autoscaling_v2_metric_value_status.t;
+    container: string [@key container];
+    current: Io_k8s_api_autoscaling_v2_metric_value_status.t [@key current];
     (* name is the name of the resource in question. *)
-    name: string;
+    name: string [@key name];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ContainerResourceMetricStatus indicates the current value of a resource metric known to Kubernetes, as specified in requests and limits, describing a single container in each pod in the current scale target (e.g. CPU or memory).  Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the \''pods\'' source. *)

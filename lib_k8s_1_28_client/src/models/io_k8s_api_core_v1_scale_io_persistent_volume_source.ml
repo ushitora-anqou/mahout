@@ -8,24 +8,24 @@
 
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Default is \''xfs\'' *)
-    fs_type: string option [@default None];
+    fs_type: string option [@default None] [@key fsType];
     (* gateway is the host address of the ScaleIO API Gateway. *)
-    gateway: string;
+    gateway: string [@key gateway];
     (* protectionDomain is the name of the ScaleIO Protection Domain for the configured storage. *)
-    protection_domain: string option [@default None];
+    protection_domain: string option [@default None] [@key protectionDomain];
     (* readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None];
-    secret_ref: Io_k8s_api_core_v1_secret_reference.t;
+    read_only: bool option [@default None] [@key readOnly];
+    secret_ref: Io_k8s_api_core_v1_secret_reference.t [@key secretRef];
     (* sslEnabled is the flag to enable/disable SSL communication with Gateway, default false *)
-    ssl_enabled: bool option [@default None];
+    ssl_enabled: bool option [@default None] [@key sslEnabled];
     (* storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned. *)
-    storage_mode: string option [@default None];
+    storage_mode: string option [@default None] [@key storageMode];
     (* storagePool is the ScaleIO Storage Pool associated with the protection domain. *)
-    storage_pool: string option [@default None];
+    storage_pool: string option [@default None] [@key storagePool];
     (* system is the name of the storage system as configured in ScaleIO. *)
-    system: string;
+    system: string [@key system];
     (* volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source. *)
-    volume_name: string option [@default None];
+    volume_name: string option [@default None] [@key volumeName];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ScaleIOPersistentVolumeSource represents a persistent ScaleIO volume *)
