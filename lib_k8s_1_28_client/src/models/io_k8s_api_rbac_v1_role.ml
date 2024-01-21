@@ -13,7 +13,7 @@ type t = {
     kind: string option [@default None];
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
     (* Rules holds all the PolicyRules for this Role *)
-    rules: Io_k8s_api_rbac_v1_policy_rule.t list;
+    rules: Io_k8s_api_rbac_v1_policy_rule.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Role is a namespaced, logical grouping of PolicyRules that can be referenced as a unit by a RoleBinding. *)

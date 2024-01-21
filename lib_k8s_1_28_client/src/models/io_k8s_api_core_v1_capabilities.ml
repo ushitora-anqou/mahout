@@ -8,9 +8,9 @@
 
 type t = {
     (* Added capabilities *)
-    add: string list;
+    add: string list [@default []];
     (* Removed capabilities *)
-    drop: string list;
+    drop: string list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Adds and removes POSIX capabilities from running containers. *)

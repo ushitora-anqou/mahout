@@ -8,7 +8,7 @@
 
 type t = {
     (* accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1 *)
-    access_modes: string list;
+    access_modes: string list [@default []];
     data_source: Io_k8s_api_core_v1_typed_local_object_reference.t option [@default None];
     data_source_ref: Io_k8s_api_core_v1_typed_object_reference.t option [@default None];
     resources: Io_k8s_api_core_v1_resource_requirements.t option [@default None];

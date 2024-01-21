@@ -10,7 +10,7 @@ type t = {
     (* Extra corresponds to the user.Info.GetExtra() method from the authenticator.  Since that is input to the authorizer it needs a reflection here. *)
     extra: (string * string list) list;
     (* Groups is the groups you're testing for. *)
-    groups: string list;
+    groups: string list [@default []];
     non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None];
     resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@default None];
     (* UID information about the requesting user. *)

@@ -8,7 +8,7 @@
 
 type t = {
     (* The Causes array includes more details associated with the StatusReason failure. Not all StatusReasons may provide detailed causes. *)
-    causes: Io_k8s_apimachinery_pkg_apis_meta_v1_status_cause.t list;
+    causes: Io_k8s_apimachinery_pkg_apis_meta_v1_status_cause.t list [@default []];
     (* The group attribute of the resource associated with the status StatusReason. *)
     group: string option [@default None];
     (* The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)

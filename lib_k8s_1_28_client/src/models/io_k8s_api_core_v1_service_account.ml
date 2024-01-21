@@ -12,12 +12,12 @@ type t = {
     (* AutomountServiceAccountToken indicates whether pods running as this service account should have an API token automatically mounted. Can be overridden at the pod level. *)
     automount_service_account_token: bool option [@default None];
     (* ImagePullSecrets is a list of references to secrets in the same namespace to use for pulling any images in pods that reference this ServiceAccount. ImagePullSecrets are distinct from Secrets because Secrets can be mounted in the pod, but ImagePullSecrets are only accessed by the kubelet. More info: https://kubernetes.io/docs/concepts/containers/images/#specifying-imagepullsecrets-on-a-pod *)
-    image_pull_secrets: Io_k8s_api_core_v1_local_object_reference.t list;
+    image_pull_secrets: Io_k8s_api_core_v1_local_object_reference.t list [@default []];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
     kind: string option [@default None];
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
     (* Secrets is a list of the secrets in the same namespace that pods running using this ServiceAccount are allowed to use. Pods are only limited to this list if this service account has a \''kubernetes.io/enforce-mountable-secrets\'' annotation set to \''true\''. This field should not be used to find auto-generated service account token secrets for use outside of pods. Instead, tokens can be requested directly using the TokenRequest API, or service account token secrets can be manually created. More info: https://kubernetes.io/docs/concepts/configuration/secret *)
-    secrets: Io_k8s_api_core_v1_object_reference.t list;
+    secrets: Io_k8s_api_core_v1_object_reference.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ServiceAccount binds together: * a name, understood by users, and perhaps by peripheral systems, for an identity * a principal that can be authenticated and authorized * a set of secrets *)

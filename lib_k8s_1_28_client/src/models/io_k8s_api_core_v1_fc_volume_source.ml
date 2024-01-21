@@ -14,9 +14,9 @@ type t = {
     (* readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
     read_only: bool option [@default None];
     (* targetWWNs is Optional: FC target worldwide names (WWNs) *)
-    target_wwns: string list;
+    target_wwns: string list [@default []];
     (* wwids Optional: FC volume world wide identifiers (wwids) Either wwids or combination of targetWWNs and lun must be set, but not both simultaneously. *)
-    wwids: string list;
+    wwids: string list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents a Fibre Channel volume. Fibre Channel volumes can only be mounted as read/write once. Fibre Channel volumes support ownership management and SELinux relabeling. *)

@@ -15,9 +15,9 @@ type t = {
     name: string;
     preferred_version: Io_k8s_apimachinery_pkg_apis_meta_v1_group_version_for_discovery.t option [@default None];
     (* a map of client CIDR to server address that is serving this group. This is to help clients reach servers in the most network-efficient way possible. Clients can use the appropriate server address as per the CIDR that they match. In case of multiple matches, clients should use the longest matching CIDR. The server returns only those CIDRs that it thinks that the client can match. For example: the master will return an internal IP CIDR only, if the client reaches the server using an internal IP. Server looks at X-Forwarded-For header or X-Real-Ip header or request.RemoteAddr (in that order) to get the client IP. *)
-    server_address_by_client_cidrs: Io_k8s_apimachinery_pkg_apis_meta_v1_server_address_by_client_cidr.t list;
+    server_address_by_client_cidrs: Io_k8s_apimachinery_pkg_apis_meta_v1_server_address_by_client_cidr.t list [@default []];
     (* versions are the versions supported in this group. *)
-    versions: Io_k8s_apimachinery_pkg_apis_meta_v1_group_version_for_discovery.t list;
+    versions: Io_k8s_apimachinery_pkg_apis_meta_v1_group_version_for_discovery.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** APIGroup contains the name, the supported versions, and the preferred version of a group. *)

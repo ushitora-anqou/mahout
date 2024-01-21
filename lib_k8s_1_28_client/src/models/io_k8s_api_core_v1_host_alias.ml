@@ -8,7 +8,7 @@
 
 type t = {
     (* Hostnames for the above IP address. *)
-    hostnames: string list;
+    hostnames: string list [@default []];
     (* IP address of the host file entry. *)
     ip: string option [@default None];
 } [@@deriving yojson { strict = false }, show ];;

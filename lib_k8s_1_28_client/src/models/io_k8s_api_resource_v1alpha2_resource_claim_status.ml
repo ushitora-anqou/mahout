@@ -13,7 +13,7 @@ type t = {
     (* DriverName is a copy of the driver name from the ResourceClass at the time when allocation started. *)
     driver_name: string option [@default None];
     (* ReservedFor indicates which entities are currently allowed to use the claim. A Pod which references a ResourceClaim which is not reserved for that Pod will not be started.  There can be at most 32 such reservations. This may get increased in the future, but not reduced. *)
-    reserved_for: Io_k8s_api_resource_v1alpha2_resource_claim_consumer_reference.t list;
+    reserved_for: Io_k8s_api_resource_v1alpha2_resource_claim_consumer_reference.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceClaimStatus tracks whether the resource has been allocated and what the resulting attributes are. *)

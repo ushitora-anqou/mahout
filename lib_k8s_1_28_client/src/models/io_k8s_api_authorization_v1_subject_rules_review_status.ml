@@ -12,9 +12,9 @@ type t = {
     (* Incomplete is true when the rules returned by this call are incomplete. This is most commonly encountered when an authorizer, such as an external authorizer, doesn't support rules evaluation. *)
     incomplete: bool;
     (* NonResourceRules is the list of actions the subject is allowed to perform on non-resources. The list ordering isn't significant, may contain duplicates, and possibly be incomplete. *)
-    non_resource_rules: Io_k8s_api_authorization_v1_non_resource_rule.t list;
+    non_resource_rules: Io_k8s_api_authorization_v1_non_resource_rule.t list [@default []];
     (* ResourceRules is the list of actions the subject is allowed to perform on resources. The list ordering isn't significant, may contain duplicates, and possibly be incomplete. *)
-    resource_rules: Io_k8s_api_authorization_v1_resource_rule.t list;
+    resource_rules: Io_k8s_api_authorization_v1_resource_rule.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SubjectRulesReviewStatus contains the result of a rules check. This check can be incomplete depending on the set of authorizers the server is configured with and any errors experienced during evaluation. Because authorization rules are additive, if a rule appears in a list it's safe to assume the subject has that permission, even if that list is incomplete. *)

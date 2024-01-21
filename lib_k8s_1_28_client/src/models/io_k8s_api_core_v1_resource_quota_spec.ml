@@ -11,7 +11,7 @@ type t = {
     hard: (string * string) list;
     scope_selector: Io_k8s_api_core_v1_scope_selector.t option [@default None];
     (* A collection of filters that must match each object tracked by a quota. If not specified, the quota matches all objects. *)
-    scopes: string list;
+    scopes: string list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceQuotaSpec defines the desired hard limits to enforce for Quota. *)

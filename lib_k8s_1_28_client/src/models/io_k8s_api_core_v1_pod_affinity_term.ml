@@ -10,7 +10,7 @@ type t = {
     label_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None];
     namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None];
     (* namespaces specifies a static list of namespace names that the term applies to. The term is applied to the union of the namespaces listed in this field and the ones selected by namespaceSelector. null or empty namespaces list and null namespaceSelector means \''this pod's namespace\''. *)
-    namespaces: string list;
+    namespaces: string list [@default []];
     (* This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed. *)
     topology_key: string;
 } [@@deriving yojson { strict = false }, show ];;

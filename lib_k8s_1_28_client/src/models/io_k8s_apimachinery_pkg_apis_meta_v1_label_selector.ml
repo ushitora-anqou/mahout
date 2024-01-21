@@ -8,7 +8,7 @@
 
 type t = {
     (* matchExpressions is a list of label selector requirements. The requirements are ANDed. *)
-    match_expressions: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector_requirement.t list;
+    match_expressions: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector_requirement.t list [@default []];
     (* matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \''key\'', the operator is \''In\'', and the values array contains only \''value\''. The requirements are ANDed. *)
     match_labels: (string * string) list;
 } [@@deriving yojson { strict = false }, show ];;

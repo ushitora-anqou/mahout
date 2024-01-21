@@ -12,7 +12,7 @@ type t = {
     (* ip is set for load-balancer ingress points that are IP based. *)
     ip: string option [@default None];
     (* ports provides information about the ports exposed by this LoadBalancer. *)
-    ports: Io_k8s_api_networking_v1_ingress_port_status.t list;
+    ports: Io_k8s_api_networking_v1_ingress_port_status.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** IngressLoadBalancerIngress represents the status of a load-balancer ingress point. *)

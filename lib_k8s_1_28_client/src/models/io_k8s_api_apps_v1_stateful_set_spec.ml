@@ -23,7 +23,7 @@ type t = {
     template: Io_k8s_api_core_v1_pod_template_spec.t;
     update_strategy: Io_k8s_api_apps_v1_stateful_set_update_strategy.t option [@default None];
     (* volumeClaimTemplates is a list of claims that pods are allowed to reference. The StatefulSet controller is responsible for mapping network identities to claims in a way that maintains the identity of a pod. Every claim in this list must have at least one matching (by name) volumeMount in one container in the template. A claim in this list takes precedence over any volumes in the template, with the same name. *)
-    volume_claim_templates: Io_k8s_api_core_v1_persistent_volume_claim.t list;
+    volume_claim_templates: Io_k8s_api_core_v1_persistent_volume_claim.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** A StatefulSetSpec is the specification of a StatefulSet. *)

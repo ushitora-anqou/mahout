@@ -22,7 +22,7 @@ type t = {
     (* lun represents iSCSI Target Lun number. *)
     lun: int32;
     (* portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260). *)
-    portals: string list;
+    portals: string list [@default []];
     (* readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. *)
     read_only: bool option [@default None];
     secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None];

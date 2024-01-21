@@ -8,9 +8,9 @@
 
 type t = {
     (* conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. *)
-    conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list;
+    conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list [@default []];
     (* currentMetrics is the last read state of the metrics used by this autoscaler. *)
-    current_metrics: Io_k8s_api_autoscaling_v2_metric_status.t list;
+    current_metrics: Io_k8s_api_autoscaling_v2_metric_status.t list [@default []];
     (* currentReplicas is current number of replicas of pods managed by this autoscaler, as last seen by the autoscaler. *)
     current_replicas: int32 option [@default None];
     (* desiredReplicas is the desired number of replicas of pods managed by this autoscaler, as last calculated by the autoscaler. *)

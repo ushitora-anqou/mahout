@@ -8,7 +8,7 @@
 
 type t = {
     (* accessModes contains all ways the volume can be mounted. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes *)
-    access_modes: string list;
+    access_modes: string list [@default []];
     aws_elastic_block_store: Io_k8s_api_core_v1_aws_elastic_block_store_volume_source.t option [@default None];
     azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@default None];
     azure_file: Io_k8s_api_core_v1_azure_file_persistent_volume_source.t option [@default None];
@@ -27,7 +27,7 @@ type t = {
     iscsi: Io_k8s_api_core_v1_iscsi_persistent_volume_source.t option [@default None];
     local: Io_k8s_api_core_v1_local_volume_source.t option [@default None];
     (* mountOptions is the list of mount options, e.g. [\''ro\'', \''soft\'']. Not validated - mount will simply fail if one is invalid. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options *)
-    mount_options: string list;
+    mount_options: string list [@default []];
     nfs: Io_k8s_api_core_v1_nfs_volume_source.t option [@default None];
     node_affinity: Io_k8s_api_core_v1_volume_node_affinity.t option [@default None];
     (* persistentVolumeReclaimPolicy defines what happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming *)

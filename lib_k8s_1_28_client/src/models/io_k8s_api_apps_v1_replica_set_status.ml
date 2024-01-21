@@ -10,7 +10,7 @@ type t = {
     (* The number of available replicas (ready for at least minReadySeconds) for this replica set. *)
     available_replicas: int32 option [@default None];
     (* Represents the latest available observations of a replica set's current state. *)
-    conditions: Io_k8s_api_apps_v1_replica_set_condition.t list;
+    conditions: Io_k8s_api_apps_v1_replica_set_condition.t list [@default []];
     (* The number of pods that have labels matching the labels of the pod template of the replicaset. *)
     fully_labeled_replicas: int32 option [@default None];
     (* ObservedGeneration reflects the generation of the most recently observed ReplicaSet. *)

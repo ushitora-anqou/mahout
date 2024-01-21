@@ -16,7 +16,7 @@ type t = {
     (* scope indicates whether the defined custom resource is cluster- or namespace-scoped. Allowed values are `Cluster` and `Namespaced`. *)
     scope: string;
     (* versions is the list of all API versions of the defined custom resource. Version names are used to compute the order in which served versions are listed in API discovery. If the version string is \''kube-like\'', it will sort above non \''kube-like\'' version strings, which are ordered lexicographically. \''Kube-like\'' versions start with a \''v\'', then are followed by a number (the major version), then optionally the string \''alpha\'' or \''beta\'' and another number (the minor version). These are sorted first by GA > beta > alpha (where GA is a version with no suffix such as beta or alpha), and then by comparing major version, then minor version. An example sorted list of versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10. *)
-    versions: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_version.t list;
+    versions: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_version.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CustomResourceDefinitionSpec describes how a user wants their resource to appear *)

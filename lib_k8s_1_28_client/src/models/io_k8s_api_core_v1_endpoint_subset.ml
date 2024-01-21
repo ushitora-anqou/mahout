@@ -8,11 +8,11 @@
 
 type t = {
     (* IP addresses which offer the related ports that are marked as ready. These endpoints should be considered safe for load balancers and clients to utilize. *)
-    addresses: Io_k8s_api_core_v1_endpoint_address.t list;
+    addresses: Io_k8s_api_core_v1_endpoint_address.t list [@default []];
     (* IP addresses which offer the related ports but are not currently marked as ready because they have not yet finished starting, have recently failed a readiness check, or have recently failed a liveness check. *)
-    not_ready_addresses: Io_k8s_api_core_v1_endpoint_address.t list;
+    not_ready_addresses: Io_k8s_api_core_v1_endpoint_address.t list [@default []];
     (* Port numbers available on the related IP addresses. *)
-    ports: Io_k8s_api_core_v1_endpoint_port.t list;
+    ports: Io_k8s_api_core_v1_endpoint_port.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** EndpointSubset is a group of addresses with a common set of ports. The expanded set of endpoints is the Cartesian product of Addresses x Ports. For example, given:   {    Addresses: [{\''ip\'': \''10.10.1.1\''}, {\''ip\'': \''10.10.2.2\''}],    Ports:     [{\''name\'': \''a\'', \''port\'': 8675}, {\''name\'': \''b\'', \''port\'': 309}]  }  The resulting set of endpoints can be viewed as:   a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],  b: [ 10.10.1.1:309, 10.10.2.2:309 ] *)

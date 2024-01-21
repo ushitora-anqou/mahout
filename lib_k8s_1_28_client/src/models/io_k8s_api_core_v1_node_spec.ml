@@ -13,11 +13,11 @@ type t = {
     (* PodCIDR represents the pod IP range assigned to the node. *)
     pod_cidr: string option [@default None];
     (* podCIDRs represents the IP ranges assigned to the node for usage by Pods on that node. If this field is specified, the 0th entry must match the podCIDR field. It may contain at most 1 value for each of IPv4 and IPv6. *)
-    pod_cidrs: string list;
+    pod_cidrs: string list [@default []];
     (* ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID> *)
     provider_id: string option [@default None];
     (* If specified, the node's taints. *)
-    taints: Io_k8s_api_core_v1_taint.t list;
+    taints: Io_k8s_api_core_v1_taint.t list [@default []];
     (* Unschedulable controls node schedulability of new pods. By default, node is schedulable. More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration *)
     unschedulable: bool option [@default None];
 } [@@deriving yojson { strict = false }, show ];;

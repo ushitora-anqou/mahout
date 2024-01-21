@@ -8,7 +8,7 @@
 
 type t = {
     (* Items is a list of DownwardAPIVolume file *)
-    items: Io_k8s_api_core_v1_downward_api_volume_file.t list;
+    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents downward API info for projecting into a projected volume. Note that this is identical to a downwardAPI volume source without the default mode. *)

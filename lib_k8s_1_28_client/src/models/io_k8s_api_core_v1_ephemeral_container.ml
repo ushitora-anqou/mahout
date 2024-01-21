@@ -8,13 +8,13 @@
 
 type t = {
     (* Arguments to the entrypoint. The image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
-    args: string list;
+    args: string list [@default []];
     (* Entrypoint array. Not executed within a shell. The image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
-    command: string list;
+    command: string list [@default []];
     (* List of environment variables to set in the container. Cannot be updated. *)
-    env: Io_k8s_api_core_v1_env_var.t list;
+    env: Io_k8s_api_core_v1_env_var.t list [@default []];
     (* List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER. All invalid keys will be reported as an event when the container is starting. When a key exists in multiple sources, the value associated with the last source will take precedence. Values defined by an Env with a duplicate key will take precedence. Cannot be updated. *)
-    env_from: Io_k8s_api_core_v1_env_from_source.t list;
+    env_from: Io_k8s_api_core_v1_env_from_source.t list [@default []];
     (* Container image name. More info: https://kubernetes.io/docs/concepts/containers/images *)
     image: string option [@default None];
     (* Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images *)
@@ -24,10 +24,10 @@ type t = {
     (* Name of the ephemeral container specified as a DNS_LABEL. This name must be unique among all containers, init containers and ephemeral containers. *)
     name: string;
     (* Ports are not allowed for ephemeral containers. *)
-    ports: Io_k8s_api_core_v1_container_port.t list;
+    ports: Io_k8s_api_core_v1_container_port.t list [@default []];
     readiness_probe: Io_k8s_api_core_v1_probe.t option [@default None];
     (* Resources resize policy for the container. *)
-    resize_policy: Io_k8s_api_core_v1_container_resize_policy.t list;
+    resize_policy: Io_k8s_api_core_v1_container_resize_policy.t list [@default []];
     resources: Io_k8s_api_core_v1_resource_requirements.t option [@default None];
     (* Restart policy for the container to manage the restart behavior of each container within a pod. This may only be set for init containers. You cannot set this field on ephemeral containers. *)
     restart_policy: string option [@default None];
@@ -46,9 +46,9 @@ type t = {
     (* Whether this container should allocate a TTY for itself, also requires 'stdin' to be true. Default is false. *)
     tty: bool option [@default None];
     (* volumeDevices is the list of block devices to be used by the container. *)
-    volume_devices: Io_k8s_api_core_v1_volume_device.t list;
+    volume_devices: Io_k8s_api_core_v1_volume_device.t list [@default []];
     (* Pod volumes to mount into the container's filesystem. Subpath mounts are not allowed for ephemeral containers. Cannot be updated. *)
-    volume_mounts: Io_k8s_api_core_v1_volume_mount.t list;
+    volume_mounts: Io_k8s_api_core_v1_volume_mount.t list [@default []];
     (* Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. *)
     working_dir: string option [@default None];
 } [@@deriving yojson { strict = false }, show ];;

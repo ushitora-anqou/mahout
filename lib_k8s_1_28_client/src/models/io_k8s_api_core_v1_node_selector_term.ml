@@ -8,9 +8,9 @@
 
 type t = {
     (* A list of node selector requirements by node's labels. *)
-    match_expressions: Io_k8s_api_core_v1_node_selector_requirement.t list;
+    match_expressions: Io_k8s_api_core_v1_node_selector_requirement.t list [@default []];
     (* A list of node selector requirements by node's fields. *)
-    match_fields: Io_k8s_api_core_v1_node_selector_requirement.t list;
+    match_fields: Io_k8s_api_core_v1_node_selector_requirement.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** A null or empty node selector term matches no objects. The requirements of them are ANDed. The TopologySelectorTerm type implements a subset of the NodeSelectorTerm. *)

@@ -8,7 +8,7 @@
 
 type t = {
     (* A list of pointers to currently running jobs. *)
-    active: Io_k8s_api_core_v1_object_reference.t list;
+    active: Io_k8s_api_core_v1_object_reference.t list [@default []];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_schedule_time: string option [@default None];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)

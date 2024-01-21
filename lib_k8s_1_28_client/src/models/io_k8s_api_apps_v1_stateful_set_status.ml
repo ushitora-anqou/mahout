@@ -12,7 +12,7 @@ type t = {
     (* collisionCount is the count of hash collisions for the StatefulSet. The StatefulSet controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ControllerRevision. *)
     collision_count: int32 option [@default None];
     (* Represents the latest available observations of a statefulset's current state. *)
-    conditions: Io_k8s_api_apps_v1_stateful_set_condition.t list;
+    conditions: Io_k8s_api_apps_v1_stateful_set_condition.t list [@default []];
     (* currentReplicas is the number of Pods created by the StatefulSet controller from the StatefulSet version indicated by currentRevision. *)
     current_replicas: int32 option [@default None];
     (* currentRevision, if not empty, indicates the version of the StatefulSet used to generate Pods in the sequence [0,currentReplicas). *)

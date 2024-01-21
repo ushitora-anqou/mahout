@@ -8,7 +8,7 @@
 
 type t = {
     (* drivers is a list of information of all CSI Drivers existing on a node. If all drivers in the list are uninstalled, this can become empty. *)
-    drivers: Io_k8s_api_storage_v1_csi_node_driver.t list;
+    drivers: Io_k8s_api_storage_v1_csi_node_driver.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CSINodeSpec holds information about the specification of all CSI drivers installed on a node *)

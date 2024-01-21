@@ -12,7 +12,7 @@ type t = {
     matching_precedence: int32 option [@default None];
     priority_level_configuration: Io_k8s_api_flowcontrol_v1beta2_priority_level_configuration_reference.t;
     (* `rules` describes which requests will match this flow schema. This FlowSchema matches a request if and only if at least one member of rules matches the request. if it is an empty slice, there will be no requests matching the FlowSchema. *)
-    rules: Io_k8s_api_flowcontrol_v1beta2_policy_rules_with_subjects.t list;
+    rules: Io_k8s_api_flowcontrol_v1beta2_policy_rules_with_subjects.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** FlowSchemaSpec describes how the FlowSchema's specification looks like. *)

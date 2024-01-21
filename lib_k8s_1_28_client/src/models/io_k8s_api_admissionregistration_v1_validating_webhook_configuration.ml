@@ -13,7 +13,7 @@ type t = {
     kind: string option [@default None];
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
     (* Webhooks is a list of webhooks and the affected resources and operations. *)
-    webhooks: Io_k8s_api_admissionregistration_v1_validating_webhook.t list;
+    webhooks: Io_k8s_api_admissionregistration_v1_validating_webhook.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ValidatingWebhookConfiguration describes the configuration of and admission webhook that accept or reject and object without changing it. *)

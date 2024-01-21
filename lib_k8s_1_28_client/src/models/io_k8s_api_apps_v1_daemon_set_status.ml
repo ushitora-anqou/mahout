@@ -10,7 +10,7 @@ type t = {
     (* Count of hash collisions for the DaemonSet. The DaemonSet controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ControllerRevision. *)
     collision_count: int32 option [@default None];
     (* Represents the latest available observations of a DaemonSet's current state. *)
-    conditions: Io_k8s_api_apps_v1_daemon_set_condition.t list;
+    conditions: Io_k8s_api_apps_v1_daemon_set_condition.t list [@default []];
     (* The number of nodes that are running at least 1 daemon pod and are supposed to run the daemon pod. More info: https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/ *)
     current_number_scheduled: int32;
     (* The total number of nodes that should be running the daemon pod (including nodes correctly running the daemon pod). More info: https://kubernetes.io/docs/concepts/workloads/controllers/daemonset/ *)

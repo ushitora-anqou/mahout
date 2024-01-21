@@ -8,17 +8,17 @@
 
 type t = {
     (* Current service state of pod. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions *)
-    conditions: Io_k8s_api_core_v1_pod_condition.t list;
+    conditions: Io_k8s_api_core_v1_pod_condition.t list [@default []];
     (* The list has one entry per container in the manifest. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-and-container-status *)
-    container_statuses: Io_k8s_api_core_v1_container_status.t list;
+    container_statuses: Io_k8s_api_core_v1_container_status.t list [@default []];
     (* Status for any ephemeral containers that have run in this pod. *)
-    ephemeral_container_statuses: Io_k8s_api_core_v1_container_status.t list;
+    ephemeral_container_statuses: Io_k8s_api_core_v1_container_status.t list [@default []];
     (* hostIP holds the IP address of the host to which the pod is assigned. Empty if the pod has not started yet. A pod can be assigned to a node that has a problem in kubelet which in turns mean that HostIP will not be updated even if there is a node is assigned to pod *)
     host_ip: string option [@default None];
     (* hostIPs holds the IP addresses allocated to the host. If this field is specified, the first entry must match the hostIP field. This list is empty if the pod has not started yet. A pod can be assigned to a node that has a problem in kubelet which in turns means that HostIPs will not be updated even if there is a node is assigned to this pod. *)
-    host_ips: Io_k8s_api_core_v1_host_ip.t list;
+    host_ips: Io_k8s_api_core_v1_host_ip.t list [@default []];
     (* The list has one entry per init container in the manifest. The most recent successful init container will have ready = true, the most recently started container will have startTime set. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-and-container-status *)
-    init_container_statuses: Io_k8s_api_core_v1_container_status.t list;
+    init_container_statuses: Io_k8s_api_core_v1_container_status.t list [@default []];
     (* A human readable message indicating details about why the pod is in this condition. *)
     message: string option [@default None];
     (* nominatedNodeName is set only when this pod preempts other pods on the node, but it cannot be scheduled right away as preemption victims receive their graceful termination periods. This field does not guarantee that the pod will be scheduled on this node. Scheduler may decide to place the pod elsewhere if other nodes become available sooner. Scheduler may also decide to give the resources on this node to a higher priority pod that is created after preemption. As a result, this field may be different than PodSpec.nodeName when the pod is scheduled. *)
@@ -28,7 +28,7 @@ type t = {
     (* podIP address allocated to the pod. Routable at least within the cluster. Empty if not yet allocated. *)
     pod_ip: string option [@default None];
     (* podIPs holds the IP addresses allocated to the pod. If this field is specified, the 0th entry must match the podIP field. Pods may be allocated at most 1 value for each of IPv4 and IPv6. This list is empty if no IPs have been allocated yet. *)
-    pod_ips: Io_k8s_api_core_v1_pod_ip.t list; [@default []]
+    pod_ips: Io_k8s_api_core_v1_pod_ip.t list [@default []];
     (* The Quality of Service (QOS) classification assigned to the pod based on resource requirements See PodQOSClass type for available QOS classes More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-qos/#quality-of-service-classes *)
     qos_class: string option [@default None];
     (* A brief CamelCase message indicating details about why the pod is in this state. e.g. 'Evicted' *)
@@ -36,7 +36,7 @@ type t = {
     (* Status of resources resize desired for pod's containers. It is empty if no resources resize is pending. Any changes to container resources will automatically set this to \''Proposed\'' *)
     resize: string option [@default None];
     (* Status of resource claims. *)
-    resource_claim_statuses: Io_k8s_api_core_v1_pod_resource_claim_status.t list; [@default []]
+    resource_claim_statuses: Io_k8s_api_core_v1_pod_resource_claim_status.t list [@default []];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     start_time: string option [@default None];
 } [@@deriving yojson { strict = false }, show ];;

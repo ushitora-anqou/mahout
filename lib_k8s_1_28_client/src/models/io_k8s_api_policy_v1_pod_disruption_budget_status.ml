@@ -8,7 +8,7 @@
 
 type t = {
     (* Conditions contain conditions for PDB. The disruption controller sets the DisruptionAllowed condition. The following are known values for the reason field (additional reasons could be added in the future): - SyncFailed: The controller encountered an error and wasn't able to compute               the number of allowed disruptions. Therefore no disruptions are               allowed and the status of the condition will be False. - InsufficientPods: The number of pods are either at or below the number                     required by the PodDisruptionBudget. No disruptions are                     allowed and the status of the condition will be False. - SufficientPods: There are more pods than required by the PodDisruptionBudget.                   The condition will be True, and the number of allowed                   disruptions are provided by the disruptionsAllowed property. *)
-    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list;
+    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@default []];
     (* current number of healthy pods *)
     current_healthy: int32;
     (* minimum desired number of healthy pods *)

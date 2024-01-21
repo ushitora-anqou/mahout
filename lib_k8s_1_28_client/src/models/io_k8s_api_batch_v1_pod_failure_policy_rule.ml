@@ -11,7 +11,7 @@ type t = {
     action: string;
     on_exit_codes: Io_k8s_api_batch_v1_pod_failure_policy_on_exit_codes_requirement.t option [@default None];
     (* Represents the requirement on the pod conditions. The requirement is represented as a list of pod condition patterns. The requirement is satisfied if at least one pattern matches an actual pod condition. At most 20 elements are allowed. *)
-    on_pod_conditions: Io_k8s_api_batch_v1_pod_failure_policy_on_pod_conditions_pattern.t list;
+    on_pod_conditions: Io_k8s_api_batch_v1_pod_failure_policy_on_pod_conditions_pattern.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodFailurePolicyRule describes how a pod failure is handled when the requirements are met. One of onExitCodes and onPodConditions, but not both, can be used in each rule. *)

@@ -14,7 +14,7 @@ type t = {
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None];
     role_ref: Io_k8s_api_rbac_v1_role_ref.t;
     (* Subjects holds references to the objects the role applies to. *)
-    subjects: Io_k8s_api_rbac_v1_subject.t list;
+    subjects: Io_k8s_api_rbac_v1_subject.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ClusterRoleBinding references a ClusterRole, but not contain it.  It can reference a ClusterRole in the global namespace, and adds who information via Subject. *)

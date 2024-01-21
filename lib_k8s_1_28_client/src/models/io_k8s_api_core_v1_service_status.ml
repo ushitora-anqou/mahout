@@ -8,7 +8,7 @@
 
 type t = {
     (* Current service state *)
-    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list;
+    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@default []];
     load_balancer: Io_k8s_api_core_v1_load_balancer_status.t option [@default None];
 } [@@deriving yojson { strict = false }, show ];;
 

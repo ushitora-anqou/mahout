@@ -8,7 +8,7 @@
 
 type t = {
     (* The conditions represent the latest available observations of a policy's current state. *)
-    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list;
+    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@default []];
     (* The generation observed by the controller. *)
     observed_generation: int64 option [@default None];
     type_checking: Io_k8s_api_admissionregistration_v1alpha1_type_checking.t option [@default None];

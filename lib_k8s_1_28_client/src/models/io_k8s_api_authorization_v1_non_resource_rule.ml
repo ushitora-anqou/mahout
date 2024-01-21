@@ -8,9 +8,9 @@
 
 type t = {
     (* NonResourceURLs is a set of partial urls that a user should have access to.  *s are allowed, but only as the full, final step in the path.  \''*\'' means all. *)
-    non_resource_urls: string list;
+    non_resource_urls: string list [@default []];
     (* Verb is a list of kubernetes non-resource API verbs, like: get, post, put, delete, patch, head, options.  \''*\'' means all. *)
-    verbs: string list;
+    verbs: string list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NonResourceRule holds information that describes a rule for the non-resource *)

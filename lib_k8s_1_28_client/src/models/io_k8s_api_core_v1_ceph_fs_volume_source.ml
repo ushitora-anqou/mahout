@@ -8,7 +8,7 @@
 
 type t = {
     (* monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it *)
-    monitors: string list;
+    monitors: string list [@default []];
     (* path is Optional: Used as the mounted root, rather than the full Ceph tree, default is / *)
     path: string option [@default None];
     (* readOnly is Optional: Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it *)

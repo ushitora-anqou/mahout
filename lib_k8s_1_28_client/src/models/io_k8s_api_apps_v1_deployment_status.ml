@@ -12,7 +12,7 @@ type t = {
     (* Count of hash collisions for the Deployment. The Deployment controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ReplicaSet. *)
     collision_count: int32 option [@default None];
     (* Represents the latest available observations of a deployment's current state. *)
-    conditions: Io_k8s_api_apps_v1_deployment_condition.t list;
+    conditions: Io_k8s_api_apps_v1_deployment_condition.t list [@default []];
     (* The generation observed by the deployment controller. *)
     observed_generation: int64 option [@default None];
     (* readyReplicas is the number of pods targeted by this Deployment with a Ready Condition. *)

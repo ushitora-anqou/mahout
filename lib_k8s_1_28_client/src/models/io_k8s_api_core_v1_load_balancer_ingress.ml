@@ -12,7 +12,7 @@ type t = {
     (* IP is set for load-balancer ingress points that are IP based (typically GCE or OpenStack load-balancers) *)
     ip: string option [@default None];
     (* Ports is a list of records of service ports If used, every port defined in the service should have an entry in it *)
-    ports: Io_k8s_api_core_v1_port_status.t list;
+    ports: Io_k8s_api_core_v1_port_status.t list [@default []];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** LoadBalancerIngress represents the status of a load-balancer ingress point: traffic intended for the service should be sent to an ingress point. *)

@@ -10,7 +10,7 @@ type t = {
     (* Host name to connect to, defaults to the pod IP. You probably want to set \''Host\'' in httpHeaders instead. *)
     host: string option [@default None];
     (* Custom headers to set in the request. HTTP allows repeated headers. *)
-    http_headers: Io_k8s_api_core_v1_http_header.t list;
+    http_headers: Io_k8s_api_core_v1_http_header.t list [@default []];
     (* Path to access on the HTTP server. *)
     path: string option [@default None];
     (* IntOrString is a type that can hold an int32 or a string.  When used in JSON or YAML marshalling and unmarshalling, it produces or consumes the inner type.  This allows you to have, for example, a JSON field that can accept a name or number. *)
