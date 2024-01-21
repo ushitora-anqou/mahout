@@ -34,6 +34,7 @@ depends: [
   "ppx_deriving_yojson"
   "ptime"
   "safepass"
+  "tls-eio"
   "uuidm"
   "yojson"
 ]

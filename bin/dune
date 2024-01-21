@@ -7,4 +7,7 @@
   eio.unix
   eio_main
   mirage-crypto-rng-eio
-  mahout))
+  mahout
+  k8s_1_28_client
+  tls
+  tls-eio))

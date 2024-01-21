@@ -9,3 +9,8 @@ run:
 .PHONY: test
 test:
 	OCAMLRUNPARAM=b dune runtest
+
+.PHONY: build-image
+build-image:
+	docker build . -t mahout:dev
+

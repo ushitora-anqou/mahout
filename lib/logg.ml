@@ -102,5 +102,5 @@ let setup () =
   (*
   Logs.set_reporter (json_reporter ~formatter);
   *)
-  Logs.set_level (Some Logs.Debug);
+  Logs.set_level (Some Logs.Info);
   ()
