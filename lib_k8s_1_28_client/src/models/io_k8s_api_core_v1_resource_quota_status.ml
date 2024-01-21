@@ -8,9 +8,9 @@
 
 type t = {
     (* Hard is the set of enforced hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/ *)
-    hard: Yojson.Safe.t [@key "hard"];
+    hard: Yojson.Safe.t [@default (`List [])] [@key "hard"];
     (* Used is the current observed total usage of the resource in the namespace. *)
-    used: Yojson.Safe.t [@key "used"];
+    used: Yojson.Safe.t [@default (`List [])] [@key "used"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceQuotaStatus defines the enforced hard limits and observed use. *)

@@ -8,7 +8,7 @@
 
 type t = {
     (* Extra corresponds to the user.Info.GetExtra() method from the authenticator.  Since that is input to the authorizer it needs a reflection here. *)
-    extra: Yojson.Safe.t [@key "extra"];
+    extra: Yojson.Safe.t [@default (`List [])] [@key "extra"];
     (* Groups is the groups you're testing for. *)
     groups: string list [@default []] [@key "groups"];
     non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None] [@key "nonResourceAttributes"];

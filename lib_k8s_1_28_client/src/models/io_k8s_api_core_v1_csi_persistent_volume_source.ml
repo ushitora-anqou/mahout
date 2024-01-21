@@ -19,7 +19,7 @@ type t = {
     (* readOnly value to pass to ControllerPublishVolumeRequest. Defaults to false (read/write). *)
     read_only: bool option [@default None] [@key "readOnly"];
     (* volumeAttributes of the volume to publish. *)
-    volume_attributes: Yojson.Safe.t [@key "volumeAttributes"];
+    volume_attributes: Yojson.Safe.t [@default (`List [])] [@key "volumeAttributes"];
     (* volumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls. Required. *)
     volume_handle: string [@key "volumeHandle"];
 } [@@deriving yojson { strict = false }, show ];;

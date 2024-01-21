@@ -17,8 +17,8 @@ type t = {
     any_of: t list [@default []] [@key "anyOf"];
     (* JSON represents any valid JSON value. These types are supported: bool, int64, float64, string, []interface{}, map[string]interface{} and nil. *)
     default: Yojson.Safe.t option [@default None] [@key "default"];
-    definitions: Yojson.Safe.t [@key "definitions"];
-    dependencies: Yojson.Safe.t [@key "dependencies"];
+    definitions: Yojson.Safe.t [@default (`List [])] [@key "definitions"];
+    dependencies: Yojson.Safe.t [@default (`List [])] [@key "dependencies"];
     description: string option [@default None] [@key "description"];
     enum: Yojson.Safe.t list [@default []] [@key "enum"];
     (* JSON represents any valid JSON value. These types are supported: bool, int64, float64, string, []interface{}, map[string]interface{} and nil. *)
@@ -44,8 +44,8 @@ type t = {
     nullable: bool option [@default None] [@key "nullable"];
     one_of: t list [@default []] [@key "oneOf"];
     pattern: string option [@default None] [@key "pattern"];
-    pattern_properties: Yojson.Safe.t [@key "patternProperties"];
-    properties: Yojson.Safe.t [@key "properties"];
+    pattern_properties: Yojson.Safe.t [@default (`List [])] [@key "patternProperties"];
+    properties: Yojson.Safe.t [@default (`List [])] [@key "properties"];
     required: string list [@default []] [@key "required"];
     title: string option [@default None] [@key "title"];
     _type: string option [@default None] [@key "type"];

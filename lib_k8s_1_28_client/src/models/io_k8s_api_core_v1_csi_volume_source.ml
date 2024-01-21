@@ -15,7 +15,7 @@ type t = {
     (* readOnly specifies a read-only configuration for the volume. Defaults to false (read/write). *)
     read_only: bool option [@default None] [@key "readOnly"];
     (* volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values. *)
-    volume_attributes: Yojson.Safe.t [@key "volumeAttributes"];
+    volume_attributes: Yojson.Safe.t [@default (`List [])] [@key "volumeAttributes"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents a source location of a volume to mount, managed by an external CSI driver *)

@@ -8,7 +8,7 @@
 
 type t = {
     (* AllocatedResources represents the compute resources allocated for this container by the node. Kubelet sets this value to Container.Resources.Requests upon successful pod admission and after successfully admitting desired pod resize. *)
-    allocated_resources: Yojson.Safe.t [@key "allocatedResources"];
+    allocated_resources: Yojson.Safe.t [@default (`List [])] [@key "allocatedResources"];
     (* ContainerID is the ID of the container in the format '<type>://<container_id>'. Where type is a container runtime identifier, returned from Version call of CRI API (for example \''containerd\''). *)
     container_id: string option [@default None] [@key "containerID"];
     (* Image is the name of container image that the container is running. The container image may not match the image used in the PodSpec, as it may have been resolved by the runtime. More info: https://kubernetes.io/docs/concepts/containers/images. *)

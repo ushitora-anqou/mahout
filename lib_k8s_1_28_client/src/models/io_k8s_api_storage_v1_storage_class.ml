@@ -19,7 +19,7 @@ type t = {
     (* mountOptions controls the mountOptions for dynamically provisioned PersistentVolumes of this storage class. e.g. [\''ro\'', \''soft\'']. Not validated - mount of the PVs will simply fail if one is invalid. *)
     mount_options: string list [@default []] [@key "mountOptions"];
     (* parameters holds the parameters for the provisioner that should create volumes of this storage class. *)
-    parameters: Yojson.Safe.t [@key "parameters"];
+    parameters: Yojson.Safe.t [@default (`List [])] [@key "parameters"];
     (* provisioner indicates the type of the provisioner. *)
     provisioner: string [@key "provisioner"];
     (* reclaimPolicy controls the reclaimPolicy for dynamically provisioned PersistentVolumes of this storage class. Defaults to Delete. *)

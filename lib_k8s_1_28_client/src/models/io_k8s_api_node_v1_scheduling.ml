@@ -8,7 +8,7 @@
 
 type t = {
     (* nodeSelector lists labels that must be present on nodes that support this RuntimeClass. Pods using this RuntimeClass can only be scheduled to a node matched by this selector. The RuntimeClass nodeSelector is merged with a pod's existing nodeSelector. Any conflicts will cause the pod to be rejected in admission. *)
-    node_selector: Yojson.Safe.t [@key "nodeSelector"];
+    node_selector: Yojson.Safe.t [@default (`List [])] [@key "nodeSelector"];
     (* tolerations are appended (excluding duplicates) to pods running with this RuntimeClass during admission, effectively unioning the set of nodes tolerated by the pod and the RuntimeClass. *)
     tolerations: Io_k8s_api_core_v1_toleration.t list [@default []] [@key "tolerations"];
 } [@@deriving yojson { strict = false }, show ];;
