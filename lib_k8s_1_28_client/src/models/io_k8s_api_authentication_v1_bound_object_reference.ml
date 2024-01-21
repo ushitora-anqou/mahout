@@ -8,13 +8,13 @@
 
 type t = {
     (* API version of the referent. *)
-    api_version: string option [@default None] [@key apiVersion];
+    api_version: string option [@default None] [@key "apiVersion"];
     (* Kind of the referent. Valid kinds are 'Pod' and 'Secret'. *)
-    kind: string option [@default None] [@key kind];
+    kind: string option [@default None] [@key "kind"];
     (* Name of the referent. *)
-    name: string option [@default None] [@key name];
+    name: string option [@default None] [@key "name"];
     (* UID of the referent. *)
-    uid: string option [@default None] [@key uid];
+    uid: string option [@default None] [@key "uid"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** BoundObjectReference is a reference to an object that a token is bound to. *)

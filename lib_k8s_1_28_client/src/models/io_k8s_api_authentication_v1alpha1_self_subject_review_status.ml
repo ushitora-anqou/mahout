@@ -7,7 +7,7 @@
  *)
 
 type t = {
-    user_info: Io_k8s_api_authentication_v1_user_info.t option [@default None] [@key userInfo];
+    user_info: Io_k8s_api_authentication_v1_user_info.t option [@default None] [@key "userInfo"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SelfSubjectReviewStatus is filled by the kube-apiserver and sent back to a user. *)

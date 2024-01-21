@@ -8,7 +8,7 @@
 
 type t = {
     (* IP is the IP address assigned to the pod *)
-    ip: string option [@default None] [@key ip];
+    ip: string option [@default None] [@key "ip"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodIP represents a single IP address allocated to the pod. *)

@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    post_start: Io_k8s_api_core_v1_lifecycle_handler.t option [@default None] [@key postStart];
-    pre_stop: Io_k8s_api_core_v1_lifecycle_handler.t option [@default None] [@key preStop];
+    post_start: Io_k8s_api_core_v1_lifecycle_handler.t option [@default None] [@key "postStart"];
+    pre_stop: Io_k8s_api_core_v1_lifecycle_handler.t option [@default None] [@key "preStop"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Lifecycle describes actions that the management system should take in response to container lifecycle events. For the PostStart and PreStop lifecycle handlers, management of the container blocks until the action is complete, unless the container process fails, in which case the handler is aborted. *)

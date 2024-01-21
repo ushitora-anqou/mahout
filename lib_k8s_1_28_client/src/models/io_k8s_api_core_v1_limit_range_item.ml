@@ -8,17 +8,17 @@
 
 type t = {
     (* Default resource requirement limit value by resource name if resource limit is omitted. *)
-    default: Yojson.Safe.t [@key default];
+    default: Yojson.Safe.t [@key "default"];
     (* DefaultRequest is the default resource requirement request value by resource name if resource request is omitted. *)
-    default_request: Yojson.Safe.t [@key defaultRequest];
+    default_request: Yojson.Safe.t [@key "defaultRequest"];
     (* Max usage constraints on this kind by resource name. *)
-    max: Yojson.Safe.t [@key max];
+    max: Yojson.Safe.t [@key "max"];
     (* MaxLimitRequestRatio if specified, the named resource must have a request and limit that are both non-zero where limit divided by request is less than or equal to the enumerated value; this represents the max burst for the named resource. *)
-    max_limit_request_ratio: Yojson.Safe.t [@key maxLimitRequestRatio];
+    max_limit_request_ratio: Yojson.Safe.t [@key "maxLimitRequestRatio"];
     (* Min usage constraints on this kind by resource name. *)
-    min: Yojson.Safe.t [@key min];
+    min: Yojson.Safe.t [@key "min"];
     (* Type of resource that this limit applies to. *)
-    _type: string [@key type];
+    _type: string [@key "type"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** LimitRangeItem defines a min/max usage limit for any resource that matches on kind. *)

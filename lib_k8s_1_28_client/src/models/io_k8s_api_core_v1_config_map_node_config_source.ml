@@ -8,15 +8,15 @@
 
 type t = {
     (* KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure This field is required in all cases. *)
-    kubelet_config_key: string [@key kubeletConfigKey];
+    kubelet_config_key: string [@key "kubeletConfigKey"];
     (* Name is the metadata.name of the referenced ConfigMap. This field is required in all cases. *)
-    name: string [@key name];
+    name: string [@key "name"];
     (* Namespace is the metadata.namespace of the referenced ConfigMap. This field is required in all cases. *)
-    namespace: string [@key namespace];
+    namespace: string [@key "namespace"];
     (* ResourceVersion is the metadata.ResourceVersion of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status. *)
-    resource_version: string option [@default None] [@key resourceVersion];
+    resource_version: string option [@default None] [@key "resourceVersion"];
     (* UID is the metadata.UID of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status. *)
-    uid: string option [@default None] [@key uid];
+    uid: string option [@default None] [@key "uid"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ConfigMapNodeConfigSource contains the information to reference a ConfigMap as a config source for the Node. This API is deprecated since 1.22: https://git.k8s.io/enhancements/keps/sig-node/281-dynamic-kubelet-configuration *)

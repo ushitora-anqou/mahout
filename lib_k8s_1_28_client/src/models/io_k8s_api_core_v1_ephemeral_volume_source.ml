@@ -7,7 +7,7 @@
  *)
 
 type t = {
-    volume_claim_template: Io_k8s_api_core_v1_persistent_volume_claim_template.t option [@default None] [@key volumeClaimTemplate];
+    volume_claim_template: Io_k8s_api_core_v1_persistent_volume_claim_template.t option [@default None] [@key "volumeClaimTemplate"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents an ephemeral volume that is handled by a normal storage driver. *)

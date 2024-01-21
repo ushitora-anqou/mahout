@@ -8,13 +8,13 @@
 
 type t = {
     (* Level is SELinux level label that applies to the container. *)
-    level: string option [@default None] [@key level];
+    level: string option [@default None] [@key "level"];
     (* Role is a SELinux role label that applies to the container. *)
-    role: string option [@default None] [@key role];
+    role: string option [@default None] [@key "role"];
     (* Type is a SELinux type label that applies to the container. *)
-    _type: string option [@default None] [@key type];
+    _type: string option [@default None] [@key "type"];
     (* User is a SELinux user label that applies to the container. *)
-    user: string option [@default None] [@key user];
+    user: string option [@default None] [@key "user"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SELinuxOptions are the labels to be applied to the container *)

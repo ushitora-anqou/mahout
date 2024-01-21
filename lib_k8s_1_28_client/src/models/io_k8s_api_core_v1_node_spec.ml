@@ -7,19 +7,19 @@
  *)
 
 type t = {
-    config_source: Io_k8s_api_core_v1_node_config_source.t option [@default None] [@key configSource];
+    config_source: Io_k8s_api_core_v1_node_config_source.t option [@default None] [@key "configSource"];
     (* Deprecated. Not all kubelets will set this field. Remove field after 1.13. see: https://issues.k8s.io/61966 *)
-    external_id: string option [@default None] [@key externalID];
+    external_id: string option [@default None] [@key "externalID"];
     (* PodCIDR represents the pod IP range assigned to the node. *)
-    pod_cidr: string option [@default None] [@key podCIDR];
+    pod_cidr: string option [@default None] [@key "podCIDR"];
     (* podCIDRs represents the IP ranges assigned to the node for usage by Pods on that node. If this field is specified, the 0th entry must match the podCIDR field. It may contain at most 1 value for each of IPv4 and IPv6. *)
-    pod_cidrs: string list [@default []] [@key podCIDRs];
+    pod_cidrs: string list [@default []] [@key "podCIDRs"];
     (* ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID> *)
-    provider_id: string option [@default None] [@key providerID];
+    provider_id: string option [@default None] [@key "providerID"];
     (* If specified, the node's taints. *)
-    taints: Io_k8s_api_core_v1_taint.t list [@default []] [@key taints];
+    taints: Io_k8s_api_core_v1_taint.t list [@default []] [@key "taints"];
     (* Unschedulable controls node schedulability of new pods. By default, node is schedulable. More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration *)
-    unschedulable: bool option [@default None] [@key unschedulable];
+    unschedulable: bool option [@default None] [@key "unschedulable"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NodeSpec describes the attributes that a node is created with. *)

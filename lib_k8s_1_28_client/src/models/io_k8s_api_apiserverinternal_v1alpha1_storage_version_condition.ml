@@ -8,17 +8,17 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key lastTransitionTime];
+    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
     (* A human readable message indicating details about the transition. *)
-    message: string option [@default None] [@key message];
+    message: string option [@default None] [@key "message"];
     (* If set, this represents the .metadata.generation that the condition was set based upon. *)
-    observed_generation: int64 option [@default None] [@key observedGeneration];
+    observed_generation: int64 option [@default None] [@key "observedGeneration"];
     (* The reason for the condition's last transition. *)
-    reason: string [@key reason];
+    reason: string [@key "reason"];
     (* Status of the condition, one of True, False, Unknown. *)
-    status: string [@key status];
+    status: string [@key "status"];
     (* Type of the condition. *)
-    _type: string [@key type];
+    _type: string [@key "type"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Describes the state of the storageVersion at a certain point. *)

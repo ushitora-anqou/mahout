@@ -8,17 +8,17 @@
 
 type t = {
     (* Path within the container at which the volume should be mounted.  Must not contain ':'. *)
-    mount_path: string [@key mountPath];
+    mount_path: string [@key "mountPath"];
     (* mountPropagation determines how mounts are propagated from the host to container and the other way around. When not set, MountPropagationNone is used. This field is beta in 1.10. *)
-    mount_propagation: string option [@default None] [@key mountPropagation];
+    mount_propagation: string option [@default None] [@key "mountPropagation"];
     (* This must match the Name of a Volume. *)
-    name: string [@key name];
+    name: string [@key "name"];
     (* Mounted read-only if true, read-write otherwise (false or unspecified). Defaults to false. *)
-    read_only: bool option [@default None] [@key readOnly];
+    read_only: bool option [@default None] [@key "readOnly"];
     (* Path within the volume from which the container's volume should be mounted. Defaults to \''\'' (volume's root). *)
-    sub_path: string option [@default None] [@key subPath];
+    sub_path: string option [@default None] [@key "subPath"];
     (* Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \''\'' (volume's root). SubPathExpr and SubPath are mutually exclusive. *)
-    sub_path_expr: string option [@default None] [@key subPathExpr];
+    sub_path_expr: string option [@default None] [@key "subPathExpr"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** VolumeMount describes a mounting of a Volume within a container. *)

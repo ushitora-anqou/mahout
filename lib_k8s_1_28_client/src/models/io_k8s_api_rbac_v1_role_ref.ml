@@ -8,11 +8,11 @@
 
 type t = {
     (* APIGroup is the group for the resource being referenced *)
-    api_group: string [@key apiGroup];
+    api_group: string [@key "apiGroup"];
     (* Kind is the type of resource being referenced *)
-    kind: string [@key kind];
+    kind: string [@key "kind"];
     (* Name is the name of resource being referenced *)
-    name: string [@key name];
+    name: string [@key "name"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** RoleRef contains information that points to the role being used *)

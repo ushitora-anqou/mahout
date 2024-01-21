@@ -8,15 +8,15 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key lastTransitionTime];
+    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
     (* Human-readable message indicating details about last transition. *)
-    message: string option [@default None] [@key message];
+    message: string option [@default None] [@key "message"];
     (* Unique, one-word, CamelCase reason for the condition's last transition. *)
-    reason: string option [@default None] [@key reason];
+    reason: string option [@default None] [@key "reason"];
     (* Status is the status of the condition. Can be True, False, Unknown. *)
-    status: string [@key status];
+    status: string [@key "status"];
     (* Type is the type of the condition. *)
-    _type: string [@key type];
+    _type: string [@key "type"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** APIServiceCondition describes the state of an APIService at a particular point *)

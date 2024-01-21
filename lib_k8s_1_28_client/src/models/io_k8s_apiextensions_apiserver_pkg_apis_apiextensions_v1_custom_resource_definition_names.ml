@@ -8,17 +8,17 @@
 
 type t = {
     (* categories is a list of grouped resources this custom resource belongs to (e.g. 'all'). This is published in API discovery documents, and used by clients to support invocations like `kubectl get all`. *)
-    categories: string list [@default []] [@key categories];
+    categories: string list [@default []] [@key "categories"];
     (* kind is the serialized kind of the resource. It is normally CamelCase and singular. Custom resource instances will use this value as the `kind` attribute in API calls. *)
-    kind: string [@key kind];
+    kind: string [@key "kind"];
     (* listKind is the serialized kind of the list for this resource. Defaults to \''`kind`List\''. *)
-    list_kind: string option [@default None] [@key listKind];
+    list_kind: string option [@default None] [@key "listKind"];
     (* plural is the plural name of the resource to serve. The custom resources are served under `/apis/<group>/<version>/.../<plural>`. Must match the name of the CustomResourceDefinition (in the form `<names.plural>.<group>`). Must be all lowercase. *)
-    plural: string [@key plural];
+    plural: string [@key "plural"];
     (* shortNames are short names for the resource, exposed in API discovery documents, and used by clients to support invocations like `kubectl get <shortname>`. It must be all lowercase. *)
-    short_names: string list [@default []] [@key shortNames];
+    short_names: string list [@default []] [@key "shortNames"];
     (* singular is the singular name of the resource. It must be all lowercase. Defaults to lowercased `kind`. *)
-    singular: string option [@default None] [@key singular];
+    singular: string option [@default None] [@key "singular"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** CustomResourceDefinitionNames indicates the names to serve this CustomResourceDefinition *)

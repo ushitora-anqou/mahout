@@ -8,10 +8,10 @@
 
 type t = {
     (* hard is the set of desired hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/ *)
-    hard: Yojson.Safe.t [@key hard];
-    scope_selector: Io_k8s_api_core_v1_scope_selector.t option [@default None] [@key scopeSelector];
+    hard: Yojson.Safe.t [@key "hard"];
+    scope_selector: Io_k8s_api_core_v1_scope_selector.t option [@default None] [@key "scopeSelector"];
     (* A collection of filters that must match each object tracked by a quota. If not specified, the quota matches all objects. *)
-    scopes: string list [@default []] [@key scopes];
+    scopes: string list [@default []] [@key "scopes"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceQuotaSpec defines the desired hard limits to enforce for Quota. *)

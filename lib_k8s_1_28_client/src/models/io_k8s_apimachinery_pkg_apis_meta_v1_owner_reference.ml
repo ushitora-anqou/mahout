@@ -8,17 +8,17 @@
 
 type t = {
     (* API version of the referent. *)
-    api_version: string [@key apiVersion];
+    api_version: string [@key "apiVersion"];
     (* If true, AND if the owner has the \''foregroundDeletion\'' finalizer, then the owner cannot be deleted from the key-value store until this reference is removed. See https://kubernetes.io/docs/concepts/architecture/garbage-collection/#foreground-deletion for how the garbage collector interacts with this field and enforces the foreground deletion. Defaults to false. To set this field, a user needs \''delete\'' permission of the owner, otherwise 422 (Unprocessable Entity) will be returned. *)
-    block_owner_deletion: bool option [@default None] [@key blockOwnerDeletion];
+    block_owner_deletion: bool option [@default None] [@key "blockOwnerDeletion"];
     (* If true, this reference points to the managing controller. *)
-    controller: bool option [@default None] [@key controller];
+    controller: bool option [@default None] [@key "controller"];
     (* Kind of the referent. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string [@key kind];
+    kind: string [@key "kind"];
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#names *)
-    name: string [@key name];
+    name: string [@key "name"];
     (* UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids *)
-    uid: string [@key uid];
+    uid: string [@key "uid"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** OwnerReference contains enough information to let you identify an owning object. An owning object must be in the same namespace as the dependent, or be cluster-scoped, so there is no namespace field. *)

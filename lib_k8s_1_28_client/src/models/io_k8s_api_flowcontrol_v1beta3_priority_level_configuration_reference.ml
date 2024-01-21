@@ -8,7 +8,7 @@
 
 type t = {
     (* `name` is the name of the priority level configuration being referenced Required. *)
-    name: string [@key name];
+    name: string [@key "name"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PriorityLevelConfigurationReference contains information that points to the \''request-priority\'' being used. *)

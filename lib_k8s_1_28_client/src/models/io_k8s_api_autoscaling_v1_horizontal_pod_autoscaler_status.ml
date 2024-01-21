@@ -8,15 +8,15 @@
 
 type t = {
     (* currentCPUUtilizationPercentage is the current average CPU utilization over all pods, represented as a percentage of requested CPU, e.g. 70 means that an average pod is using now 70% of its requested CPU. *)
-    current_cpu_utilization_percentage: int32 option [@default None] [@key currentCPUUtilizationPercentage];
+    current_cpu_utilization_percentage: int32 option [@default None] [@key "currentCPUUtilizationPercentage"];
     (* currentReplicas is the current number of replicas of pods managed by this autoscaler. *)
-    current_replicas: int32 [@key currentReplicas];
+    current_replicas: int32 [@key "currentReplicas"];
     (* desiredReplicas is the  desired number of replicas of pods managed by this autoscaler. *)
-    desired_replicas: int32 [@key desiredReplicas];
+    desired_replicas: int32 [@key "desiredReplicas"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_scale_time: string option [@default None] [@key lastScaleTime];
+    last_scale_time: string option [@default None] [@key "lastScaleTime"];
     (* observedGeneration is the most recent generation observed by this autoscaler. *)
-    observed_generation: int64 option [@default None] [@key observedGeneration];
+    observed_generation: int64 option [@default None] [@key "observedGeneration"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** current status of a horizontal pod autoscaler *)

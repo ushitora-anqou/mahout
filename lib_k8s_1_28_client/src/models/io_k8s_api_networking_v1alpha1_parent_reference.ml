@@ -8,15 +8,15 @@
 
 type t = {
     (* Group is the group of the object being referenced. *)
-    group: string option [@default None] [@key group];
+    group: string option [@default None] [@key "group"];
     (* Name is the name of the object being referenced. *)
-    name: string option [@default None] [@key name];
+    name: string option [@default None] [@key "name"];
     (* Namespace is the namespace of the object being referenced. *)
-    namespace: string option [@default None] [@key namespace];
+    namespace: string option [@default None] [@key "namespace"];
     (* Resource is the resource of the object being referenced. *)
-    resource: string option [@default None] [@key resource];
+    resource: string option [@default None] [@key "resource"];
     (* UID is the uid of the object being referenced. *)
-    uid: string option [@default None] [@key uid];
+    uid: string option [@default None] [@key "uid"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ParentReference describes a reference to a parent object. *)

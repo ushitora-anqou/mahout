@@ -8,7 +8,7 @@
 
 type t = {
     (* ConditionType refers to a condition in the pod's condition list with matching type. *)
-    condition_type: string [@key conditionType];
+    condition_type: string [@key "conditionType"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodReadinessGate contains the reference to a pod condition *)

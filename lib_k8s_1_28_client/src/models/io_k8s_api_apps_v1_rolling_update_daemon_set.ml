@@ -8,9 +8,9 @@
 
 type t = {
     (* IntOrString is a type that can hold an int32 or a string.  When used in JSON or YAML marshalling and unmarshalling, it produces or consumes the inner type.  This allows you to have, for example, a JSON field that can accept a name or number. *)
-    max_surge: string option [@default None] [@key maxSurge];
+    max_surge: string option [@default None] [@key "maxSurge"];
     (* IntOrString is a type that can hold an int32 or a string.  When used in JSON or YAML marshalling and unmarshalling, it produces or consumes the inner type.  This allows you to have, for example, a JSON field that can accept a name or number. *)
-    max_unavailable: string option [@default None] [@key maxUnavailable];
+    max_unavailable: string option [@default None] [@key "maxUnavailable"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Spec to control the desired behavior of daemon set rolling update. *)

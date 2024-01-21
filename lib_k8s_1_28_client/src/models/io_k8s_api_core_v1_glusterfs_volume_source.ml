@@ -8,11 +8,11 @@
 
 type t = {
     (* endpoints is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod *)
-    endpoints: string [@key endpoints];
+    endpoints: string [@key "endpoints"];
     (* path is the Glusterfs volume path. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod *)
-    path: string [@key path];
+    path: string [@key "path"];
     (* readOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod *)
-    read_only: bool option [@default None] [@key readOnly];
+    read_only: bool option [@default None] [@key "readOnly"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents a Glusterfs mount that lasts the lifetime of a pod. Glusterfs volumes do not support ownership management or SELinux relabeling. *)

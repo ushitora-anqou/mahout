@@ -8,9 +8,9 @@
 
 type t = {
     (* Version of the schema the FieldPath is written in terms of, defaults to \''v1\''. *)
-    api_version: string option [@default None] [@key apiVersion];
+    api_version: string option [@default None] [@key "apiVersion"];
     (* Path of the field to select in the specified API version. *)
-    field_path: string [@key fieldPath];
+    field_path: string [@key "fieldPath"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ObjectFieldSelector selects an APIVersioned field of an object. *)

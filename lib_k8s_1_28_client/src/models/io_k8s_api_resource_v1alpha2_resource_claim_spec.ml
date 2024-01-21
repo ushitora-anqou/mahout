@@ -8,10 +8,10 @@
 
 type t = {
     (* Allocation can start immediately or when a Pod wants to use the resource. \''WaitForFirstConsumer\'' is the default. *)
-    allocation_mode: string option [@default None] [@key allocationMode];
-    parameters_ref: Io_k8s_api_resource_v1alpha2_resource_claim_parameters_reference.t option [@default None] [@key parametersRef];
+    allocation_mode: string option [@default None] [@key "allocationMode"];
+    parameters_ref: Io_k8s_api_resource_v1alpha2_resource_claim_parameters_reference.t option [@default None] [@key "parametersRef"];
     (* ResourceClassName references the driver and additional parameters via the name of a ResourceClass that was created as part of the driver deployment. *)
-    resource_class_name: string [@key resourceClassName];
+    resource_class_name: string [@key "resourceClassName"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ResourceClaimSpec defines how a resource is to be allocated. *)

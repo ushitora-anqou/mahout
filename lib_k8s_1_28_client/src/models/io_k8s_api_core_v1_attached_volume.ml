@@ -8,9 +8,9 @@
 
 type t = {
     (* DevicePath represents the device path where the volume should be available *)
-    device_path: string [@key devicePath];
+    device_path: string [@key "devicePath"];
     (* Name of the attached volume *)
-    name: string [@key name];
+    name: string [@key "name"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** AttachedVolume describes a volume attached to a node *)

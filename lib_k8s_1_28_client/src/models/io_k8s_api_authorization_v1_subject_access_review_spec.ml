@@ -8,15 +8,15 @@
 
 type t = {
     (* Extra corresponds to the user.Info.GetExtra() method from the authenticator.  Since that is input to the authorizer it needs a reflection here. *)
-    extra: Yojson.Safe.t [@key extra];
+    extra: Yojson.Safe.t [@key "extra"];
     (* Groups is the groups you're testing for. *)
-    groups: string list [@default []] [@key groups];
-    non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None] [@key nonResourceAttributes];
-    resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@default None] [@key resourceAttributes];
+    groups: string list [@default []] [@key "groups"];
+    non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None] [@key "nonResourceAttributes"];
+    resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@default None] [@key "resourceAttributes"];
     (* UID information about the requesting user. *)
-    uid: string option [@default None] [@key uid];
+    uid: string option [@default None] [@key "uid"];
     (* User is the user you're testing for. If you specify \''User\'' but not \''Groups\'', then is it interpreted as \''What if User were not a member of any groups *)
-    user: string option [@default None] [@key user];
+    user: string option [@default None] [@key "user"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SubjectAccessReviewSpec is a description of the access request.  Exactly one of ResourceAuthorizationAttributes and NonResourceAuthorizationAttributes must be set *)

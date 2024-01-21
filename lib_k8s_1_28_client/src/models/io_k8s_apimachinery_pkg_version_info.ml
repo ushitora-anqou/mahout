@@ -7,15 +7,15 @@
  *)
 
 type t = {
-    build_date: string [@key buildDate];
-    compiler: string [@key compiler];
-    git_commit: string [@key gitCommit];
-    git_tree_state: string [@key gitTreeState];
-    git_version: string [@key gitVersion];
-    go_version: string [@key goVersion];
-    major: string [@key major];
-    minor: string [@key minor];
-    platform: string [@key platform];
+    build_date: string [@key "buildDate"];
+    compiler: string [@key "compiler"];
+    git_commit: string [@key "gitCommit"];
+    git_tree_state: string [@key "gitTreeState"];
+    git_version: string [@key "gitVersion"];
+    go_version: string [@key "goVersion"];
+    major: string [@key "major"];
+    minor: string [@key "minor"];
+    platform: string [@key "platform"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Info contains versioning information. how we'll want to distribute that information. *)

@@ -8,12 +8,12 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key apiVersion];
+    api_version: string option [@default None] [@key "apiVersion"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key kind];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key metadata];
-    spec: Io_k8s_api_authorization_v1_self_subject_rules_review_spec.t [@key spec];
-    status: Io_k8s_api_authorization_v1_subject_rules_review_status.t option [@default None] [@key status];
+    kind: string option [@default None] [@key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
+    spec: Io_k8s_api_authorization_v1_self_subject_rules_review_spec.t [@key "spec"];
+    status: Io_k8s_api_authorization_v1_subject_rules_review_status.t option [@default None] [@key "status"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** SelfSubjectRulesReview enumerates the set of actions the current user can perform within a namespace. The returned list of actions may be incomplete depending on the server's authorization mode, and any errors experienced during the evaluation. SelfSubjectRulesReview should be used by UIs to show/hide actions, or to quickly let an end user reason about their permissions. It should NOT Be used by external systems to drive authorization decisions as this raises confused deputy, cache lifetime/revocation, and correctness concerns. SubjectAccessReview, and LocalAccessReview are the correct way to defer authorization decisions to the API server. *)

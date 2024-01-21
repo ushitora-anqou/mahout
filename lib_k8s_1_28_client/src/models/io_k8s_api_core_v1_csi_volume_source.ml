@@ -8,14 +8,14 @@
 
 type t = {
     (* driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster. *)
-    driver: string [@key driver];
+    driver: string [@key "driver"];
     (* fsType to mount. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. If not provided, the empty value is passed to the associated CSI driver which will determine the default filesystem to apply. *)
-    fs_type: string option [@default None] [@key fsType];
-    node_publish_secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None] [@key nodePublishSecretRef];
+    fs_type: string option [@default None] [@key "fsType"];
+    node_publish_secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None] [@key "nodePublishSecretRef"];
     (* readOnly specifies a read-only configuration for the volume. Defaults to false (read/write). *)
-    read_only: bool option [@default None] [@key readOnly];
+    read_only: bool option [@default None] [@key "readOnly"];
     (* volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values. *)
-    volume_attributes: Yojson.Safe.t [@key volumeAttributes];
+    volume_attributes: Yojson.Safe.t [@key "volumeAttributes"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Represents a source location of a volume to mount, managed by an external CSI driver *)

@@ -7,13 +7,13 @@
  *)
 
 type t = {
-    container_resource: Io_k8s_api_autoscaling_v2_container_resource_metric_status.t option [@default None] [@key containerResource];
-    _external: Io_k8s_api_autoscaling_v2_external_metric_status.t option [@default None] [@key external];
-    _object: Io_k8s_api_autoscaling_v2_object_metric_status.t option [@default None] [@key object];
-    pods: Io_k8s_api_autoscaling_v2_pods_metric_status.t option [@default None] [@key pods];
-    resource: Io_k8s_api_autoscaling_v2_resource_metric_status.t option [@default None] [@key resource];
+    container_resource: Io_k8s_api_autoscaling_v2_container_resource_metric_status.t option [@default None] [@key "containerResource"];
+    _external: Io_k8s_api_autoscaling_v2_external_metric_status.t option [@default None] [@key "external"];
+    _object: Io_k8s_api_autoscaling_v2_object_metric_status.t option [@default None] [@key "object"];
+    pods: Io_k8s_api_autoscaling_v2_pods_metric_status.t option [@default None] [@key "pods"];
+    resource: Io_k8s_api_autoscaling_v2_resource_metric_status.t option [@default None] [@key "resource"];
     (* type is the type of metric source.  It will be one of \''ContainerResource\'', \''External\'', \''Object\'', \''Pods\'' or \''Resource\'', each corresponds to a matching field in the object. Note: \''ContainerResource\'' type is available on when the feature-gate HPAContainerMetrics is enabled *)
-    _type: string [@key type];
+    _type: string [@key "type"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** MetricStatus describes the last-read state of a single metric. *)

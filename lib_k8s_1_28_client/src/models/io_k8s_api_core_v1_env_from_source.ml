@@ -7,10 +7,10 @@
  *)
 
 type t = {
-    config_map_ref: Io_k8s_api_core_v1_config_map_env_source.t option [@default None] [@key configMapRef];
+    config_map_ref: Io_k8s_api_core_v1_config_map_env_source.t option [@default None] [@key "configMapRef"];
     (* An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER. *)
-    prefix: string option [@default None] [@key prefix];
-    secret_ref: Io_k8s_api_core_v1_secret_env_source.t option [@default None] [@key secretRef];
+    prefix: string option [@default None] [@key "prefix"];
+    secret_ref: Io_k8s_api_core_v1_secret_env_source.t option [@default None] [@key "secretRef"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** EnvFromSource represents the source of a set of ConfigMaps *)

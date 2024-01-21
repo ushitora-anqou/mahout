@@ -8,10 +8,10 @@
 
 type t = {
     (* attacher indicates the name of the volume driver that MUST handle this request. This is the name returned by GetPluginName(). *)
-    attacher: string [@key attacher];
+    attacher: string [@key "attacher"];
     (* nodeName represents the node that the volume should be attached to. *)
-    node_name: string [@key nodeName];
-    source: Io_k8s_api_storage_v1_volume_attachment_source.t [@key source];
+    node_name: string [@key "nodeName"];
+    source: Io_k8s_api_storage_v1_volume_attachment_source.t [@key "source"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** VolumeAttachmentSpec is the specification of a VolumeAttachment request. *)

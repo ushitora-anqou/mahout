@@ -8,11 +8,11 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key apiVersion];
-    delete_options: Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.t option [@default None] [@key deleteOptions];
+    api_version: string option [@default None] [@key "apiVersion"];
+    delete_options: Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.t option [@default None] [@key "deleteOptions"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key kind];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key metadata];
+    kind: string option [@default None] [@key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Eviction evicts a pod from its node subject to certain policies and safety constraints. This is a subresource of Pod.  A request to cause such an eviction is created by POSTing to .../pods/<pod name>/evictions. *)

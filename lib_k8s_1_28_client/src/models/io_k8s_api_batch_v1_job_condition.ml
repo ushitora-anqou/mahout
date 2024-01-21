@@ -8,17 +8,17 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_probe_time: string option [@default None] [@key lastProbeTime];
+    last_probe_time: string option [@default None] [@key "lastProbeTime"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key lastTransitionTime];
+    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
     (* Human readable message indicating details about last transition. *)
-    message: string option [@default None] [@key message];
+    message: string option [@default None] [@key "message"];
     (* (brief) reason for the condition's last transition. *)
-    reason: string option [@default None] [@key reason];
+    reason: string option [@default None] [@key "reason"];
     (* Status of the condition, one of True, False, Unknown. *)
-    status: string [@key status];
+    status: string [@key "status"];
     (* Type of job condition, Complete or Failed. *)
-    _type: string [@key type];
+    _type: string [@key "type"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** JobCondition describes current state of a job. *)

@@ -8,15 +8,15 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_probe_time: string option [@default None] [@key lastProbeTime];
+    last_probe_time: string option [@default None] [@key "lastProbeTime"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key lastTransitionTime];
+    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
     (* message is the human-readable message indicating details about last transition. *)
-    message: string option [@default None] [@key message];
+    message: string option [@default None] [@key "message"];
     (* reason is a unique, this should be a short, machine understandable string that gives the reason for condition's last transition. If it reports \''ResizeStarted\'' that means the underlying persistent volume is being resized. *)
-    reason: string option [@default None] [@key reason];
-    status: string [@key status];
-    _type: string [@key type];
+    reason: string option [@default None] [@key "reason"];
+    status: string [@key "status"];
+    _type: string [@key "type"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PersistentVolumeClaimCondition contains details about state of pvc *)

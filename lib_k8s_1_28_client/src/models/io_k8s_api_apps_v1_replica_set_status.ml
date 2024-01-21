@@ -8,17 +8,17 @@
 
 type t = {
     (* The number of available replicas (ready for at least minReadySeconds) for this replica set. *)
-    available_replicas: int32 option [@default None] [@key availableReplicas];
+    available_replicas: int32 option [@default None] [@key "availableReplicas"];
     (* Represents the latest available observations of a replica set's current state. *)
-    conditions: Io_k8s_api_apps_v1_replica_set_condition.t list [@default []] [@key conditions];
+    conditions: Io_k8s_api_apps_v1_replica_set_condition.t list [@default []] [@key "conditions"];
     (* The number of pods that have labels matching the labels of the pod template of the replicaset. *)
-    fully_labeled_replicas: int32 option [@default None] [@key fullyLabeledReplicas];
+    fully_labeled_replicas: int32 option [@default None] [@key "fullyLabeledReplicas"];
     (* ObservedGeneration reflects the generation of the most recently observed ReplicaSet. *)
-    observed_generation: int64 option [@default None] [@key observedGeneration];
+    observed_generation: int64 option [@default None] [@key "observedGeneration"];
     (* readyReplicas is the number of pods targeted by this ReplicaSet with a Ready Condition. *)
-    ready_replicas: int32 option [@default None] [@key readyReplicas];
+    ready_replicas: int32 option [@default None] [@key "readyReplicas"];
     (* Replicas is the most recently observed number of replicas. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller *)
-    replicas: int32 [@key replicas];
+    replicas: int32 [@key "replicas"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ReplicaSetStatus represents the current status of a ReplicaSet. *)

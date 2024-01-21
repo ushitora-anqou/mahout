@@ -8,9 +8,9 @@
 
 type t = {
     (* audience is the intended audience of the token in \''TokenRequestSpec\''. It will default to the audiences of kube apiserver. *)
-    audience: string [@key audience];
+    audience: string [@key "audience"];
     (* expirationSeconds is the duration of validity of the token in \''TokenRequestSpec\''. It has the same default value of \''ExpirationSeconds\'' in \''TokenRequestSpec\''. *)
-    expiration_seconds: int64 option [@default None] [@key expirationSeconds];
+    expiration_seconds: int64 option [@default None] [@key "expirationSeconds"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** TokenRequest contains parameters of a service account token. *)

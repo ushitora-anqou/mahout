@@ -8,9 +8,9 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    expiration_timestamp: string [@key expirationTimestamp];
+    expiration_timestamp: string [@key "expirationTimestamp"];
     (* Token is the opaque bearer token. *)
-    token: string [@key token];
+    token: string [@key "token"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** TokenRequestStatus is the result of a token request. *)

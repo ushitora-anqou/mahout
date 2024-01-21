@@ -8,9 +8,9 @@
 
 type t = {
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
-    name: string option [@default None] [@key name];
+    name: string option [@default None] [@key "name"];
     (* Specify whether the ConfigMap must be defined *)
-    optional: bool option [@default None] [@key optional];
+    optional: bool option [@default None] [@key "optional"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ConfigMapEnvSource selects a ConfigMap to populate the environment variables with.  The contents of the target ConfigMap's Data field will represent the key-value pairs as environment variables. *)

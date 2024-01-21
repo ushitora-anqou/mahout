@@ -8,9 +8,9 @@
 
 type t = {
     (* `name` is the name of matching ServiceAccount objects, or \''*\'' to match regardless of name. Required. *)
-    name: string [@key name];
+    name: string [@key "name"];
     (* `namespace` is the namespace of matching ServiceAccount objects. Required. *)
-    namespace: string [@key namespace];
+    namespace: string [@key "namespace"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** ServiceAccountSubject holds detailed information for service-account-kind subject. *)

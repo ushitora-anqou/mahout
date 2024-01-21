@@ -8,13 +8,13 @@
 
 type t = {
     (* Any additional information provided by the authenticator. *)
-    extra: Yojson.Safe.t [@key extra];
+    extra: Yojson.Safe.t [@key "extra"];
     (* The names of groups this user is a part of. *)
-    groups: string list [@default []] [@key groups];
+    groups: string list [@default []] [@key "groups"];
     (* A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs. *)
-    uid: string option [@default None] [@key uid];
+    uid: string option [@default None] [@key "uid"];
     (* The name that uniquely identifies this user among all active users. *)
-    username: string option [@default None] [@key username];
+    username: string option [@default None] [@key "username"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** UserInfo holds the information about the user needed to implement the user.Info interface. *)

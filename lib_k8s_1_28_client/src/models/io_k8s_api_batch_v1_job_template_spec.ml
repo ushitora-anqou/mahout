@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key metadata];
-    spec: Io_k8s_api_batch_v1_job_spec.t option [@default None] [@key spec];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
+    spec: Io_k8s_api_batch_v1_job_spec.t option [@default None] [@key "spec"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** JobTemplateSpec describes the data a Job should have when created from a template *)

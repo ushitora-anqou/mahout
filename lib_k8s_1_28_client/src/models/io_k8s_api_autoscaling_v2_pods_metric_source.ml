@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@key metric];
-    target: Io_k8s_api_autoscaling_v2_metric_target.t [@key target];
+    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@key "metric"];
+    target: Io_k8s_api_autoscaling_v2_metric_target.t [@key "target"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodsMetricSource indicates how to scale on a metric describing each pod in the current scale target (for example, transactions-processed-per-second). The values will be averaged together before being compared to the target value. *)

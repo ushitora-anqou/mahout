@@ -7,7 +7,7 @@
  *)
 
 type t = {
-    kubelet_endpoint: Io_k8s_api_core_v1_daemon_endpoint.t option [@default None] [@key kubeletEndpoint];
+    kubelet_endpoint: Io_k8s_api_core_v1_daemon_endpoint.t option [@default None] [@key "kubeletEndpoint"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** NodeDaemonEndpoints lists ports opened by daemons running on the Node. *)

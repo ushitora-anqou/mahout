@@ -8,7 +8,7 @@
 
 type t = {
     (* Current service state of apiService. *)
-    conditions: Io_k8s_kube_aggregator_pkg_apis_apiregistration_v1_api_service_condition.t list [@default []] [@key conditions];
+    conditions: Io_k8s_kube_aggregator_pkg_apis_apiregistration_v1_api_service_condition.t list [@default []] [@key "conditions"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** APIServiceStatus contains derived information about an API server *)

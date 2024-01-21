@@ -7,9 +7,9 @@
  *)
 
 type t = {
-    node_affinity: Io_k8s_api_core_v1_node_affinity.t option [@default None] [@key nodeAffinity];
-    pod_affinity: Io_k8s_api_core_v1_pod_affinity.t option [@default None] [@key podAffinity];
-    pod_anti_affinity: Io_k8s_api_core_v1_pod_anti_affinity.t option [@default None] [@key podAntiAffinity];
+    node_affinity: Io_k8s_api_core_v1_node_affinity.t option [@default None] [@key "nodeAffinity"];
+    pod_affinity: Io_k8s_api_core_v1_pod_affinity.t option [@default None] [@key "podAffinity"];
+    pod_anti_affinity: Io_k8s_api_core_v1_pod_anti_affinity.t option [@default None] [@key "podAntiAffinity"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Affinity is a group of affinity scheduling rules. *)

@@ -7,8 +7,8 @@
  *)
 
 type t = {
-    scale_down: Io_k8s_api_autoscaling_v2_hpa_scaling_rules.t option [@default None] [@key scaleDown];
-    scale_up: Io_k8s_api_autoscaling_v2_hpa_scaling_rules.t option [@default None] [@key scaleUp];
+    scale_down: Io_k8s_api_autoscaling_v2_hpa_scaling_rules.t option [@default None] [@key "scaleDown"];
+    scale_up: Io_k8s_api_autoscaling_v2_hpa_scaling_rules.t option [@default None] [@key "scaleUp"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** HorizontalPodAutoscalerBehavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively). *)

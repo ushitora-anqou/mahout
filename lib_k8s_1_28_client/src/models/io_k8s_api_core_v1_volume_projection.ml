@@ -7,10 +7,10 @@
  *)
 
 type t = {
-    config_map: Io_k8s_api_core_v1_config_map_projection.t option [@default None] [@key configMap];
-    downward_api: Io_k8s_api_core_v1_downward_api_projection.t option [@default None] [@key downwardAPI];
-    secret: Io_k8s_api_core_v1_secret_projection.t option [@default None] [@key secret];
-    service_account_token: Io_k8s_api_core_v1_service_account_token_projection.t option [@default None] [@key serviceAccountToken];
+    config_map: Io_k8s_api_core_v1_config_map_projection.t option [@default None] [@key "configMap"];
+    downward_api: Io_k8s_api_core_v1_downward_api_projection.t option [@default None] [@key "downwardAPI"];
+    secret: Io_k8s_api_core_v1_secret_projection.t option [@default None] [@key "secret"];
+    service_account_token: Io_k8s_api_core_v1_service_account_token_projection.t option [@default None] [@key "serviceAccountToken"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** Projection that may be projected along with other supported volume types *)

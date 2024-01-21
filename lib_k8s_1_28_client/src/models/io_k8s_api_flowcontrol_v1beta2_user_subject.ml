@@ -8,7 +8,7 @@
 
 type t = {
     (* `name` is the username that matches, or \''*\'' to match all usernames. Required. *)
-    name: string [@key name];
+    name: string [@key "name"];
 } [@@deriving yojson { strict = false }, show ];;
 
 (** UserSubject holds detailed information for user-kind subject. *)
