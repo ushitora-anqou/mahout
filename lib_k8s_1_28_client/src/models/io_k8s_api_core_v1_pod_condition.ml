@@ -18,7 +18,7 @@ type t = {
     (* Status is the status of the condition. Can be True, False, Unknown. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions *)
     status: string;
     (* Type is the type of the condition. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions *)
-    _type: string;
+    _type: string; [@key "type"]
 } [@@deriving yojson { strict = false }, show ];;
 
 (** PodCondition contains details for the current condition of this pod. *)
