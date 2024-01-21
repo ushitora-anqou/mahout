@@ -6,8 +6,8 @@ let https ~authenticator =
   fun uri raw ->
     let host =
       try
-        uri |> Uri.host |> Option.get |> Domain_name.of_string_exn |> Domain_name.host_exn
-        |> Option.some
+        uri |> Uri.host |> Option.get |> Domain_name.of_string_exn
+        |> Domain_name.host_exn |> Option.some
       with _ -> None
     in
     Tls_eio.client_of_flow ?host tls_config raw
@@ -28,7 +28,10 @@ let controller () =
     K8s_1_28_client.Core_v1_api.list_core_v1_namespaced_pod ~sw client
       ~namespace:"mastodon0" ()
   in
-  Logs.info (fun m -> m ">>>>> %d" (List.length result.items));
+  Logs.info (fun m ->
+      m ">>>>> %s %d"
+        (result.api_version |> Option.value ~default:"None")
+        (List.length result.items));
   ()
 
 let () =
