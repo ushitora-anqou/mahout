@@ -5,4 +5,4 @@
  *
  *)
 
-val get_code_version : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> unit -> Io_k8s_apimachinery_pkg_version_info.t
+val get_code_version : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> unit -> Io_k8s_apimachinery_pkg_version_info.t Json_response_scanner.t

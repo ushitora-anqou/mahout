@@ -50,24 +50,26 @@ let handle_response resp on_success_handler =
 let handle_unit_response resp = handle_response resp (fun () -> ())
 
 let read_json_body resp body =
-  handle_response resp (fun () ->
-    let body = Eio.Buf_read.(parse_exn take_all) body ~max_size:max_int in
-    Printf.eprintf ">>>>>>>>>>> %s\n" body;
-    Yojson.Safe.from_string body)
+  handle_response resp (fun () -> Json_response_scanner.make body)
 
-let read_json_body_as of_json resp body = read_json_body resp body |> of_json
+let read_json_body_as of_json resp body =
+  read_json_body resp body |> Json_response_scanner.with_conv of_json
 
 let read_json_body_as_list resp body =
-  read_json_body resp body |> Yojson.Safe.Util.to_list
+  read_json_body resp body
+  |> Json_response_scanner.with_conv Yojson.Safe.Util.to_list
 
 let read_json_body_as_list_of of_json resp body =
-  read_json_body_as_list resp body |> List.map of_json
+  read_json_body_as_list resp body
+  |> Json_response_scanner.with_conv (List.map of_json)
 
 let read_json_body_as_map resp body =
-  read_json_body resp body |> Yojson.Safe.Util.to_assoc
+  read_json_body resp body
+  |> Json_response_scanner.with_conv Yojson.Safe.Util.to_assoc
 
 let read_json_body_as_map_of of_json resp body =
-  read_json_body_as_map resp body |> List.map (fun (s, v) -> (s, of_json v))
+  read_json_body_as_map resp body
+  |> Json_response_scanner.with_conv (List.map (fun (s, v) -> (s, of_json v)))
 
 let replace_string_path_param uri param_name param_value =
   let regexp = Str.regexp (Str.quote ("{" ^ param_name ^ "}")) in

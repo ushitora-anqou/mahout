@@ -5,4 +5,4 @@
  *
  *)
 
-val get_service_account_issuer_open_id_configuration : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> unit -> string
+val get_service_account_issuer_open_id_configuration : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> unit -> string Json_response_scanner.t

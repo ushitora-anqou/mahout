@@ -16,22 +16,22 @@ let controller () =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
   Eio.Switch.run @@ fun sw ->
-  Logs.info (fun m -> m "11111111111111111111111");
   let client =
     (* FIXME: use ca cert *)
     Cohttp_eio.Client.make
       ~https:(Some (https ~authenticator:null_auth))
       (Eio.Stdenv.net env)
   in
-  Logs.info (fun m -> m "22222222222222222222222");
   let result =
     K8s_1_28_client.Core_v1_api.list_core_v1_namespaced_pod ~sw client
-      ~namespace:"mastodon0" ()
+      ~namespace:"mastodon0" ~watch:true ()
   in
-  Logs.info (fun m ->
-      m ">>>>> %s %d"
-        (result.api_version |> Option.value ~default:"None")
-        (List.length result.items));
+  result.items
+  |> List.iter (fun (item : K8s_1_28_client.Io_k8s_api_core_v1_pod.t) ->
+         Logs.info (fun m ->
+             m ">>> %s / %s"
+               (Option.get (Option.get item.metadata).name)
+               (Option.get (Option.get item.metadata).namespace)));
   ()
 
 let () =
