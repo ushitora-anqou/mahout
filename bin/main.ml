@@ -12,6 +12,8 @@ let https ~authenticator =
     in
     Tls_eio.client_of_flow ?host tls_config raw
 
+module K = K8s_1_28_client
+
 let controller () =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
@@ -22,14 +24,15 @@ let controller () =
       ~https:(Some (https ~authenticator:null_auth))
       (Eio.Stdenv.net env)
   in
-  let result =
-    K8s_1_28_client.Core_v1_api.list_core_v1_namespaced_pod ~sw client
-      ~namespace:"mastodon0" ~watch:true ()
-  in
-  result.items
-  |> List.iter (fun (item : K8s_1_28_client.Io_k8s_api_core_v1_pod.t) ->
+  K.Core_v1_api.watch_core_v1_namespaced_pod_list ~sw client
+    ~namespace:"mastodon0" ~watch:true ()
+  |> K.Json_response_scanner.iter
+       (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
+         let item =
+           K.Io_k8s_api_core_v1_pod.of_yojson result._object |> Result.get_ok
+         in
          Logs.info (fun m ->
-             m ">>> %s / %s"
+             m ">>> %s %s / %s" result._type
                (Option.get (Option.get item.metadata).name)
                (Option.get (Option.get item.metadata).namespace)));
   ()

@@ -50,7 +50,7 @@ let handle_response resp on_success_handler =
 let handle_unit_response resp = handle_response resp (fun () -> ())
 
 let read_json_body resp body =
-  handle_response resp (fun () -> Json_response_scanner.make body)
+  handle_response resp (fun () -> Json_response_scanner.consume body)
 
 let read_json_body_as of_json resp body =
   read_json_body resp body |> Json_response_scanner.with_conv of_json
