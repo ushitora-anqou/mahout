@@ -14,6 +14,99 @@ let https ~authenticator =
 
 module K = K8s_1_28_client
 
+module Net_anqou_mahout = struct
+  open K
+
+  module V1alpha1 = struct
+    module Mastodon = struct
+      module Web = struct
+        type t = { replicas : int [@key "replicas"] }
+        [@@deriving yojson { strict = false }, show]
+      end
+
+      module Sidekiq = struct
+        type t = { replicas : int [@key "replicas"] }
+        [@@deriving yojson { strict = false }, show]
+      end
+
+      module Streaming = struct
+        type t = { replicas : int [@key "replicas"] }
+        [@@deriving yojson { strict = false }, show]
+      end
+
+      module Spec = struct
+        type t = {
+          image : string; [@key "image"]
+          env_from : Io_k8s_api_core_v1_env_from_source.t list;
+              [@default []] [@key "envFrom"]
+          web : Web.t option; [@default None] [@key "web"]
+          sidekiq : Sidekiq.t option; [@default None] [@key "sidekiq"]
+          streaming : Streaming.t option; [@default None] [@key "streaming"]
+        }
+        [@@deriving yojson { strict = false }, show]
+      end
+
+      module Status = struct
+        type t = { message : string option [@default None] [@key "message"] }
+        [@@deriving yojson { strict = false }, show]
+      end
+
+      type t = {
+        api_version : string option; [@default None] [@key "apiVersion"]
+        kind : string option; [@default None] [@key "kind"]
+        metadata : Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option;
+            [@default None] [@key "metadata"]
+        spec : Spec.t option; [@default None] [@key "spec"]
+        status : Status.t option; [@default None] [@key "status"]
+      }
+      [@@deriving yojson { strict = false }, show]
+    end
+    [@@warning "-32"]
+  end
+end
+
+module Mahout_v1alpha1_api = struct
+  open K
+
+  let watch_mahout_v1alpha1_namespaced_mastodon ~sw client ~namespace ?watch ()
+      =
+    let uri =
+      Request.build_uri
+        "/apis/mahout.anqou.net/v1alpha1/watch/namespaces/{namespace}/mastodons"
+    in
+    let headers = Request.default_headers in
+    let headers = Cohttp.Header.add headers "authorization" Request.api_key in
+    let uri =
+      Request.replace_path_param uri "namespace" (fun x -> x) namespace
+    in
+    let uri = Request.maybe_add_query_param uri "watch" string_of_bool watch in
+    let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers in
+    Request.read_json_body_as
+      (JsonSupport.unwrap
+         Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson)
+      resp body
+
+  let patch_mahout_v1alpha1_namespaced_mastodon ~sw client ~name ~namespace
+      ~body () =
+    let uri =
+      Request.build_uri
+        "/apis/mahout.anqou.net/v1alpha1/namespaces/{namespace}/mastodons/{name}/status"
+    in
+    let headers = Request.default_headers in
+    let headers = Cohttp.Header.add headers "authorization" Request.api_key in
+    let uri = Request.replace_path_param uri "name" (fun x -> x) name in
+    let uri =
+      Request.replace_path_param uri "namespace" (fun x -> x) namespace
+    in
+    let body = Request.write_json_body body in
+    let resp, body =
+      Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body
+    in
+    Request.read_json_body_as
+      (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.of_yojson)
+      resp body
+end
+
 let controller () =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
@@ -24,6 +117,8 @@ let controller () =
       ~https:(Some (https ~authenticator:null_auth))
       (Eio.Stdenv.net env)
   in
+
+  (*
   K.Core_v1_api.watch_core_v1_namespaced_pod_list ~sw client
     ~namespace:"mastodon0" ~watch:true ()
   |> K.Json_response_scanner.iter
@@ -35,6 +130,26 @@ let controller () =
              m ">>> %s %s / %s" result._type
                (Option.get (Option.get item.metadata).name)
                (Option.get (Option.get item.metadata).namespace)));
+  *)
+  Mahout_v1alpha1_api.watch_mahout_v1alpha1_namespaced_mastodon ~sw client
+    ~namespace:"default" ~watch:true ()
+  |> K.Json_response_scanner.iter
+       (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
+         let item =
+           Net_anqou_mahout.V1alpha1.Mastodon.of_yojson result._object
+           |> Result.get_ok
+         in
+         Logs.info (fun m ->
+             m ">>> %s Mastodon %s" result._type (Option.get item.spec).image);
+
+         let _ =
+           Mahout_v1alpha1_api.patch_mahout_v1alpha1_namespaced_mastodon ~sw
+             client
+             ~name:(Option.get (Option.get item.metadata).name)
+             ~namespace:"default" ~body ()
+         in
+         ());
+
   ()
 
 let () =

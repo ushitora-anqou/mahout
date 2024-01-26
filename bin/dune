@@ -9,5 +9,9 @@
   mirage-crypto-rng-eio
   mahout
   k8s_1_28_client
+  ppx_deriving_yojson.runtime
   tls
-  tls-eio))
+  tls-eio
+  yojson)
+ (preprocess
+  (pps ppx_deriving_yojson ppx_deriving.std)))

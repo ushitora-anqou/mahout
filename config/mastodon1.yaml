@@ -1,0 +1,8 @@
+---
+apiVersion: mahout.anqou.net/v1alpha1
+kind: Mastodon
+metadata:
+  name: mastodon1
+spec:
+  image: "ghcr.io/mastodon/mastodon:4.2.1"
+
