@@ -17,11 +17,14 @@ build-image:
 .PHONY: setup-mahout
 setup-mahout:
 	kubectl delete -f config/test-pod.yaml || true
+	kubectl delete -f config/mahout.anqou.net_mastodons.yaml || true
 	minikube image rm mahout:dev
 	$(MAKE) build-image
 	docker save mahout:dev -o mahout_dev.img
 	minikube image load mahout_dev.img
 	rm mahout_dev.img
-	kubectl apply -f config/test-pod.yaml
+	kubectl apply -f config/mahout.anqou.net_mastodons.yaml || true
+	kubectl apply -f config/test-pod.yaml || true
 	sleep 3
+	kubectl apply -f config/test-pod.yaml || true
 	kubectl logs test-pod -f

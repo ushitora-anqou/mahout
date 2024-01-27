@@ -88,6 +88,9 @@ spec:
             type: object
           status:
             description: MastodonStatus defines the observed state of Mastodon
+            properties:
+              message:
+                type: string
             type: object
         type: object
     served: true

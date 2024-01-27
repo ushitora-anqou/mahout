@@ -92,7 +92,9 @@ module Mahout_v1alpha1_api = struct
       Request.build_uri
         "/apis/mahout.anqou.net/v1alpha1/namespaces/{namespace}/mastodons/{name}/status"
     in
-    let headers = Request.default_headers in
+    let headers =
+      Cohttp.Header.init_with "Content-Type" "application/merge-patch+json"
+    in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri =
@@ -135,20 +137,28 @@ let controller () =
     ~namespace:"default" ~watch:true ()
   |> K.Json_response_scanner.iter
        (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
-         let item =
-           Net_anqou_mahout.V1alpha1.Mastodon.of_yojson result._object
-           |> Result.get_ok
-         in
          Logs.info (fun m ->
-             m ">>> %s Mastodon %s" result._type (Option.get item.spec).image);
-
-         let _ =
-           Mahout_v1alpha1_api.patch_mahout_v1alpha1_namespaced_mastodon ~sw
-             client
-             ~name:(Option.get (Option.get item.metadata).name)
-             ~namespace:"default" ~body ()
-         in
-         ());
+             m "%s %s" result._type (Yojson.Safe.to_string result._object));
+         match result._type with
+         | "ADDED" ->
+             let item =
+               Net_anqou_mahout.V1alpha1.Mastodon.of_yojson result._object
+               |> Result.get_ok
+             in
+             let body =
+               Net_anqou_mahout.V1alpha1.Mastodon.(
+                 { item with status = Some Status.{ message = Some "Hello" } }
+                 |> to_yojson)
+             in
+             let _ =
+               Mahout_v1alpha1_api.patch_mahout_v1alpha1_namespaced_mastodon ~sw
+                 client
+                 ~name:(Option.get (Option.get item.metadata).name)
+                 ~namespace:"default" ~body ()
+             in
+             Logs.info (fun m -> m "patched");
+             ()
+         | _ -> ());
 
   ()
 
