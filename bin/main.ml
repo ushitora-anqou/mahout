@@ -28,6 +28,11 @@ module K = struct
   module Key_to_path = Io_k8s_api_core_v1_key_to_path
   module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
   module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
+  module Config_map = Io_k8s_api_core_v1_config_map
+  module Job = Io_k8s_api_batch_v1_job
+  module Job_spec = Io_k8s_api_batch_v1_job_spec
+  module Job_template_spec = Io_k8s_api_batch_v1_job_template_spec
+  module Env_from_source = Io_k8s_api_core_v1_env_from_source
 end
 
 module Net_anqou_mahout = struct
@@ -37,17 +42,17 @@ module Net_anqou_mahout = struct
     module Mastodon = struct
       module Web = struct
         type t = { replicas : int [@yojson.key "replicas"] }
-        [@@deriving yojson { strict = false }, show]
+        [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
       end
 
       module Sidekiq = struct
         type t = { replicas : int [@yojson.key "replicas"] }
-        [@@deriving yojson { strict = false }, show]
+        [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
       end
 
       module Streaming = struct
         type t = { replicas : int [@yojson.key "replicas"] }
-        [@@deriving yojson { strict = false }, show]
+        [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
       end
 
       module Spec = struct
@@ -61,14 +66,17 @@ module Net_anqou_mahout = struct
           streaming : Streaming.t option;
               [@yojson.default None] [@yojson.key "streaming"]
         }
-        [@@deriving yojson { strict = false }, show]
+        [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
       end
 
       module Status = struct
         type t = {
-          message : string option; [@yojson.default None] [@yojson.key "message"]
+          message : string option;
+              [@yojson.default None] [@yojson.key "message"]
+          server_name : string option;
+              [@yojson.default None] [@yojson.key "serverName"]
         }
-        [@@deriving yojson { strict = false }, show]
+        [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
       end
 
       type t = {
@@ -80,7 +88,7 @@ module Net_anqou_mahout = struct
         spec : Spec.t option; [@yojson.default None] [@yojson.key "spec"]
         status : Status.t option; [@yojson.default None] [@yojson.key "status"]
       }
-      [@@deriving yojson { strict = false }, show]
+      [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
     [@@warning "-32"]
   end
@@ -132,6 +140,72 @@ module Mahout_v1alpha1_api = struct
       *)
 end
 
+let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+  let name = Option.get (Option.get mastodon.metadata).name in
+  K.Owner_reference.
+    [
+      make
+        ~api_version:(Option.get mastodon.api_version)
+        ~kind:(Option.get mastodon.kind)
+        ~uid:(Option.get (Option.get mastodon.metadata).uid)
+        ~name ~controller:true ();
+    ]
+
+let get_running_pod ~sw client =
+  let name = Sys.getenv "POD_NAME" in
+  let namespace = Sys.getenv "POD_NAMESPACE" in
+  K.Core_v1_api.read_core_v1_namespaced_pod ~sw client ~name ~namespace ()
+  |> K.Json_response_scanner.scan |> Result.get_ok
+
+let get_check_env_job_name ~sw:_ _client
+    (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+  let name = Option.get (Option.get mastodon.metadata).name in
+  name ^ "-check-env"
+
+let create_or_update_check_env_job ~sw client
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+  let name = Option.get (Option.get mastodon.metadata).name in
+  let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let env_from = (Option.get mastodon.spec).env_from in
+  let owner_references = get_owner_references mastodon in
+  let job_name = get_check_env_job_name ~sw client mastodon in
+
+  let p = get_running_pod ~sw client in
+  let c = List.hd (Option.get p.spec).containers in
+  let image = Option.get c.image in
+  let service_account_name =
+    Option.get (Option.get p.spec).service_account_name
+  in
+
+  let body =
+    K.Job.make ~api_version:"batch/v1" ~kind:"Job"
+      ~metadata:
+        (K.Object_meta.make ~name:job_name ~namespace ~owner_references ())
+      ~spec:
+        (K.Job_spec.make
+           ~template:
+             (K.Pod_template_spec.make
+                ~spec:
+                  (K.Pod_spec.make ~service_account_name
+                     ~restart_policy:"OnFailure"
+                     ~containers:
+                       K.Container.
+                         [
+                           make ~name:"check-env" ~image ~env_from
+                             ~args:[ "check-env"; name; namespace ]
+                             ();
+                         ]
+                     ())
+                ())
+           ())
+      ()
+  in
+  Logs.info (fun m -> m "%s" (body |> K.Job.to_yojson |> Yojson.Safe.to_string));
+  let _ =
+    K.Batch_v1_api.create_batch_v1_namespaced_job ~sw client ~namespace ~body ()
+  in
+  ()
+
 let create_or_update_gateway ~sw client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let nginx_image = "nginx:1.25.3" in
@@ -139,6 +213,35 @@ let create_or_update_gateway ~sw client
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let mastodon_image = (Option.get mastodon.spec).image in
+
+  let nginx_conf_cm_name = name ^ "-gateway-nginx-conf" in
+  let nginx_conf_cm_key = "mastodon-nginx.conf" in
+  let nginx_deploy_name = name ^ "-gateway-nginx" in
+
+  let server_name = Option.get (Option.get mastodon.status).server_name in
+
+  let owner_references = get_owner_references mastodon in
+
+  let _body =
+    K.Config_map.make
+      ~metadata:
+        (K.Object_meta.make ~name:nginx_conf_cm_name ~namespace
+           ~owner_references ())
+      ~data:
+        (`Assoc
+          [
+            ( nginx_conf_cm_key,
+              `String
+                (Gateway_nginx_conf.s
+                |> Jingoo.Jg_template.from_string
+                     ~models:
+                       [
+                         ("server_name", Tstr server_name);
+                         ("namespace", Tstr namespace);
+                       ]) );
+          ])
+      ()
+  in
 
   let body =
     let selector_labels =
@@ -151,16 +254,7 @@ let create_or_update_gateway ~sw client
     in
     K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
       ~metadata:
-        (K.Object_meta.make ~name:(name ^ "-gateway-nginx") ~namespace
-           ~owner_references:
-             K.Owner_reference.
-               [
-                 make
-                   ~api_version:(Option.get mastodon.api_version)
-                   ~kind:(Option.get mastodon.kind)
-                   ~uid:(Option.get (Option.get mastodon.metadata).uid)
-                   ~name ~controller:true ();
-               ]
+        (K.Object_meta.make ~name:nginx_deploy_name ~namespace ~owner_references
            ())
       ~spec:
         K.Deployment_spec.(
@@ -216,12 +310,12 @@ let create_or_update_gateway ~sw client
                              make ~name:"nginx-conf"
                                ~config_map:
                                  K.Config_map_volume_source.(
-                                   make ~name:"gateway-nginx-conf"
+                                   make ~name:nginx_conf_cm_name
                                      ~items:
                                        K.Key_to_path.
                                          [
-                                           make ~key:"mastodon0-nginx.conf"
-                                             ~path:"mastodon0.conf" ();
+                                           make ~key:nginx_conf_cm_key
+                                             ~path:"mastodon.conf" ();
                                          ]
                                      ())
                                ();
@@ -248,9 +342,10 @@ let reconcile_mastodon ~sw client
     | Ok x -> x
     | Error msg -> failwith msg
   in
-  create_or_update_gateway ~sw client ~mastodon;
 
-  ()
+  match Option.bind mastodon.status (fun x -> Some x.server_name) with
+  | None -> create_or_update_check_env_job ~sw client ~mastodon
+  | Some _ -> create_or_update_gateway ~sw client ~mastodon
 
 let controller () =
   Eio_main.run @@ fun env ->

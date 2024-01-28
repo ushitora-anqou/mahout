@@ -27,4 +27,5 @@ FROM ubuntu:22.04
 WORKDIR /root/
 COPY --from=0 /home/opam/mahout/_build/default/bin/main.exe ./mahout
 
-CMD /root/mahout controller
+ENTRYPOINT ["/root/mahout"]
+CMD ["controller"]

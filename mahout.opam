@@ -23,6 +23,7 @@ depends: [
   "eio_main"
   "hex"
   "integers"
+  "jingoo"
   "logs"
   "mirage-clock-unix"
   "mirage-crypto-rng"
