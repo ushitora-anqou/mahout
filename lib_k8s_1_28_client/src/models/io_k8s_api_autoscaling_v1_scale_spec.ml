@@ -8,11 +8,7 @@
 
 type t = {
     (* replicas is the desired number of instances for the scaled object. *)
-    replicas: int32 option [@default None] [@key "replicas"];
-} [@@deriving yojson { strict = false }, show ];;
+    replicas: int32 option [@yojson.default None] [@yojson.key "replicas"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ScaleSpec describes the attributes of a scale subresource. *)
-let create () : t = {
-    replicas = None;
-}
 

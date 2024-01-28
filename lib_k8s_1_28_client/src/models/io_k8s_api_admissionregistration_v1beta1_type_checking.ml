@@ -8,11 +8,7 @@
 
 type t = {
     (* The type checking warnings for each expression. *)
-    expression_warnings: Io_k8s_api_admissionregistration_v1beta1_expression_warning.t list [@default []] [@key "expressionWarnings"];
-} [@@deriving yojson { strict = false }, show ];;
+    expression_warnings: Io_k8s_api_admissionregistration_v1beta1_expression_warning.t list [@yojson.default []] [@yojson.key "expressionWarnings"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** TypeChecking contains results of type checking the expressions in the ValidatingAdmissionPolicy *)
-let create () : t = {
-    expression_warnings = [];
-}
 

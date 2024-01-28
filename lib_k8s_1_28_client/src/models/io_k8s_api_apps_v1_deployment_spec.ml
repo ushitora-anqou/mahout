@@ -8,29 +8,18 @@
 
 type t = {
     (* Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) *)
-    min_ready_seconds: int32 option [@default None] [@key "minReadySeconds"];
+    min_ready_seconds: int32 option [@yojson.default None] [@yojson.key "minReadySeconds"];
     (* Indicates that the deployment is paused. *)
-    paused: bool option [@default None] [@key "paused"];
+    paused: bool option [@yojson.default None] [@yojson.key "paused"];
     (* The maximum time in seconds for a deployment to make progress before it is considered to be failed. The deployment controller will continue to process failed deployments and a condition with a ProgressDeadlineExceeded reason will be surfaced in the deployment status. Note that progress will not be estimated during the time a deployment is paused. Defaults to 600s. *)
-    progress_deadline_seconds: int32 option [@default None] [@key "progressDeadlineSeconds"];
+    progress_deadline_seconds: int32 option [@yojson.default None] [@yojson.key "progressDeadlineSeconds"];
     (* Number of desired pods. This is a pointer to distinguish between explicit zero and not specified. Defaults to 1. *)
-    replicas: int32 option [@default None] [@key "replicas"];
+    replicas: int32 option [@yojson.default None] [@yojson.key "replicas"];
     (* The number of old ReplicaSets to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10. *)
-    revision_history_limit: int32 option [@default None] [@key "revisionHistoryLimit"];
-    selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t [@key "selector"];
-    strategy: Io_k8s_api_apps_v1_deployment_strategy.t option [@default None] [@key "strategy"];
-    template: Io_k8s_api_core_v1_pod_template_spec.t [@key "template"];
-} [@@deriving yojson { strict = false }, show ];;
+    revision_history_limit: int32 option [@yojson.default None] [@yojson.key "revisionHistoryLimit"];
+    selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t [@yojson.key "selector"];
+    strategy: Io_k8s_api_apps_v1_deployment_strategy.t option [@yojson.default None] [@yojson.key "strategy"];
+    template: Io_k8s_api_core_v1_pod_template_spec.t [@yojson.key "template"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** DeploymentSpec is the specification of the desired behavior of the Deployment. *)
-let create (selector : Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t) (template : Io_k8s_api_core_v1_pod_template_spec.t) : t = {
-    min_ready_seconds = None;
-    paused = None;
-    progress_deadline_seconds = None;
-    replicas = None;
-    revision_history_limit = None;
-    selector = selector;
-    strategy = None;
-    template = template;
-}
 

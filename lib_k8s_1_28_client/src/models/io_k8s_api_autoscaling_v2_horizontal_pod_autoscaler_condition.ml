@@ -8,23 +8,15 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
+    last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
     (* message is a human-readable explanation containing details about the transition *)
-    message: string option [@default None] [@key "message"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
     (* reason is the reason for the condition's last transition. *)
-    reason: string option [@default None] [@key "reason"];
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
     (* status is the status of the condition (True, False, Unknown) *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* type describes the current condition *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** HorizontalPodAutoscalerCondition describes the state of a HorizontalPodAutoscaler at a certain point. *)
-let create (status : string) (_type : string) : t = {
-    last_transition_time = None;
-    message = None;
-    reason = None;
-    status = status;
-    _type = _type;
-}
 

@@ -8,14 +8,9 @@
 
 type t = {
     (* Optional: mode bits to use on created files by default. Must be a Optional: mode bits used to set permissions on created files by default. Must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. Defaults to 0644. Directories within the path are not affected by this setting. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set. *)
-    default_mode: int32 option [@default None] [@key "defaultMode"];
+    default_mode: int32 option [@yojson.default None] [@yojson.key "defaultMode"];
     (* Items is a list of downward API volume file *)
-    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@default []] [@key "items"];
-} [@@deriving yojson { strict = false }, show ];;
+    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@yojson.default []] [@yojson.key "items"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** DownwardAPIVolumeSource represents a volume containing downward API info. Downward API volumes support ownership management and SELinux relabeling. *)
-let create () : t = {
-    default_mode = None;
-    items = [];
-}
 

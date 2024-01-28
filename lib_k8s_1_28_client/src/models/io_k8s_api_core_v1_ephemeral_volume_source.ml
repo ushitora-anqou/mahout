@@ -7,11 +7,7 @@
  *)
 
 type t = {
-    volume_claim_template: Io_k8s_api_core_v1_persistent_volume_claim_template.t option [@default None] [@key "volumeClaimTemplate"];
-} [@@deriving yojson { strict = false }, show ];;
+    volume_claim_template: Io_k8s_api_core_v1_persistent_volume_claim_template.t option [@yojson.default None] [@yojson.key "volumeClaimTemplate"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents an ephemeral volume that is handled by a normal storage driver. *)
-let create () : t = {
-    volume_claim_template = None;
-}
 

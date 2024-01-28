@@ -8,20 +8,13 @@
 
 type t = {
     (* EvaluationError can appear in combination with Rules. It indicates an error occurred during rule evaluation, such as an authorizer that doesn't support rule evaluation, and that ResourceRules and/or NonResourceRules may be incomplete. *)
-    evaluation_error: string option [@default None] [@key "evaluationError"];
+    evaluation_error: string option [@yojson.default None] [@yojson.key "evaluationError"];
     (* Incomplete is true when the rules returned by this call are incomplete. This is most commonly encountered when an authorizer, such as an external authorizer, doesn't support rules evaluation. *)
-    incomplete: bool [@key "incomplete"];
+    incomplete: bool [@yojson.key "incomplete"];
     (* NonResourceRules is the list of actions the subject is allowed to perform on non-resources. The list ordering isn't significant, may contain duplicates, and possibly be incomplete. *)
-    non_resource_rules: Io_k8s_api_authorization_v1_non_resource_rule.t list [@default []] [@key "nonResourceRules"];
+    non_resource_rules: Io_k8s_api_authorization_v1_non_resource_rule.t list [@yojson.default []] [@yojson.key "nonResourceRules"];
     (* ResourceRules is the list of actions the subject is allowed to perform on resources. The list ordering isn't significant, may contain duplicates, and possibly be incomplete. *)
-    resource_rules: Io_k8s_api_authorization_v1_resource_rule.t list [@default []] [@key "resourceRules"];
-} [@@deriving yojson { strict = false }, show ];;
+    resource_rules: Io_k8s_api_authorization_v1_resource_rule.t list [@yojson.default []] [@yojson.key "resourceRules"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** SubjectRulesReviewStatus contains the result of a rules check. This check can be incomplete depending on the set of authorizers the server is configured with and any errors experienced during evaluation. Because authorization rules are additive, if a rule appears in a list it's safe to assume the subject has that permission, even if that list is incomplete. *)
-let create (incomplete : bool) (non_resource_rules : Io_k8s_api_authorization_v1_non_resource_rule.t list) (resource_rules : Io_k8s_api_authorization_v1_resource_rule.t list) : t = {
-    evaluation_error = None;
-    incomplete = incomplete;
-    non_resource_rules = non_resource_rules;
-    resource_rules = resource_rules;
-}
 

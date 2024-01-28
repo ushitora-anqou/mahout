@@ -8,31 +8,20 @@
 
 type t = {
     (* Specifies how to treat concurrent executions of a Job. Valid values are:  - \''Allow\'' (default): allows CronJobs to run concurrently; - \''Forbid\'': forbids concurrent runs, skipping next run if previous run hasn't finished yet; - \''Replace\'': cancels currently running job and replaces it with a new one *)
-    concurrency_policy: string option [@default None] [@key "concurrencyPolicy"];
+    concurrency_policy: string option [@yojson.default None] [@yojson.key "concurrencyPolicy"];
     (* The number of failed finished jobs to retain. Value must be non-negative integer. Defaults to 1. *)
-    failed_jobs_history_limit: int32 option [@default None] [@key "failedJobsHistoryLimit"];
-    job_template: Io_k8s_api_batch_v1_job_template_spec.t [@key "jobTemplate"];
+    failed_jobs_history_limit: int32 option [@yojson.default None] [@yojson.key "failedJobsHistoryLimit"];
+    job_template: Io_k8s_api_batch_v1_job_template_spec.t [@yojson.key "jobTemplate"];
     (* The schedule in Cron format, see https://en.wikipedia.org/wiki/Cron. *)
-    schedule: string [@key "schedule"];
+    schedule: string [@yojson.key "schedule"];
     (* Optional deadline in seconds for starting the job if it misses scheduled time for any reason.  Missed jobs executions will be counted as failed ones. *)
-    starting_deadline_seconds: int64 option [@default None] [@key "startingDeadlineSeconds"];
+    starting_deadline_seconds: int64 option [@yojson.default None] [@yojson.key "startingDeadlineSeconds"];
     (* The number of successful finished jobs to retain. Value must be non-negative integer. Defaults to 3. *)
-    successful_jobs_history_limit: int32 option [@default None] [@key "successfulJobsHistoryLimit"];
+    successful_jobs_history_limit: int32 option [@yojson.default None] [@yojson.key "successfulJobsHistoryLimit"];
     (* This flag tells the controller to suspend subsequent executions, it does not apply to already started executions.  Defaults to false. *)
-    suspend: bool option [@default None] [@key "suspend"];
+    suspend: bool option [@yojson.default None] [@yojson.key "suspend"];
     (* The time zone name for the given schedule, see https://en.wikipedia.org/wiki/List_of_tz_database_time_zones. If not specified, this will default to the time zone of the kube-controller-manager process. The set of valid time zone names and the time zone offset is loaded from the system-wide time zone database by the API server during CronJob validation and the controller manager during execution. If no system-wide time zone database can be found a bundled version of the database is used instead. If the time zone name becomes invalid during the lifetime of a CronJob or due to a change in host configuration, the controller will stop creating new new Jobs and will create a system event with the reason UnknownTimeZone. More information can be found in https://kubernetes.io/docs/concepts/workloads/controllers/cron-jobs/#time-zones *)
-    time_zone: string option [@default None] [@key "timeZone"];
-} [@@deriving yojson { strict = false }, show ];;
+    time_zone: string option [@yojson.default None] [@yojson.key "timeZone"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** CronJobSpec describes how the job execution will look like and when it will actually run. *)
-let create (job_template : Io_k8s_api_batch_v1_job_template_spec.t) (schedule : string) : t = {
-    concurrency_policy = None;
-    failed_jobs_history_limit = None;
-    job_template = job_template;
-    schedule = schedule;
-    starting_deadline_seconds = None;
-    successful_jobs_history_limit = None;
-    suspend = None;
-    time_zone = None;
-}
 

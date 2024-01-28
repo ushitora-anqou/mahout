@@ -8,28 +8,18 @@
 
 type t = {
     (* CABundle is a PEM encoded CA bundle which will be used to validate an API server's serving certificate. If unspecified, system trust roots on the apiserver are used. *)
-    ca_bundle: string option [@default None] [@key "caBundle"];
+    ca_bundle: string option [@yojson.default None] [@yojson.key "caBundle"];
     (* Group is the API group name this server hosts *)
-    group: string option [@default None] [@key "group"];
+    group: string option [@yojson.default None] [@yojson.key "group"];
     (* GroupPriorityMininum is the priority this group should have at least. Higher priority means that the group is preferred by clients over lower priority ones. Note that other versions of this group might specify even higher GroupPriorityMininum values such that the whole group gets a higher priority. The primary sort is based on GroupPriorityMinimum, ordered highest number to lowest (20 before 10). The secondary sort is based on the alphabetical comparison of the name of the object.  (v1.bar before v1.foo) We'd recommend something like: *.k8s.io (except extensions) at 18000 and PaaSes (OpenShift, Deis) are recommended to be in the 2000s *)
-    group_priority_minimum: int32 [@key "groupPriorityMinimum"];
+    group_priority_minimum: int32 [@yojson.key "groupPriorityMinimum"];
     (* InsecureSkipTLSVerify disables TLS certificate verification when communicating with this server. This is strongly discouraged.  You should use the CABundle instead. *)
-    insecure_skip_tls_verify: bool option [@default None] [@key "insecureSkipTLSVerify"];
-    service: Io_k8s_kube_aggregator_pkg_apis_apiregistration_v1_service_reference.t option [@default None] [@key "service"];
+    insecure_skip_tls_verify: bool option [@yojson.default None] [@yojson.key "insecureSkipTLSVerify"];
+    service: Io_k8s_kube_aggregator_pkg_apis_apiregistration_v1_service_reference.t option [@yojson.default None] [@yojson.key "service"];
     (* Version is the API version this server hosts.  For example, \''v1\'' *)
-    version: string option [@default None] [@key "version"];
+    version: string option [@yojson.default None] [@yojson.key "version"];
     (* VersionPriority controls the ordering of this API version inside of its group.  Must be greater than zero. The primary sort is based on VersionPriority, ordered highest to lowest (20 before 10). Since it's inside of a group, the number can be small, probably in the 10s. In case of equal version priorities, the version string will be used to compute the order inside a group. If the version string is \''kube-like\'', it will sort above non \''kube-like\'' version strings, which are ordered lexicographically. \''Kube-like\'' versions start with a \''v\'', then are followed by a number (the major version), then optionally the string \''alpha\'' or \''beta\'' and another number (the minor version). These are sorted first by GA > beta > alpha (where GA is a version with no suffix such as beta or alpha), and then by comparing major version, then minor version. An example sorted list of versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10. *)
-    version_priority: int32 [@key "versionPriority"];
-} [@@deriving yojson { strict = false }, show ];;
+    version_priority: int32 [@yojson.key "versionPriority"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** APIServiceSpec contains information for locating and communicating with a server. Only https is supported, though you are able to disable certificate verification. *)
-let create (group_priority_minimum : int32) (version_priority : int32) : t = {
-    ca_bundle = None;
-    group = None;
-    group_priority_minimum = group_priority_minimum;
-    insecure_skip_tls_verify = None;
-    service = None;
-    version = None;
-    version_priority = version_priority;
-}
 

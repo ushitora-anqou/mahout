@@ -8,17 +8,11 @@
 
 type t = {
     (* fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
-    fs_type: string option [@default None] [@key "fsType"];
+    fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
     (* readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None] [@key "readOnly"];
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* volumeID uniquely identifies a Portworx volume *)
-    volume_id: string [@key "volumeID"];
-} [@@deriving yojson { strict = false }, show ];;
+    volume_id: string [@yojson.key "volumeID"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PortworxVolumeSource represents a Portworx volume resource. *)
-let create (volume_id : string) : t = {
-    fs_type = None;
-    read_only = None;
-    volume_id = volume_id;
-}
 

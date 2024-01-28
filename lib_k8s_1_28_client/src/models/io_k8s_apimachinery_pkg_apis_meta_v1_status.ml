@@ -8,30 +8,19 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* Suggested HTTP return code for this status, 0 if not set. *)
-    code: int32 option [@default None] [@key "code"];
-    details: Io_k8s_apimachinery_pkg_apis_meta_v1_status_details.t option [@default None] [@key "details"];
+    code: int32 option [@yojson.default None] [@yojson.key "code"];
+    details: Io_k8s_apimachinery_pkg_apis_meta_v1_status_details.t option [@yojson.default None] [@yojson.key "details"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
     (* A human-readable description of the status of this operation. *)
-    message: string option [@default None] [@key "message"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_list_meta.t option [@default None] [@key "metadata"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_list_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     (* A machine-readable description of why this operation is in the \''Failure\'' status. If this value is empty there is no information available. A Reason clarifies an HTTP status code but does not override it. *)
-    reason: string option [@default None] [@key "reason"];
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
     (* Status of the operation. One of: \''Success\'' or \''Failure\''. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status *)
-    status: string option [@default None] [@key "status"];
-} [@@deriving yojson { strict = false }, show ];;
+    status: string option [@yojson.default None] [@yojson.key "status"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Status is a return value for calls that don't return other objects. *)
-let create () : t = {
-    api_version = None;
-    code = None;
-    details = None;
-    kind = None;
-    message = None;
-    metadata = None;
-    reason = None;
-    status = None;
-}
 

@@ -8,20 +8,12 @@
 
 type t = {
     (* The minimum number of seconds for which a newly created DaemonSet pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready). *)
-    min_ready_seconds: int32 option [@default None] [@key "minReadySeconds"];
+    min_ready_seconds: int32 option [@yojson.default None] [@yojson.key "minReadySeconds"];
     (* The number of old history to retain to allow rollback. This is a pointer to distinguish between explicit zero and not specified. Defaults to 10. *)
-    revision_history_limit: int32 option [@default None] [@key "revisionHistoryLimit"];
-    selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t [@key "selector"];
-    template: Io_k8s_api_core_v1_pod_template_spec.t [@key "template"];
-    update_strategy: Io_k8s_api_apps_v1_daemon_set_update_strategy.t option [@default None] [@key "updateStrategy"];
-} [@@deriving yojson { strict = false }, show ];;
+    revision_history_limit: int32 option [@yojson.default None] [@yojson.key "revisionHistoryLimit"];
+    selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t [@yojson.key "selector"];
+    template: Io_k8s_api_core_v1_pod_template_spec.t [@yojson.key "template"];
+    update_strategy: Io_k8s_api_apps_v1_daemon_set_update_strategy.t option [@yojson.default None] [@yojson.key "updateStrategy"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** DaemonSetSpec is the specification of a daemon set. *)
-let create (selector : Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t) (template : Io_k8s_api_core_v1_pod_template_spec.t) : t = {
-    min_ready_seconds = None;
-    revision_history_limit = None;
-    selector = selector;
-    template = template;
-    update_strategy = None;
-}
 

@@ -8,14 +8,9 @@
 
 type t = {
     (* matchExpressions is a list of label selector requirements. The requirements are ANDed. *)
-    match_expressions: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector_requirement.t list [@default []] [@key "matchExpressions"];
+    match_expressions: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector_requirement.t list [@yojson.default []] [@yojson.key "matchExpressions"];
     (* matchLabels is a map of {key,value} pairs. A single {key,value} in the matchLabels map is equivalent to an element of matchExpressions, whose key field is \''key\'', the operator is \''In\'', and the values array contains only \''value\''. The requirements are ANDed. *)
-    match_labels: Yojson.Safe.t [@default (`List [])] [@key "matchLabels"];
-} [@@deriving yojson { strict = false }, show ];;
+    match_labels: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "matchLabels"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** A label selector is a label query over a set of resources. The result of matchLabels and matchExpressions are ANDed. An empty label selector matches all objects. A null label selector matches no objects. *)
-let create () : t = {
-    match_expressions = [];
-    match_labels = `List [];
-}
 

@@ -7,11 +7,7 @@
  *)
 
 type t = {
-    parent_ref: Io_k8s_api_networking_v1alpha1_parent_reference.t option [@default None] [@key "parentRef"];
-} [@@deriving yojson { strict = false }, show ];;
+    parent_ref: Io_k8s_api_networking_v1alpha1_parent_reference.t option [@yojson.default None] [@yojson.key "parentRef"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** IPAddressSpec describe the attributes in an IP Address. *)
-let create () : t = {
-    parent_ref = None;
-}
 

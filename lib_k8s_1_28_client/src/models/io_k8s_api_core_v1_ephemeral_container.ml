@@ -8,77 +8,49 @@
 
 type t = {
     (* Arguments to the entrypoint. The image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
-    args: string list [@default []] [@key "args"];
+    args: string list [@yojson.default []] [@yojson.key "args"];
     (* Entrypoint array. Not executed within a shell. The image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
-    command: string list [@default []] [@key "command"];
+    command: string list [@yojson.default []] [@yojson.key "command"];
     (* List of environment variables to set in the container. Cannot be updated. *)
-    env: Io_k8s_api_core_v1_env_var.t list [@default []] [@key "env"];
+    env: Io_k8s_api_core_v1_env_var.t list [@yojson.default []] [@yojson.key "env"];
     (* List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER. All invalid keys will be reported as an event when the container is starting. When a key exists in multiple sources, the value associated with the last source will take precedence. Values defined by an Env with a duplicate key will take precedence. Cannot be updated. *)
-    env_from: Io_k8s_api_core_v1_env_from_source.t list [@default []] [@key "envFrom"];
+    env_from: Io_k8s_api_core_v1_env_from_source.t list [@yojson.default []] [@yojson.key "envFrom"];
     (* Container image name. More info: https://kubernetes.io/docs/concepts/containers/images *)
-    image: string option [@default None] [@key "image"];
+    image: string option [@yojson.default None] [@yojson.key "image"];
     (* Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images *)
-    image_pull_policy: string option [@default None] [@key "imagePullPolicy"];
-    lifecycle: Io_k8s_api_core_v1_lifecycle.t option [@default None] [@key "lifecycle"];
-    liveness_probe: Io_k8s_api_core_v1_probe.t option [@default None] [@key "livenessProbe"];
+    image_pull_policy: string option [@yojson.default None] [@yojson.key "imagePullPolicy"];
+    lifecycle: Io_k8s_api_core_v1_lifecycle.t option [@yojson.default None] [@yojson.key "lifecycle"];
+    liveness_probe: Io_k8s_api_core_v1_probe.t option [@yojson.default None] [@yojson.key "livenessProbe"];
     (* Name of the ephemeral container specified as a DNS_LABEL. This name must be unique among all containers, init containers and ephemeral containers. *)
-    name: string [@key "name"];
+    name: string [@yojson.key "name"];
     (* Ports are not allowed for ephemeral containers. *)
-    ports: Io_k8s_api_core_v1_container_port.t list [@default []] [@key "ports"];
-    readiness_probe: Io_k8s_api_core_v1_probe.t option [@default None] [@key "readinessProbe"];
+    ports: Io_k8s_api_core_v1_container_port.t list [@yojson.default []] [@yojson.key "ports"];
+    readiness_probe: Io_k8s_api_core_v1_probe.t option [@yojson.default None] [@yojson.key "readinessProbe"];
     (* Resources resize policy for the container. *)
-    resize_policy: Io_k8s_api_core_v1_container_resize_policy.t list [@default []] [@key "resizePolicy"];
-    resources: Io_k8s_api_core_v1_resource_requirements.t option [@default None] [@key "resources"];
+    resize_policy: Io_k8s_api_core_v1_container_resize_policy.t list [@yojson.default []] [@yojson.key "resizePolicy"];
+    resources: Io_k8s_api_core_v1_resource_requirements.t option [@yojson.default None] [@yojson.key "resources"];
     (* Restart policy for the container to manage the restart behavior of each container within a pod. This may only be set for init containers. You cannot set this field on ephemeral containers. *)
-    restart_policy: string option [@default None] [@key "restartPolicy"];
-    security_context: Io_k8s_api_core_v1_security_context.t option [@default None] [@key "securityContext"];
-    startup_probe: Io_k8s_api_core_v1_probe.t option [@default None] [@key "startupProbe"];
+    restart_policy: string option [@yojson.default None] [@yojson.key "restartPolicy"];
+    security_context: Io_k8s_api_core_v1_security_context.t option [@yojson.default None] [@yojson.key "securityContext"];
+    startup_probe: Io_k8s_api_core_v1_probe.t option [@yojson.default None] [@yojson.key "startupProbe"];
     (* Whether this container should allocate a buffer for stdin in the container runtime. If this is not set, reads from stdin in the container will always result in EOF. Default is false. *)
-    stdin: bool option [@default None] [@key "stdin"];
+    stdin: bool option [@yojson.default None] [@yojson.key "stdin"];
     (* Whether the container runtime should close the stdin channel after it has been opened by a single attach. When stdin is true the stdin stream will remain open across multiple attach sessions. If stdinOnce is set to true, stdin is opened on container start, is empty until the first client attaches to stdin, and then remains open and accepts data until the client disconnects, at which time stdin is closed and remains closed until the container is restarted. If this flag is false, a container processes that reads from stdin will never receive an EOF. Default is false *)
-    stdin_once: bool option [@default None] [@key "stdinOnce"];
+    stdin_once: bool option [@yojson.default None] [@yojson.key "stdinOnce"];
     (* If set, the name of the container from PodSpec that this ephemeral container targets. The ephemeral container will be run in the namespaces (IPC, PID, etc) of this container. If not set then the ephemeral container uses the namespaces configured in the Pod spec.  The container runtime must implement support for this feature. If the runtime does not support namespace targeting then the result of setting this field is undefined. *)
-    target_container_name: string option [@default None] [@key "targetContainerName"];
+    target_container_name: string option [@yojson.default None] [@yojson.key "targetContainerName"];
     (* Optional: Path at which the file to which the container's termination message will be written is mounted into the container's filesystem. Message written is intended to be brief final status, such as an assertion failure message. Will be truncated by the node if greater than 4096 bytes. The total message length across all containers will be limited to 12kb. Defaults to /dev/termination-log. Cannot be updated. *)
-    termination_message_path: string option [@default None] [@key "terminationMessagePath"];
+    termination_message_path: string option [@yojson.default None] [@yojson.key "terminationMessagePath"];
     (* Indicate how the termination message should be populated. File will use the contents of terminationMessagePath to populate the container status message on both success and failure. FallbackToLogsOnError will use the last chunk of container log output if the termination message file is empty and the container exited with an error. The log output is limited to 2048 bytes or 80 lines, whichever is smaller. Defaults to File. Cannot be updated. *)
-    termination_message_policy: string option [@default None] [@key "terminationMessagePolicy"];
+    termination_message_policy: string option [@yojson.default None] [@yojson.key "terminationMessagePolicy"];
     (* Whether this container should allocate a TTY for itself, also requires 'stdin' to be true. Default is false. *)
-    tty: bool option [@default None] [@key "tty"];
+    tty: bool option [@yojson.default None] [@yojson.key "tty"];
     (* volumeDevices is the list of block devices to be used by the container. *)
-    volume_devices: Io_k8s_api_core_v1_volume_device.t list [@default []] [@key "volumeDevices"];
+    volume_devices: Io_k8s_api_core_v1_volume_device.t list [@yojson.default []] [@yojson.key "volumeDevices"];
     (* Pod volumes to mount into the container's filesystem. Subpath mounts are not allowed for ephemeral containers. Cannot be updated. *)
-    volume_mounts: Io_k8s_api_core_v1_volume_mount.t list [@default []] [@key "volumeMounts"];
+    volume_mounts: Io_k8s_api_core_v1_volume_mount.t list [@yojson.default []] [@yojson.key "volumeMounts"];
     (* Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. *)
-    working_dir: string option [@default None] [@key "workingDir"];
-} [@@deriving yojson { strict = false }, show ];;
+    working_dir: string option [@yojson.default None] [@yojson.key "workingDir"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** An EphemeralContainer is a temporary container that you may add to an existing Pod for user-initiated activities such as debugging. Ephemeral containers have no resource or scheduling guarantees, and they will not be restarted when they exit or when a Pod is removed or restarted. The kubelet may evict a Pod if an ephemeral container causes the Pod to exceed its resource allocation.  To add an ephemeral container, use the ephemeralcontainers subresource of an existing Pod. Ephemeral containers may not be removed or restarted. *)
-let create (name : string) : t = {
-    args = [];
-    command = [];
-    env = [];
-    env_from = [];
-    image = None;
-    image_pull_policy = None;
-    lifecycle = None;
-    liveness_probe = None;
-    name = name;
-    ports = [];
-    readiness_probe = None;
-    resize_policy = [];
-    resources = None;
-    restart_policy = None;
-    security_context = None;
-    startup_probe = None;
-    stdin = None;
-    stdin_once = None;
-    target_container_name = None;
-    termination_message_path = None;
-    termination_message_policy = None;
-    tty = None;
-    volume_devices = [];
-    volume_mounts = [];
-    working_dir = None;
-}
 

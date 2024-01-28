@@ -8,14 +8,9 @@
 
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
-    fs_type: string option [@default None] [@key "fsType"];
+    fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
     (* pdID is the ID that identifies Photon Controller persistent disk *)
-    pd_id: string [@key "pdID"];
-} [@@deriving yojson { strict = false }, show ];;
+    pd_id: string [@yojson.key "pdID"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents a Photon Controller persistent disk resource. *)
-let create (pd_id : string) : t = {
-    fs_type = None;
-    pd_id = pd_id;
-}
 

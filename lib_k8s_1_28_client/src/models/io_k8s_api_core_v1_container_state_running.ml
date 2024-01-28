@@ -8,11 +8,7 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    started_at: string option [@default None] [@key "startedAt"];
-} [@@deriving yojson { strict = false }, show ];;
+    started_at: string option [@yojson.default None] [@yojson.key "startedAt"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ContainerStateRunning is a running state of a container. *)
-let create () : t = {
-    started_at = None;
-}
 

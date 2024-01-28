@@ -7,34 +7,21 @@
  *)
 
 type t = {
-    controller_expand_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@default None] [@key "controllerExpandSecretRef"];
-    controller_publish_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@default None] [@key "controllerPublishSecretRef"];
+    controller_expand_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "controllerExpandSecretRef"];
+    controller_publish_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "controllerPublishSecretRef"];
     (* driver is the name of the driver to use for this volume. Required. *)
-    driver: string [@key "driver"];
+    driver: string [@yojson.key "driver"];
     (* fsType to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. *)
-    fs_type: string option [@default None] [@key "fsType"];
-    node_expand_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@default None] [@key "nodeExpandSecretRef"];
-    node_publish_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@default None] [@key "nodePublishSecretRef"];
-    node_stage_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@default None] [@key "nodeStageSecretRef"];
+    fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
+    node_expand_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "nodeExpandSecretRef"];
+    node_publish_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "nodePublishSecretRef"];
+    node_stage_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "nodeStageSecretRef"];
     (* readOnly value to pass to ControllerPublishVolumeRequest. Defaults to false (read/write). *)
-    read_only: bool option [@default None] [@key "readOnly"];
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* volumeAttributes of the volume to publish. *)
-    volume_attributes: Yojson.Safe.t [@default (`List [])] [@key "volumeAttributes"];
+    volume_attributes: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "volumeAttributes"];
     (* volumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls. Required. *)
-    volume_handle: string [@key "volumeHandle"];
-} [@@deriving yojson { strict = false }, show ];;
+    volume_handle: string [@yojson.key "volumeHandle"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents storage that is managed by an external CSI volume driver (Beta feature) *)
-let create (driver : string) (volume_handle : string) : t = {
-    controller_expand_secret_ref = None;
-    controller_publish_secret_ref = None;
-    driver = driver;
-    fs_type = None;
-    node_expand_secret_ref = None;
-    node_publish_secret_ref = None;
-    node_stage_secret_ref = None;
-    read_only = None;
-    volume_attributes = `List [];
-    volume_handle = volume_handle;
-}
 

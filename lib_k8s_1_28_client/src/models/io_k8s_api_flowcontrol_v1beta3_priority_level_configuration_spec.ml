@@ -7,16 +7,10 @@
  *)
 
 type t = {
-    exempt: Io_k8s_api_flowcontrol_v1beta3_exempt_priority_level_configuration.t option [@default None] [@key "exempt"];
-    limited: Io_k8s_api_flowcontrol_v1beta3_limited_priority_level_configuration.t option [@default None] [@key "limited"];
+    exempt: Io_k8s_api_flowcontrol_v1beta3_exempt_priority_level_configuration.t option [@yojson.default None] [@yojson.key "exempt"];
+    limited: Io_k8s_api_flowcontrol_v1beta3_limited_priority_level_configuration.t option [@yojson.default None] [@yojson.key "limited"];
     (* `type` indicates whether this priority level is subject to limitation on request execution.  A value of `\''Exempt\''` means that requests of this priority level are not subject to a limit (and thus are never queued) and do not detract from the capacity made available to other priority levels.  A value of `\''Limited\''` means that (a) requests of this priority level _are_ subject to limits and (b) some of the server's limited capacity is made available exclusively to this priority level. Required. *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PriorityLevelConfigurationSpec specifies the configuration of a priority level. *)
-let create (_type : string) : t = {
-    exempt = None;
-    limited = None;
-    _type = _type;
-}
 

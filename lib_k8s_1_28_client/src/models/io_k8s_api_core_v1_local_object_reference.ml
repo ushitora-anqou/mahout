@@ -8,11 +8,7 @@
 
 type t = {
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
-    name: string option [@default None] [@key "name"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string option [@yojson.default None] [@yojson.key "name"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace. *)
-let create () : t = {
-    name = None;
-}
 

@@ -8,22 +8,14 @@
 
 type t = {
     (* driver is the name of the driver to use for this volume. *)
-    driver: string [@key "driver"];
+    driver: string [@yojson.key "driver"];
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. The default filesystem depends on FlexVolume script. *)
-    fs_type: string option [@default None] [@key "fsType"];
+    fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
     (* options is Optional: this field holds extra command options if any. *)
-    options: Yojson.Safe.t [@default (`List [])] [@key "options"];
+    options: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "options"];
     (* readOnly is Optional: defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None] [@key "readOnly"];
-    secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@default None] [@key "secretRef"];
-} [@@deriving yojson { strict = false }, show ];;
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
+    secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@yojson.default None] [@yojson.key "secretRef"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** FlexVolume represents a generic volume resource that is provisioned/attached using an exec based plugin. *)
-let create (driver : string) : t = {
-    driver = driver;
-    fs_type = None;
-    options = `List [];
-    read_only = None;
-    secret_ref = None;
-}
 

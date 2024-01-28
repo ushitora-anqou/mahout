@@ -8,14 +8,9 @@
 
 type t = {
     (* Data contains the opaque data associated with this ResourceHandle. It is set by the controller component of the resource driver whose name matches the DriverName set in the ResourceClaimStatus this ResourceHandle is embedded in. It is set at allocation time and is intended for processing by the kubelet plugin whose name matches the DriverName set in this ResourceHandle.  The maximum size of this field is 16KiB. This may get increased in the future, but not reduced. *)
-    data: string option [@default None] [@key "data"];
+    data: string option [@yojson.default None] [@yojson.key "data"];
     (* DriverName specifies the name of the resource driver whose kubelet plugin should be invoked to process this ResourceHandle's data once it lands on a node. This may differ from the DriverName set in ResourceClaimStatus this ResourceHandle is embedded in. *)
-    driver_name: string option [@default None] [@key "driverName"];
-} [@@deriving yojson { strict = false }, show ];;
+    driver_name: string option [@yojson.default None] [@yojson.key "driverName"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ResourceHandle holds opaque resource data for processing by a specific kubelet plugin. *)
-let create () : t = {
-    data = None;
-    driver_name = None;
-}
 

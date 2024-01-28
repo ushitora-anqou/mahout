@@ -8,26 +8,17 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_probe_time: string option [@default None] [@key "lastProbeTime"];
+    last_probe_time: string option [@yojson.default None] [@yojson.key "lastProbeTime"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
+    last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
     (* Human-readable message indicating details about last transition. *)
-    message: string option [@default None] [@key "message"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
     (* Unique, one-word, CamelCase reason for the condition's last transition. *)
-    reason: string option [@default None] [@key "reason"];
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
     (* Status is the status of the condition. Can be True, False, Unknown. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* Type is the type of the condition. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodCondition contains details for the current condition of this pod. *)
-let create (status : string) (_type : string) : t = {
-    last_probe_time = None;
-    last_transition_time = None;
-    message = None;
-    reason = None;
-    status = status;
-    _type = _type;
-}
 

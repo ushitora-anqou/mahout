@@ -8,11 +8,7 @@
 
 type t = {
     (* IP is the IP address assigned to the host *)
-    ip: string option [@default None] [@key "ip"];
-} [@@deriving yojson { strict = false }, show ];;
+    ip: string option [@yojson.default None] [@yojson.key "ip"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** HostIP represents a single IP address allocated to the host. *)
-let create () : t = {
-    ip = None;
-}
 

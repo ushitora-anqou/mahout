@@ -8,11 +8,7 @@
 
 type t = {
     (* podFixed represents the fixed resource overhead associated with running a pod. *)
-    pod_fixed: Yojson.Safe.t [@default (`List [])] [@key "podFixed"];
-} [@@deriving yojson { strict = false }, show ];;
+    pod_fixed: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "podFixed"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Overhead structure represents the resource overhead associated with running a pod. *)
-let create () : t = {
-    pod_fixed = `List [];
-}
 

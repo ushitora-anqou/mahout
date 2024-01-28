@@ -8,11 +8,7 @@
 
 type t = {
     (* Items is a list of DownwardAPIVolume file *)
-    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@default []] [@key "items"];
-} [@@deriving yojson { strict = false }, show ];;
+    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@yojson.default []] [@yojson.key "items"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents downward API info for projecting into a projected volume. Note that this is identical to a downwardAPI volume source without the default mode. *)
-let create () : t = {
-    items = [];
-}
 

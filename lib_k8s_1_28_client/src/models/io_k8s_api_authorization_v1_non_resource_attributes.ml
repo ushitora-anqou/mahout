@@ -8,14 +8,9 @@
 
 type t = {
     (* Path is the URL path of the request *)
-    path: string option [@default None] [@key "path"];
+    path: string option [@yojson.default None] [@yojson.key "path"];
     (* Verb is the standard HTTP verb *)
-    verb: string option [@default None] [@key "verb"];
-} [@@deriving yojson { strict = false }, show ];;
+    verb: string option [@yojson.default None] [@yojson.key "verb"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** NonResourceAttributes includes the authorization attributes available for non-resource requests to the Authorizer interface *)
-let create () : t = {
-    path = None;
-    verb = None;
-}
 

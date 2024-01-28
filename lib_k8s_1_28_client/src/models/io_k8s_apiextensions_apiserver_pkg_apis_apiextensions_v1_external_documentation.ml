@@ -7,13 +7,8 @@
  *)
 
 type t = {
-    description: string option [@default None] [@key "description"];
-    url: string option [@default None] [@key "url"];
-} [@@deriving yojson { strict = false }, show ];;
+    description: string option [@yojson.default None] [@yojson.key "description"];
+    url: string option [@yojson.default None] [@yojson.key "url"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ExternalDocumentation allows referencing an external resource for extended documentation. *)
-let create () : t = {
-    description = None;
-    url = None;
-}
 

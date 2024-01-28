@@ -8,17 +8,11 @@
 
 type t = {
     (* readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None] [@key "readOnly"];
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* secretName is the  name of secret that contains Azure Storage Account Name and Key *)
-    secret_name: string [@key "secretName"];
+    secret_name: string [@yojson.key "secretName"];
     (* shareName is the azure share Name *)
-    share_name: string [@key "shareName"];
-} [@@deriving yojson { strict = false }, show ];;
+    share_name: string [@yojson.key "shareName"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** AzureFile represents an Azure File Service mount on the host and bind mount to the pod. *)
-let create (secret_name : string) (share_name : string) : t = {
-    read_only = None;
-    secret_name = secret_name;
-    share_name = share_name;
-}
 

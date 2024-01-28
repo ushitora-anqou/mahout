@@ -8,21 +8,13 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
-    message: string option [@default None] [@key "message"];
-    reason: string option [@default None] [@key "reason"];
+    last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
     (* Status of the condition, one of True, False, Unknown. *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* Type of namespace controller condition. *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** NamespaceCondition contains details about state of namespace. *)
-let create (status : string) (_type : string) : t = {
-    last_transition_time = None;
-    message = None;
-    reason = None;
-    status = status;
-    _type = _type;
-}
 

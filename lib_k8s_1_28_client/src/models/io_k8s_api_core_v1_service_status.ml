@@ -8,13 +8,8 @@
 
 type t = {
     (* Current service state *)
-    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@default []] [@key "conditions"];
-    load_balancer: Io_k8s_api_core_v1_load_balancer_status.t option [@default None] [@key "loadBalancer"];
-} [@@deriving yojson { strict = false }, show ];;
+    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    load_balancer: Io_k8s_api_core_v1_load_balancer_status.t option [@yojson.default None] [@yojson.key "loadBalancer"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ServiceStatus represents the current status of a service. *)
-let create () : t = {
-    conditions = [];
-    load_balancer = None;
-}
 

@@ -8,20 +8,13 @@
 
 type t = {
     (* name is the name of the service. Required *)
-    name: string [@key "name"];
+    name: string [@yojson.key "name"];
     (* namespace is the namespace of the service. Required *)
-    namespace: string [@key "namespace"];
+    namespace: string [@yojson.key "namespace"];
     (* path is an optional URL path at which the webhook will be contacted. *)
-    path: string option [@default None] [@key "path"];
+    path: string option [@yojson.default None] [@yojson.key "path"];
     (* port is an optional service port at which the webhook will be contacted. `port` should be a valid port number (1-65535, inclusive). Defaults to 443 for backward compatibility. *)
-    port: int32 option [@default None] [@key "port"];
-} [@@deriving yojson { strict = false }, show ];;
+    port: int32 option [@yojson.default None] [@yojson.key "port"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ServiceReference holds a reference to Service.legacy.k8s.io *)
-let create (name : string) (namespace : string) : t = {
-    name = name;
-    namespace = namespace;
-    path = None;
-    port = None;
-}
 

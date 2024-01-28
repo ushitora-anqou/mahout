@@ -8,11 +8,7 @@
 
 type t = {
     (* Limits is the list of LimitRangeItem objects that are enforced. *)
-    limits: Io_k8s_api_core_v1_limit_range_item.t list [@default []] [@key "limits"];
-} [@@deriving yojson { strict = false }, show ];;
+    limits: Io_k8s_api_core_v1_limit_range_item.t list [@yojson.default []] [@yojson.key "limits"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** LimitRangeSpec defines a min/max usage limit for resources that match on kind. *)
-let create (limits : Io_k8s_api_core_v1_limit_range_item.t list) : t = {
-    limits = limits;
-}
 

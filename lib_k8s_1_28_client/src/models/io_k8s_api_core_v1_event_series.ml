@@ -8,14 +8,9 @@
 
 type t = {
     (* Number of occurrences in this series up to the last heartbeat time *)
-    count: int32 option [@default None] [@key "count"];
+    count: int32 option [@yojson.default None] [@yojson.key "count"];
     (* MicroTime is version of Time with microsecond level precision. *)
-    last_observed_time: string option [@default None] [@key "lastObservedTime"];
-} [@@deriving yojson { strict = false }, show ];;
+    last_observed_time: string option [@yojson.default None] [@yojson.key "lastObservedTime"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** EventSeries contain information on series of events, i.e. thing that was/is happening continuously for some time. *)
-let create () : t = {
-    count = None;
-    last_observed_time = None;
-}
 

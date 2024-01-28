@@ -8,14 +8,9 @@
 
 type t = {
     (* path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath *)
-    path: string [@key "path"];
+    path: string [@yojson.key "path"];
     (* type for HostPath Volume Defaults to \''\'' More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath *)
-    _type: string option [@default None] [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string option [@yojson.default None] [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents a host path mapped into a pod. Host path volumes do not support ownership management or SELinux relabeling. *)
-let create (path : string) : t = {
-    path = path;
-    _type = None;
-}
 

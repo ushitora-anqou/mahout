@@ -8,11 +8,7 @@
 
 type t = {
     (* Ingress is a list containing ingress points for the load-balancer. Traffic intended for the service should be sent to these ingress points. *)
-    ingress: Io_k8s_api_core_v1_load_balancer_ingress.t list [@default []] [@key "ingress"];
-} [@@deriving yojson { strict = false }, show ];;
+    ingress: Io_k8s_api_core_v1_load_balancer_ingress.t list [@yojson.default []] [@yojson.key "ingress"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** LoadBalancerStatus represents the status of a load-balancer. *)
-let create () : t = {
-    ingress = [];
-}
 

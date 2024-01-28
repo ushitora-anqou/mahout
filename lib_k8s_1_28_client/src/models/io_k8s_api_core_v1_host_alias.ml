@@ -8,14 +8,9 @@
 
 type t = {
     (* Hostnames for the above IP address. *)
-    hostnames: string list [@default []] [@key "hostnames"];
+    hostnames: string list [@yojson.default []] [@yojson.key "hostnames"];
     (* IP address of the host file entry. *)
-    ip: string option [@default None] [@key "ip"];
-} [@@deriving yojson { strict = false }, show ];;
+    ip: string option [@yojson.default None] [@yojson.key "ip"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod's hosts file. *)
-let create () : t = {
-    hostnames = [];
-    ip = None;
-}
 

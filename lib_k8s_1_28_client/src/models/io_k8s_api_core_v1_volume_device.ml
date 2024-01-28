@@ -8,14 +8,9 @@
 
 type t = {
     (* devicePath is the path inside of the container that the device will be mapped to. *)
-    device_path: string [@key "devicePath"];
+    device_path: string [@yojson.key "devicePath"];
     (* name must match the name of a persistentVolumeClaim in the pod *)
-    name: string [@key "name"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string [@yojson.key "name"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** volumeDevice describes a mapping of a raw block device within a container. *)
-let create (device_path : string) (name : string) : t = {
-    device_path = device_path;
-    name = name;
-}
 

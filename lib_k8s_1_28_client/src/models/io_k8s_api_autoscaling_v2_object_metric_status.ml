@@ -7,15 +7,9 @@
  *)
 
 type t = {
-    current: Io_k8s_api_autoscaling_v2_metric_value_status.t [@key "current"];
-    described_object: Io_k8s_api_autoscaling_v2_cross_version_object_reference.t [@key "describedObject"];
-    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@key "metric"];
-} [@@deriving yojson { strict = false }, show ];;
+    current: Io_k8s_api_autoscaling_v2_metric_value_status.t [@yojson.key "current"];
+    described_object: Io_k8s_api_autoscaling_v2_cross_version_object_reference.t [@yojson.key "describedObject"];
+    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@yojson.key "metric"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ObjectMetricStatus indicates the current value of a metric describing a kubernetes object (for example, hits-per-second on an Ingress object). *)
-let create (current : Io_k8s_api_autoscaling_v2_metric_value_status.t) (described_object : Io_k8s_api_autoscaling_v2_cross_version_object_reference.t) (metric : Io_k8s_api_autoscaling_v2_metric_identifier.t) : t = {
-    current = current;
-    described_object = described_object;
-    metric = metric;
-}
 

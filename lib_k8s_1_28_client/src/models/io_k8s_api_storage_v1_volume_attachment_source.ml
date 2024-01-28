@@ -7,14 +7,9 @@
  *)
 
 type t = {
-    inline_volume_spec: Io_k8s_api_core_v1_persistent_volume_spec.t option [@default None] [@key "inlineVolumeSpec"];
+    inline_volume_spec: Io_k8s_api_core_v1_persistent_volume_spec.t option [@yojson.default None] [@yojson.key "inlineVolumeSpec"];
     (* persistentVolumeName represents the name of the persistent volume to attach. *)
-    persistent_volume_name: string option [@default None] [@key "persistentVolumeName"];
-} [@@deriving yojson { strict = false }, show ];;
+    persistent_volume_name: string option [@yojson.default None] [@yojson.key "persistentVolumeName"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** VolumeAttachmentSource represents a volume that should be attached. Right now only PersistenVolumes can be attached via external attacher, in future we may allow also inline volumes in pods. Exactly one member can be set. *)
-let create () : t = {
-    inline_volume_spec = None;
-    persistent_volume_name = None;
-}
 

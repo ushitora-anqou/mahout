@@ -7,14 +7,9 @@
  *)
 
 type t = {
-    rolling_update: Io_k8s_api_apps_v1_rolling_update_stateful_set_strategy.t option [@default None] [@key "rollingUpdate"];
+    rolling_update: Io_k8s_api_apps_v1_rolling_update_stateful_set_strategy.t option [@yojson.default None] [@yojson.key "rollingUpdate"];
     (* Type indicates the type of the StatefulSetUpdateStrategy. Default is RollingUpdate. *)
-    _type: string option [@default None] [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string option [@yojson.default None] [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** StatefulSetUpdateStrategy indicates the strategy that the StatefulSet controller will use to perform updates. It includes any additional parameters necessary to perform the update for the indicated strategy. *)
-let create () : t = {
-    rolling_update = None;
-    _type = None;
-}
 

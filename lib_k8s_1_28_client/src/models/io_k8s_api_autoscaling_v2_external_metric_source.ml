@@ -7,13 +7,8 @@
  *)
 
 type t = {
-    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@key "metric"];
-    target: Io_k8s_api_autoscaling_v2_metric_target.t [@key "target"];
-} [@@deriving yojson { strict = false }, show ];;
+    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@yojson.key "metric"];
+    target: Io_k8s_api_autoscaling_v2_metric_target.t [@yojson.key "target"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ExternalMetricSource indicates how to scale on a metric not associated with any Kubernetes object (for example length of queue in cloud messaging service, or QPS from loadbalancer running outside of cluster). *)
-let create (metric : Io_k8s_api_autoscaling_v2_metric_identifier.t) (target : Io_k8s_api_autoscaling_v2_metric_target.t) : t = {
-    metric = metric;
-    target = target;
-}
 

@@ -8,14 +8,9 @@
 
 type t = {
     (* Name of the resource to which this resource resize policy applies. Supported values: cpu, memory. *)
-    resource_name: string [@key "resourceName"];
+    resource_name: string [@yojson.key "resourceName"];
     (* Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired. *)
-    restart_policy: string [@key "restartPolicy"];
-} [@@deriving yojson { strict = false }, show ];;
+    restart_policy: string [@yojson.key "restartPolicy"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ContainerResizePolicy represents resource resize policy for the container. *)
-let create (resource_name : string) (restart_policy : string) : t = {
-    resource_name = resource_name;
-    restart_policy = restart_policy;
-}
 

@@ -7,13 +7,8 @@
  *)
 
 type t = {
-    non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@default None] [@key "nonResourceAttributes"];
-    resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@default None] [@key "resourceAttributes"];
-} [@@deriving yojson { strict = false }, show ];;
+    non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@yojson.default None] [@yojson.key "nonResourceAttributes"];
+    resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@yojson.default None] [@yojson.key "resourceAttributes"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** SelfSubjectAccessReviewSpec is a description of the access request.  Exactly one of ResourceAuthorizationAttributes and NonResourceAuthorizationAttributes must be set *)
-let create () : t = {
-    non_resource_attributes = None;
-    resource_attributes = None;
-}
 

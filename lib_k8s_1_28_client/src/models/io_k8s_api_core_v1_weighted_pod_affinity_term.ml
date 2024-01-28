@@ -7,14 +7,9 @@
  *)
 
 type t = {
-    pod_affinity_term: Io_k8s_api_core_v1_pod_affinity_term.t [@key "podAffinityTerm"];
+    pod_affinity_term: Io_k8s_api_core_v1_pod_affinity_term.t [@yojson.key "podAffinityTerm"];
     (* weight associated with matching the corresponding podAffinityTerm, in the range 1-100. *)
-    weight: int32 [@key "weight"];
-} [@@deriving yojson { strict = false }, show ];;
+    weight: int32 [@yojson.key "weight"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s) *)
-let create (pod_affinity_term : Io_k8s_api_core_v1_pod_affinity_term.t) (weight : int32) : t = {
-    pod_affinity_term = pod_affinity_term;
-    weight = weight;
-}
 

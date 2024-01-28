@@ -8,28 +8,18 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* Data contains the secret data. Each key must consist of alphanumeric characters, '-', '_' or '.'. The serialized form of the secret data is a base64 encoded string, representing the arbitrary (possibly non-string) data value here. Described in https://tools.ietf.org/html/rfc4648#section-4 *)
-    data: Yojson.Safe.t [@default (`List [])] [@key "data"];
+    data: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "data"];
     (* Immutable, if set to true, ensures that data stored in the Secret cannot be updated (only object metadata can be modified). If not set to true, the field can be modified at any time. Defaulted to nil. *)
-    immutable: bool option [@default None] [@key "immutable"];
+    immutable: bool option [@yojson.default None] [@yojson.key "immutable"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     (* stringData allows specifying non-binary secret data in string form. It is provided as a write-only input field for convenience. All keys and values are merged into the data field on write, overwriting any existing values. The stringData field is never output when reading from the API. *)
-    string_data: Yojson.Safe.t [@default (`List [])] [@key "stringData"];
+    string_data: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "stringData"];
     (* Used to facilitate programmatic handling of secret data. More info: https://kubernetes.io/docs/concepts/configuration/secret/#secret-types *)
-    _type: string option [@default None] [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string option [@yojson.default None] [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Secret holds secret data of a certain type. The total bytes of the values in the Data field must be less than MaxSecretSize bytes. *)
-let create () : t = {
-    api_version = None;
-    data = `List [];
-    immutable = None;
-    kind = None;
-    metadata = None;
-    string_data = `List [];
-    _type = None;
-}
 

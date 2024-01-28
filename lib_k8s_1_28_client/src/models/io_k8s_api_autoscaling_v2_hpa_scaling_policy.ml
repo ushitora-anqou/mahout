@@ -8,17 +8,11 @@
 
 type t = {
     (* periodSeconds specifies the window of time for which the policy should hold true. PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min). *)
-    period_seconds: int32 [@key "periodSeconds"];
+    period_seconds: int32 [@yojson.key "periodSeconds"];
     (* type is used to specify the scaling policy. *)
-    _type: string [@key "type"];
+    _type: string [@yojson.key "type"];
     (* value contains the amount of change which is permitted by the policy. It must be greater than zero *)
-    value: int32 [@key "value"];
-} [@@deriving yojson { strict = false }, show ];;
+    value: int32 [@yojson.key "value"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** HPAScalingPolicy is a single policy which must hold true for a specified past interval. *)
-let create (period_seconds : int32) (_type : string) (value : int32) : t = {
-    period_seconds = period_seconds;
-    _type = _type;
-    value = value;
-}
 

@@ -8,17 +8,11 @@
 
 type t = {
     (* APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. *)
-    api_group: string option [@default None] [@key "apiGroup"];
+    api_group: string option [@yojson.default None] [@yojson.key "apiGroup"];
     (* Kind is the type of resource being referenced. This is the same value as in the parameter object's metadata, for example \''ConfigMap\''. *)
-    kind: string [@key "kind"];
+    kind: string [@yojson.key "kind"];
     (* Name is the name of resource being referenced. *)
-    name: string [@key "name"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string [@yojson.key "name"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ResourceClaimParametersReference contains enough information to let you locate the parameters for a ResourceClaim. The object must be in the same namespace as the ResourceClaim. *)
-let create (kind : string) (name : string) : t = {
-    api_group = None;
-    kind = kind;
-    name = name;
-}
 

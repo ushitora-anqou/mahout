@@ -7,22 +7,14 @@
  *)
 
 type t = {
-    aggregation_rule: Io_k8s_api_rbac_v1_aggregation_rule.t option [@default None] [@key "aggregationRule"];
+    aggregation_rule: Io_k8s_api_rbac_v1_aggregation_rule.t option [@yojson.default None] [@yojson.key "aggregationRule"];
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     (* Rules holds all the PolicyRules for this ClusterRole *)
-    rules: Io_k8s_api_rbac_v1_policy_rule.t list [@default []] [@key "rules"];
-} [@@deriving yojson { strict = false }, show ];;
+    rules: Io_k8s_api_rbac_v1_policy_rule.t list [@yojson.default []] [@yojson.key "rules"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ClusterRole is a cluster level, logical grouping of PolicyRules that can be referenced as a unit by a RoleBinding or ClusterRoleBinding. *)
-let create () : t = {
-    aggregation_rule = None;
-    api_version = None;
-    kind = None;
-    metadata = None;
-    rules = [];
-}
 

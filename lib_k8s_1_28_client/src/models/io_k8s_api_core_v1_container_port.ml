@@ -8,23 +8,15 @@
 
 type t = {
     (* Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536. *)
-    container_port: int32 [@key "containerPort"];
+    container_port: int32 [@yojson.key "containerPort"];
     (* What host IP to bind the external port to. *)
-    host_ip: string option [@default None] [@key "hostIP"];
+    host_ip: string option [@yojson.default None] [@yojson.key "hostIP"];
     (* Number of port to expose on the host. If specified, this must be a valid port number, 0 < x < 65536. If HostNetwork is specified, this must match ContainerPort. Most containers do not need this. *)
-    host_port: int32 option [@default None] [@key "hostPort"];
+    host_port: int32 option [@yojson.default None] [@yojson.key "hostPort"];
     (* If specified, this must be an IANA_SVC_NAME and unique within the pod. Each named port in a pod must have a unique name. Name for the port that can be referred to by services. *)
-    name: string option [@default None] [@key "name"];
+    name: string option [@yojson.default None] [@yojson.key "name"];
     (* Protocol for port. Must be UDP, TCP, or SCTP. Defaults to \''TCP\''. *)
-    protocol: string option [@default None] [@key "protocol"];
-} [@@deriving yojson { strict = false }, show ];;
+    protocol: string option [@yojson.default None] [@yojson.key "protocol"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ContainerPort represents a network port in a single container. *)
-let create (container_port : int32) : t = {
-    container_port = container_port;
-    host_ip = None;
-    host_port = None;
-    name = None;
-    protocol = None;
-}
 

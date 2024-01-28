@@ -8,54 +8,34 @@
 
 type t = {
     (* What action was taken/failed regarding to the Regarding object. *)
-    action: string option [@default None] [@key "action"];
+    action: string option [@yojson.default None] [@yojson.key "action"];
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* The number of times this event has occurred. *)
-    count: int32 option [@default None] [@key "count"];
+    count: int32 option [@yojson.default None] [@yojson.key "count"];
     (* MicroTime is version of Time with microsecond level precision. *)
-    event_time: string option [@default None] [@key "eventTime"];
+    event_time: string option [@yojson.default None] [@yojson.key "eventTime"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    first_timestamp: string option [@default None] [@key "firstTimestamp"];
-    involved_object: Io_k8s_api_core_v1_object_reference.t [@key "involvedObject"];
+    first_timestamp: string option [@yojson.default None] [@yojson.key "firstTimestamp"];
+    involved_object: Io_k8s_api_core_v1_object_reference.t [@yojson.key "involvedObject"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_timestamp: string option [@default None] [@key "lastTimestamp"];
+    last_timestamp: string option [@yojson.default None] [@yojson.key "lastTimestamp"];
     (* A human-readable description of the status of this operation. *)
-    message: string option [@default None] [@key "message"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t [@key "metadata"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t [@yojson.key "metadata"];
     (* This should be a short, machine understandable string that gives the reason for the transition into the object's current status. *)
-    reason: string option [@default None] [@key "reason"];
-    related: Io_k8s_api_core_v1_object_reference.t option [@default None] [@key "related"];
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
+    related: Io_k8s_api_core_v1_object_reference.t option [@yojson.default None] [@yojson.key "related"];
     (* Name of the controller that emitted this Event, e.g. `kubernetes.io/kubelet`. *)
-    reporting_component: string option [@default None] [@key "reportingComponent"];
+    reporting_component: string option [@yojson.default None] [@yojson.key "reportingComponent"];
     (* ID of the controller instance, e.g. `kubelet-xyzf`. *)
-    reporting_instance: string option [@default None] [@key "reportingInstance"];
-    series: Io_k8s_api_core_v1_event_series.t option [@default None] [@key "series"];
-    source: Io_k8s_api_core_v1_event_source.t option [@default None] [@key "source"];
+    reporting_instance: string option [@yojson.default None] [@yojson.key "reportingInstance"];
+    series: Io_k8s_api_core_v1_event_series.t option [@yojson.default None] [@yojson.key "series"];
+    source: Io_k8s_api_core_v1_event_source.t option [@yojson.default None] [@yojson.key "source"];
     (* Type of this event (Normal, Warning), new types could be added in the future *)
-    _type: string option [@default None] [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string option [@yojson.default None] [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Event is a report of an event somewhere in the cluster.  Events have a limited retention time and triggers and messages may evolve with time.  Event consumers should not rely on the timing of an event with a given Reason reflecting a consistent underlying trigger, or the continued existence of events with that Reason.  Events should be treated as informative, best-effort, supplemental data. *)
-let create (involved_object : Io_k8s_api_core_v1_object_reference.t) (metadata : Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t) : t = {
-    action = None;
-    api_version = None;
-    count = None;
-    event_time = None;
-    first_timestamp = None;
-    involved_object = involved_object;
-    kind = None;
-    last_timestamp = None;
-    message = None;
-    metadata = metadata;
-    reason = None;
-    related = None;
-    reporting_component = None;
-    reporting_instance = None;
-    series = None;
-    source = None;
-    _type = None;
-}
 

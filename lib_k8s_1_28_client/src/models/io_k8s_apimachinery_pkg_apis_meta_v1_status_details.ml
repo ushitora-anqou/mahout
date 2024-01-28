@@ -8,26 +8,17 @@
 
 type t = {
     (* The Causes array includes more details associated with the StatusReason failure. Not all StatusReasons may provide detailed causes. *)
-    causes: Io_k8s_apimachinery_pkg_apis_meta_v1_status_cause.t list [@default []] [@key "causes"];
+    causes: Io_k8s_apimachinery_pkg_apis_meta_v1_status_cause.t list [@yojson.default []] [@yojson.key "causes"];
     (* The group attribute of the resource associated with the status StatusReason. *)
-    group: string option [@default None] [@key "group"];
+    group: string option [@yojson.default None] [@yojson.key "group"];
     (* The kind attribute of the resource associated with the status StatusReason. On some operations may differ from the requested resource Kind. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
     (* The name attribute of the resource associated with the status StatusReason (when there is a single name which can be described). *)
-    name: string option [@default None] [@key "name"];
+    name: string option [@yojson.default None] [@yojson.key "name"];
     (* If specified, the time in seconds before the operation should be retried. Some errors may indicate the client must take an alternate action - for those errors this field may indicate how long to wait before taking the alternate action. *)
-    retry_after_seconds: int32 option [@default None] [@key "retryAfterSeconds"];
+    retry_after_seconds: int32 option [@yojson.default None] [@yojson.key "retryAfterSeconds"];
     (* UID of the resource. (when there is a single resource which can be described). More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids *)
-    uid: string option [@default None] [@key "uid"];
-} [@@deriving yojson { strict = false }, show ];;
+    uid: string option [@yojson.default None] [@yojson.key "uid"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** StatusDetails is a set of additional properties that MAY be set by the server to provide additional information about a response. The Reason field of a Status object defines what attributes will be set. Clients must ignore fields that do not match the defined type of each attribute, and should assume that any attribute may be empty, invalid, or under defined. *)
-let create () : t = {
-    causes = [];
-    group = None;
-    kind = None;
-    name = None;
-    retry_after_seconds = None;
-    uid = None;
-}
 

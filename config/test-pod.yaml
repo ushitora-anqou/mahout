@@ -105,3 +105,6 @@ metadata:
   name: mastodon0
 spec:
   image: "ghcr.io/mastodon/mastodon:4.2.1"
+  envFrom:
+    - secretRef:
+        name: secret-env

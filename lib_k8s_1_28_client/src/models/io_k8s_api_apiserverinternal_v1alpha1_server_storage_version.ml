@@ -8,20 +8,13 @@
 
 type t = {
     (* The ID of the reporting API server. *)
-    api_server_id: string option [@default None] [@key "apiServerID"];
+    api_server_id: string option [@yojson.default None] [@yojson.key "apiServerID"];
     (* The API server can decode objects encoded in these versions. The encodingVersion must be included in the decodableVersions. *)
-    decodable_versions: string list [@default []] [@key "decodableVersions"];
+    decodable_versions: string list [@yojson.default []] [@yojson.key "decodableVersions"];
     (* The API server encodes the object to this version when persisting it in the backend (e.g., etcd). *)
-    encoding_version: string option [@default None] [@key "encodingVersion"];
+    encoding_version: string option [@yojson.default None] [@yojson.key "encodingVersion"];
     (* The API server can serve these versions. DecodableVersions must include all ServedVersions. *)
-    served_versions: string list [@default []] [@key "servedVersions"];
-} [@@deriving yojson { strict = false }, show ];;
+    served_versions: string list [@yojson.default []] [@yojson.key "servedVersions"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** An API server instance reports the version it can decode and the version it encodes objects to when persisting objects in the backend. *)
-let create () : t = {
-    api_server_id = None;
-    decodable_versions = [];
-    encoding_version = None;
-    served_versions = [];
-}
 

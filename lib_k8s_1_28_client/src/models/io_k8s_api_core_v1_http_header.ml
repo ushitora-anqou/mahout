@@ -8,14 +8,9 @@
 
 type t = {
     (* The header field name. This will be canonicalized upon output, so case-variant names will be understood as the same header. *)
-    name: string [@key "name"];
+    name: string [@yojson.key "name"];
     (* The header field value *)
-    value: string [@key "value"];
-} [@@deriving yojson { strict = false }, show ];;
+    value: string [@yojson.key "value"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** HTTPHeader describes a custom header to be used in HTTP probes *)
-let create (name : string) (value : string) : t = {
-    name = name;
-    value = value;
-}
 

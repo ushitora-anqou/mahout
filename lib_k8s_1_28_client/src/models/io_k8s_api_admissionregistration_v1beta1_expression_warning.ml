@@ -8,14 +8,9 @@
 
 type t = {
     (* The path to the field that refers the expression. For example, the reference to the expression of the first item of validations is \''spec.validations[0].expression\'' *)
-    field_ref: string [@key "fieldRef"];
+    field_ref: string [@yojson.key "fieldRef"];
     (* The content of type checking information in a human-readable form. Each line of the warning contains the type that the expression is checked against, followed by the type check error from the compiler. *)
-    warning: string [@key "warning"];
-} [@@deriving yojson { strict = false }, show ];;
+    warning: string [@yojson.key "warning"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ExpressionWarning is a warning information that targets a specific expression. *)
-let create (field_ref : string) (warning : string) : t = {
-    field_ref = field_ref;
-    warning = warning;
-}
 

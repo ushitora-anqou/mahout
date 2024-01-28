@@ -8,17 +8,11 @@
 
 type t = {
     (* The key of the secret to select from.  Must be a valid secret key. *)
-    key: string [@key "key"];
+    key: string [@yojson.key "key"];
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
-    name: string option [@default None] [@key "name"];
+    name: string option [@yojson.default None] [@yojson.key "name"];
     (* Specify whether the Secret or its key must be defined *)
-    optional: bool option [@default None] [@key "optional"];
-} [@@deriving yojson { strict = false }, show ];;
+    optional: bool option [@yojson.default None] [@yojson.key "optional"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** SecretKeySelector selects a key of a Secret. *)
-let create (key : string) : t = {
-    key = key;
-    name = None;
-    optional = None;
-}
 

@@ -7,11 +7,7 @@
  *)
 
 type t = {
-    open_apiv3_schema: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_json_schema_props.t option [@default None] [@key "openAPIV3Schema"];
-} [@@deriving yojson { strict = false }, show ];;
+    open_apiv3_schema: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_json_schema_props.t option [@yojson.default None] [@yojson.key "openAPIV3Schema"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** CustomResourceValidation is a list of validation methods for CustomResources. *)
-let create () : t = {
-    open_apiv3_schema = None;
-}
 

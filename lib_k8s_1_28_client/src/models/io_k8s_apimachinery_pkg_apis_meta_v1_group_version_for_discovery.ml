@@ -8,14 +8,9 @@
 
 type t = {
     (* groupVersion specifies the API group and version in the form \''group/version\'' *)
-    group_version: string [@key "groupVersion"];
+    group_version: string [@yojson.key "groupVersion"];
     (* version specifies the version in the form of \''version\''. This is to save the clients the trouble of splitting the GroupVersion. *)
-    version: string [@key "version"];
-} [@@deriving yojson { strict = false }, show ];;
+    version: string [@yojson.key "version"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** GroupVersion contains the \''group/version\'' and \''version\'' string of a version. It is made a struct to keep extensibility. *)
-let create (group_version : string) (version : string) : t = {
-    group_version = group_version;
-    version = version;
-}
 

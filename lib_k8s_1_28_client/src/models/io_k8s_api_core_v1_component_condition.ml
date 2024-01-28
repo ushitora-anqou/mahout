@@ -8,20 +8,13 @@
 
 type t = {
     (* Condition error code for a component. For example, a health check error code. *)
-    error: string option [@default None] [@key "error"];
+    error: string option [@yojson.default None] [@yojson.key "error"];
     (* Message about the condition for a component. For example, information about a health check. *)
-    message: string option [@default None] [@key "message"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
     (* Status of the condition for a component. Valid values for \''Healthy\'': \''True\'', \''False\'', or \''Unknown\''. *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* Type of condition for a component. Valid value: \''Healthy\'' *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Information about the condition of a component. *)
-let create (status : string) (_type : string) : t = {
-    error = None;
-    message = None;
-    status = status;
-    _type = _type;
-}
 

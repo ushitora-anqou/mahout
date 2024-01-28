@@ -8,11 +8,7 @@
 
 type t = {
     (* forZones indicates the zone(s) this endpoint should be consumed by to enable topology aware routing. *)
-    for_zones: Io_k8s_api_discovery_v1_for_zone.t list [@default []] [@key "forZones"];
-} [@@deriving yojson { strict = false }, show ];;
+    for_zones: Io_k8s_api_discovery_v1_for_zone.t list [@yojson.default []] [@yojson.key "forZones"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** EndpointHints provides hints describing how an endpoint should be consumed. *)
-let create () : t = {
-    for_zones = [];
-}
 

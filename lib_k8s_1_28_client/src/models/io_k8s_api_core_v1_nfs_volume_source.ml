@@ -8,17 +8,11 @@
 
 type t = {
     (* path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs *)
-    path: string [@key "path"];
+    path: string [@yojson.key "path"];
     (* readOnly here will force the NFS export to be mounted with read-only permissions. Defaults to false. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs *)
-    read_only: bool option [@default None] [@key "readOnly"];
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs *)
-    server: string [@key "server"];
-} [@@deriving yojson { strict = false }, show ];;
+    server: string [@yojson.key "server"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents an NFS mount that lasts the lifetime of a pod. NFS volumes do not support ownership management or SELinux relabeling. *)
-let create (path : string) (server : string) : t = {
-    path = path;
-    read_only = None;
-    server = server;
-}
 

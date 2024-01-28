@@ -8,38 +8,25 @@
 
 type t = {
     (* Total number of available pods (ready for at least minReadySeconds) targeted by this statefulset. *)
-    available_replicas: int32 option [@default None] [@key "availableReplicas"];
+    available_replicas: int32 option [@yojson.default None] [@yojson.key "availableReplicas"];
     (* collisionCount is the count of hash collisions for the StatefulSet. The StatefulSet controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ControllerRevision. *)
-    collision_count: int32 option [@default None] [@key "collisionCount"];
+    collision_count: int32 option [@yojson.default None] [@yojson.key "collisionCount"];
     (* Represents the latest available observations of a statefulset's current state. *)
-    conditions: Io_k8s_api_apps_v1_stateful_set_condition.t list [@default []] [@key "conditions"];
+    conditions: Io_k8s_api_apps_v1_stateful_set_condition.t list [@yojson.default []] [@yojson.key "conditions"];
     (* currentReplicas is the number of Pods created by the StatefulSet controller from the StatefulSet version indicated by currentRevision. *)
-    current_replicas: int32 option [@default None] [@key "currentReplicas"];
+    current_replicas: int32 option [@yojson.default None] [@yojson.key "currentReplicas"];
     (* currentRevision, if not empty, indicates the version of the StatefulSet used to generate Pods in the sequence [0,currentReplicas). *)
-    current_revision: string option [@default None] [@key "currentRevision"];
+    current_revision: string option [@yojson.default None] [@yojson.key "currentRevision"];
     (* observedGeneration is the most recent generation observed for this StatefulSet. It corresponds to the StatefulSet's generation, which is updated on mutation by the API Server. *)
-    observed_generation: int64 option [@default None] [@key "observedGeneration"];
+    observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
     (* readyReplicas is the number of pods created for this StatefulSet with a Ready Condition. *)
-    ready_replicas: int32 option [@default None] [@key "readyReplicas"];
+    ready_replicas: int32 option [@yojson.default None] [@yojson.key "readyReplicas"];
     (* replicas is the number of Pods created by the StatefulSet controller. *)
-    replicas: int32 [@key "replicas"];
+    replicas: int32 [@yojson.key "replicas"];
     (* updateRevision, if not empty, indicates the version of the StatefulSet used to generate Pods in the sequence [replicas-updatedReplicas,replicas) *)
-    update_revision: string option [@default None] [@key "updateRevision"];
+    update_revision: string option [@yojson.default None] [@yojson.key "updateRevision"];
     (* updatedReplicas is the number of Pods created by the StatefulSet controller from the StatefulSet version indicated by updateRevision. *)
-    updated_replicas: int32 option [@default None] [@key "updatedReplicas"];
-} [@@deriving yojson { strict = false }, show ];;
+    updated_replicas: int32 option [@yojson.default None] [@yojson.key "updatedReplicas"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** StatefulSetStatus represents the current state of a StatefulSet. *)
-let create (replicas : int32) : t = {
-    available_replicas = None;
-    collision_count = None;
-    conditions = [];
-    current_replicas = None;
-    current_revision = None;
-    observed_generation = None;
-    ready_replicas = None;
-    replicas = replicas;
-    update_revision = None;
-    updated_replicas = None;
-}
 

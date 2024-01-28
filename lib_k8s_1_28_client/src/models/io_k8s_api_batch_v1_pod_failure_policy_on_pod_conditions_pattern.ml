@@ -8,14 +8,9 @@
 
 type t = {
     (* Specifies the required Pod condition status. To match a pod condition it is required that the specified status equals the pod condition status. Defaults to True. *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* Specifies the required Pod condition type. To match a pod condition it is required that specified type equals the pod condition type. *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodFailurePolicyOnPodConditionsPattern describes a pattern for matching an actual pod condition type. *)
-let create (status : string) (_type : string) : t = {
-    status = status;
-    _type = _type;
-}
 

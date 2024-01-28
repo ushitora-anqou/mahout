@@ -7,13 +7,9 @@
 
 type t = {
     (* Port number of the gRPC service. Number must be in the range 1 to 65535. *)
-    port: int32 [@key "port"];
+    port: int32 [@yojson.key "port"];
     (* Service is the name of the service to place in the gRPC HealthCheckRequest (see https://github.com/grpc/grpc/blob/master/doc/health-checking.md).  If this is not specified, the default behavior is defined by gRPC. *)
-    service: string option [@default None] [@key "service"];
-} [@@deriving yojson { strict = false }, show ];;
+    service: string option [@yojson.default None] [@yojson.key "service"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-let create (port : int32) : t = {
-    port = port;
-    service = None;
-}
 

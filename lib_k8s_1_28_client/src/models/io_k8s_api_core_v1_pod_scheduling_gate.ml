@@ -8,11 +8,7 @@
 
 type t = {
     (* Name of the scheduling gate. Each scheduling gate must have a unique name field. *)
-    name: string [@key "name"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string [@yojson.key "name"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodSchedulingGate is associated to a Pod to guard its scheduling. *)
-let create (name : string) : t = {
-    name = name;
-}
 

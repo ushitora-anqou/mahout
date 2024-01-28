@@ -7,14 +7,9 @@
  *)
 
 type t = {
-    queuing: Io_k8s_api_flowcontrol_v1beta3_queuing_configuration.t option [@default None] [@key "queuing"];
+    queuing: Io_k8s_api_flowcontrol_v1beta3_queuing_configuration.t option [@yojson.default None] [@yojson.key "queuing"];
     (* `type` is \''Queue\'' or \''Reject\''. \''Queue\'' means that requests that can not be executed upon arrival are held in a queue until they can be executed or a queuing limit is reached. \''Reject\'' means that requests that can not be executed upon arrival are rejected. Required. *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** LimitResponse defines how to handle requests that can not be executed right now. *)
-let create (_type : string) : t = {
-    queuing = None;
-    _type = _type;
-}
 

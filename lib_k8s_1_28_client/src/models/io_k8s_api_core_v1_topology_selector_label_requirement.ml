@@ -8,14 +8,9 @@
 
 type t = {
     (* The label key that the selector applies to. *)
-    key: string [@key "key"];
+    key: string [@yojson.key "key"];
     (* An array of string values. One value must match the label to be selected. Each entry in Values is ORed. *)
-    values: string list [@default []] [@key "values"];
-} [@@deriving yojson { strict = false }, show ];;
+    values: string list [@yojson.default []] [@yojson.key "values"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** A topology selector requirement is a selector that matches given label. This is an alpha feature and may change in the future. *)
-let create (key : string) (values : string list) : t = {
-    key = key;
-    values = values;
-}
 

@@ -8,13 +8,8 @@
 
 type t = {
     (* Required. *)
-    name: string option [@default None] [@key "name"];
-    value: string option [@default None] [@key "value"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string option [@yojson.default None] [@yojson.key "name"];
+    value: string option [@yojson.default None] [@yojson.key "value"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodDNSConfigOption defines DNS resolver options of a pod. *)
-let create () : t = {
-    name = None;
-    value = None;
-}
 

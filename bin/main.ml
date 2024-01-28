@@ -12,7 +12,22 @@ let https ~authenticator =
     in
     Tls_eio.client_of_flow ?host tls_config raw
 
-module K = K8s_1_28_client
+module K = struct
+  include K8s_1_28_client
+  module Deployment = Io_k8s_api_apps_v1_deployment
+  module Object_meta = Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta
+  module Label_selector = Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector
+  module Pod_template_spec = Io_k8s_api_core_v1_pod_template_spec
+  module Container = Io_k8s_api_core_v1_container
+  module Container_port = Io_k8s_api_core_v1_container_port
+  module Volume_mount = Io_k8s_api_core_v1_volume_mount
+  module Pod_spec = Io_k8s_api_core_v1_pod_spec
+  module Volume = Io_k8s_api_core_v1_volume
+  module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
+  module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
+  module Key_to_path = Io_k8s_api_core_v1_key_to_path
+  module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
+end
 
 module Net_anqou_mahout = struct
   open K
@@ -20,44 +35,49 @@ module Net_anqou_mahout = struct
   module V1alpha1 = struct
     module Mastodon = struct
       module Web = struct
-        type t = { replicas : int [@key "replicas"] }
+        type t = { replicas : int [@yojson.key "replicas"] }
         [@@deriving yojson { strict = false }, show]
       end
 
       module Sidekiq = struct
-        type t = { replicas : int [@key "replicas"] }
+        type t = { replicas : int [@yojson.key "replicas"] }
         [@@deriving yojson { strict = false }, show]
       end
 
       module Streaming = struct
-        type t = { replicas : int [@key "replicas"] }
+        type t = { replicas : int [@yojson.key "replicas"] }
         [@@deriving yojson { strict = false }, show]
       end
 
       module Spec = struct
         type t = {
-          image : string; [@key "image"]
+          image : string; [@yojson.key "image"]
           env_from : Io_k8s_api_core_v1_env_from_source.t list;
-              [@default []] [@key "envFrom"]
-          web : Web.t option; [@default None] [@key "web"]
-          sidekiq : Sidekiq.t option; [@default None] [@key "sidekiq"]
-          streaming : Streaming.t option; [@default None] [@key "streaming"]
+              [@yojson.default []] [@yojson.key "envFrom"]
+          web : Web.t option; [@yojson.default None] [@yojson.key "web"]
+          sidekiq : Sidekiq.t option;
+              [@yojson.default None] [@yojson.key "sidekiq"]
+          streaming : Streaming.t option;
+              [@yojson.default None] [@yojson.key "streaming"]
         }
         [@@deriving yojson { strict = false }, show]
       end
 
       module Status = struct
-        type t = { message : string option [@default None] [@key "message"] }
+        type t = {
+          message : string option; [@yojson.default None] [@yojson.key "message"]
+        }
         [@@deriving yojson { strict = false }, show]
       end
 
       type t = {
-        api_version : string option; [@default None] [@key "apiVersion"]
-        kind : string option; [@default None] [@key "kind"]
+        api_version : string option;
+            [@yojson.default None] [@yojson.key "apiVersion"]
+        kind : string option; [@yojson.default None] [@yojson.key "kind"]
         metadata : Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option;
-            [@default None] [@key "metadata"]
-        spec : Spec.t option; [@default None] [@key "spec"]
-        status : Status.t option; [@default None] [@key "status"]
+            [@yojson.default None] [@yojson.key "metadata"]
+        spec : Spec.t option; [@yojson.default None] [@yojson.key "spec"]
+        status : Status.t option; [@yojson.default None] [@yojson.key "status"]
       }
       [@@deriving yojson { strict = false }, show]
     end
@@ -109,6 +129,101 @@ module Mahout_v1alpha1_api = struct
       resp body
 end
 
+(*
+let reconcile_mastodon ~sw client
+    (req : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) =
+  Logs.info (fun m -> m "%s %s" req._type (Yojson.Safe.to_string req._object));
+
+  let nginx_image = "nginx:1.25.3" in
+  let mastodon =
+    Net_anqou_mahout.V1alpha1.Mastodon.of_yojson req._object |> Result.get_ok
+  in
+  let name = Option.get (Option.get mastodon.metadata).name in
+  let namespace = Option.get (Option.get mastodon.metadata).namespace in
+
+  let body =
+    let selector_labels =
+      `Assoc
+        [
+          ("app.kubernetes.io/name", `String "nginx");
+          ("app.kubernetes.io/component", `String "gateway");
+          ("app.kubernetes.io/part-of", `String "mastodon");
+        ]
+    in
+    K.Deployment.make ~api_version:"v1" ~kind:"Deployment"
+      ~metadata:(K.Object_meta.make ~name:(name ^ "-nginx") ~namespace ())
+      ~spec:
+        (let selector =
+           K.Label_selector.make ~match_labels:selector_labels ()
+         in
+         let template =
+           K.Pod_template_spec.make
+             ~metadata:(K.Object_meta.make ~labels:selector_labels ())
+             ~spec:
+               (let containers =
+                  K.Container.
+                    [
+                      make ~name:"gateway" ~image:nginx_image
+                        ~ports:K.Container_port.[ create 80l ]
+                        ~volume_mounts:
+                          K.Volume_mount.
+                            [
+                              {
+                                (create "/mnt/public" "mnt-public") with
+                                read_only = Some true;
+                              };
+                              {
+                                (create "/etc/nginx/conf.d" "nginx-conf") with
+                                read_only = Some true;
+                              };
+                            ]
+                        ();
+                    ]
+                in
+                K.Pod_spec.
+                  {
+                    (create containers) with
+                    init_containers = [];
+                    volumes =
+                      K.Volume.
+                        [
+                          {
+                            (create "mnt-public") with
+                            empty_dir =
+                              Some K.Empty_dir_volume_source.(create ());
+                          };
+                          {
+                            (create "nginx-conf") with
+                            config_map =
+                              Some
+                                K.Config_map_volume_source.
+                                  {
+                                    (create ()) with
+                                    name = Some "gateway-nginx-conf";
+                                    items =
+                                      K.Key_to_path.
+                                        [
+                                          create "mastodon0-nginx.conf"
+                                            "mastodon0.conf";
+                                        ];
+                                  };
+                          };
+                        ];
+                  })
+             ()
+         in
+         K.Deployment_spec.
+           { (create selector template) with replicas = Some 1l })
+      ()
+  in
+
+  let _ =
+    K.Apps_v1_api.create_apps_v1_namespaced_deployment ~sw client ~namespace
+      ~body ()
+  in
+  ()
+  *)
+
 let controller () =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
@@ -135,7 +250,7 @@ let controller () =
   *)
   Mahout_v1alpha1_api.watch_mahout_v1alpha1_namespaced_mastodon ~sw client
     ~namespace:"default" ~watch:true ()
-  |> K.Json_response_scanner.iter
+  |> K.Json_response_scanner.iter (*(reconcile_mastodon ~sw client)*)
        (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
          Logs.info (fun m ->
              m "%s %s" result._type (Yojson.Safe.to_string result._object));

@@ -8,14 +8,9 @@
 
 type t = {
     (* APIVersion is the API group version the resources belong to. In format of \''group/version\''. Required. *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* Kind is the API kind the resources belong to. Required. *)
-    kind: string option [@default None] [@key "kind"];
-} [@@deriving yojson { strict = false }, show ];;
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ParamKind is a tuple of Group Kind and Version. *)
-let create () : t = {
-    api_version = None;
-    kind = None;
-}
 

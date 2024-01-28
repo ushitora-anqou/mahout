@@ -7,22 +7,13 @@
  *)
 
 type t = {
-    container_resource: Io_k8s_api_autoscaling_v2_container_resource_metric_source.t option [@default None] [@key "containerResource"];
-    _external: Io_k8s_api_autoscaling_v2_external_metric_source.t option [@default None] [@key "external"];
-    _object: Io_k8s_api_autoscaling_v2_object_metric_source.t option [@default None] [@key "object"];
-    pods: Io_k8s_api_autoscaling_v2_pods_metric_source.t option [@default None] [@key "pods"];
-    resource: Io_k8s_api_autoscaling_v2_resource_metric_source.t option [@default None] [@key "resource"];
+    container_resource: Io_k8s_api_autoscaling_v2_container_resource_metric_source.t option [@yojson.default None] [@yojson.key "containerResource"];
+    _external: Io_k8s_api_autoscaling_v2_external_metric_source.t option [@yojson.default None] [@yojson.key "external"];
+    _object: Io_k8s_api_autoscaling_v2_object_metric_source.t option [@yojson.default None] [@yojson.key "object"];
+    pods: Io_k8s_api_autoscaling_v2_pods_metric_source.t option [@yojson.default None] [@yojson.key "pods"];
+    resource: Io_k8s_api_autoscaling_v2_resource_metric_source.t option [@yojson.default None] [@yojson.key "resource"];
     (* type is the type of metric source.  It should be one of \''ContainerResource\'', \''External\'', \''Object\'', \''Pods\'' or \''Resource\'', each mapping to a matching field in the object. Note: \''ContainerResource\'' type is available on when the feature-gate HPAContainerMetrics is enabled *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** MetricSpec specifies how to scale based on a single metric (only `type` and one other matching field should be set at once). *)
-let create (_type : string) : t = {
-    container_resource = None;
-    _external = None;
-    _object = None;
-    pods = None;
-    resource = None;
-    _type = _type;
-}
 

@@ -7,15 +7,9 @@
  *)
 
 type t = {
-    ip_block: Io_k8s_api_networking_v1_ip_block.t option [@default None] [@key "ipBlock"];
-    namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None] [@key "namespaceSelector"];
-    pod_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@default None] [@key "podSelector"];
-} [@@deriving yojson { strict = false }, show ];;
+    ip_block: Io_k8s_api_networking_v1_ip_block.t option [@yojson.default None] [@yojson.key "ipBlock"];
+    namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "namespaceSelector"];
+    pod_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "podSelector"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** NetworkPolicyPeer describes a peer to allow traffic to/from. Only certain combinations of fields are allowed *)
-let create () : t = {
-    ip_block = None;
-    namespace_selector = None;
-    pod_selector = None;
-}
 

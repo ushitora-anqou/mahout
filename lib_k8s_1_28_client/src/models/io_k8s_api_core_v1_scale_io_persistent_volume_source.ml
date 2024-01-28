@@ -8,37 +8,24 @@
 
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Default is \''xfs\'' *)
-    fs_type: string option [@default None] [@key "fsType"];
+    fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
     (* gateway is the host address of the ScaleIO API Gateway. *)
-    gateway: string [@key "gateway"];
+    gateway: string [@yojson.key "gateway"];
     (* protectionDomain is the name of the ScaleIO Protection Domain for the configured storage. *)
-    protection_domain: string option [@default None] [@key "protectionDomain"];
+    protection_domain: string option [@yojson.default None] [@yojson.key "protectionDomain"];
     (* readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None] [@key "readOnly"];
-    secret_ref: Io_k8s_api_core_v1_secret_reference.t [@key "secretRef"];
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
+    secret_ref: Io_k8s_api_core_v1_secret_reference.t [@yojson.key "secretRef"];
     (* sslEnabled is the flag to enable/disable SSL communication with Gateway, default false *)
-    ssl_enabled: bool option [@default None] [@key "sslEnabled"];
+    ssl_enabled: bool option [@yojson.default None] [@yojson.key "sslEnabled"];
     (* storageMode indicates whether the storage for a volume should be ThickProvisioned or ThinProvisioned. Default is ThinProvisioned. *)
-    storage_mode: string option [@default None] [@key "storageMode"];
+    storage_mode: string option [@yojson.default None] [@yojson.key "storageMode"];
     (* storagePool is the ScaleIO Storage Pool associated with the protection domain. *)
-    storage_pool: string option [@default None] [@key "storagePool"];
+    storage_pool: string option [@yojson.default None] [@yojson.key "storagePool"];
     (* system is the name of the storage system as configured in ScaleIO. *)
-    system: string [@key "system"];
+    system: string [@yojson.key "system"];
     (* volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source. *)
-    volume_name: string option [@default None] [@key "volumeName"];
-} [@@deriving yojson { strict = false }, show ];;
+    volume_name: string option [@yojson.default None] [@yojson.key "volumeName"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ScaleIOPersistentVolumeSource represents a persistent ScaleIO volume *)
-let create (gateway : string) (secret_ref : Io_k8s_api_core_v1_secret_reference.t) (system : string) : t = {
-    fs_type = None;
-    gateway = gateway;
-    protection_domain = None;
-    read_only = None;
-    secret_ref = secret_ref;
-    ssl_enabled = None;
-    storage_mode = None;
-    storage_pool = None;
-    system = system;
-    volume_name = None;
-}
 

@@ -8,19 +8,12 @@
 
 type t = {
     (* Audiences are audience identifiers chosen by the authenticator that are compatible with both the TokenReview and token. An identifier is any identifier in the intersection of the TokenReviewSpec audiences and the token's audiences. A client of the TokenReview API that sets the spec.audiences field should validate that a compatible audience identifier is returned in the status.audiences field to ensure that the TokenReview server is audience aware. If a TokenReview returns an empty status.audience field where status.authenticated is \''true\'', the token is valid against the audience of the Kubernetes API server. *)
-    audiences: string list [@default []] [@key "audiences"];
+    audiences: string list [@yojson.default []] [@yojson.key "audiences"];
     (* Authenticated indicates that the token was associated with a known user. *)
-    authenticated: bool option [@default None] [@key "authenticated"];
+    authenticated: bool option [@yojson.default None] [@yojson.key "authenticated"];
     (* Error indicates that the token couldn't be checked *)
-    error: string option [@default None] [@key "error"];
-    user: Io_k8s_api_authentication_v1_user_info.t option [@default None] [@key "user"];
-} [@@deriving yojson { strict = false }, show ];;
+    error: string option [@yojson.default None] [@yojson.key "error"];
+    user: Io_k8s_api_authentication_v1_user_info.t option [@yojson.default None] [@yojson.key "user"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** TokenReviewStatus is the result of the token authentication request. *)
-let create () : t = {
-    audiences = [];
-    authenticated = None;
-    error = None;
-    user = None;
-}
 

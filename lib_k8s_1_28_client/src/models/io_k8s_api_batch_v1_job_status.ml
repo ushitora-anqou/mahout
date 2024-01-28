@@ -8,40 +8,26 @@
 
 type t = {
     (* The number of pending and running pods. *)
-    active: int32 option [@default None] [@key "active"];
+    active: int32 option [@yojson.default None] [@yojson.key "active"];
     (* completedIndexes holds the completed indexes when .spec.completionMode = \''Indexed\'' in a text format. The indexes are represented as decimal integers separated by commas. The numbers are listed in increasing order. Three or more consecutive numbers are compressed and represented by the first and last element of the series, separated by a hyphen. For example, if the completed indexes are 1, 3, 4, 5 and 7, they are represented as \''1,3-5,7\''. *)
-    completed_indexes: string option [@default None] [@key "completedIndexes"];
+    completed_indexes: string option [@yojson.default None] [@yojson.key "completedIndexes"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    completion_time: string option [@default None] [@key "completionTime"];
+    completion_time: string option [@yojson.default None] [@yojson.key "completionTime"];
     (* The latest available observations of an object's current state. When a Job fails, one of the conditions will have type \''Failed\'' and status true. When a Job is suspended, one of the conditions will have type \''Suspended\'' and status true; when the Job is resumed, the status of this condition will become false. When a Job is completed, one of the conditions will have type \''Complete\'' and status true. More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/ *)
-    conditions: Io_k8s_api_batch_v1_job_condition.t list [@default []] [@key "conditions"];
+    conditions: Io_k8s_api_batch_v1_job_condition.t list [@yojson.default []] [@yojson.key "conditions"];
     (* The number of pods which reached phase Failed. *)
-    failed: int32 option [@default None] [@key "failed"];
+    failed: int32 option [@yojson.default None] [@yojson.key "failed"];
     (* FailedIndexes holds the failed indexes when backoffLimitPerIndex=true. The indexes are represented in the text format analogous as for the `completedIndexes` field, ie. they are kept as decimal integers separated by commas. The numbers are listed in increasing order. Three or more consecutive numbers are compressed and represented by the first and last element of the series, separated by a hyphen. For example, if the failed indexes are 1, 3, 4, 5 and 7, they are represented as \''1,3-5,7\''. This field is alpha-level. It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (disabled by default). *)
-    failed_indexes: string option [@default None] [@key "failedIndexes"];
+    failed_indexes: string option [@yojson.default None] [@yojson.key "failedIndexes"];
     (* The number of pods which have a Ready condition.  This field is beta-level. The job controller populates the field when the feature gate JobReadyPods is enabled (enabled by default). *)
-    ready: int32 option [@default None] [@key "ready"];
+    ready: int32 option [@yojson.default None] [@yojson.key "ready"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    start_time: string option [@default None] [@key "startTime"];
+    start_time: string option [@yojson.default None] [@yojson.key "startTime"];
     (* The number of pods which reached phase Succeeded. *)
-    succeeded: int32 option [@default None] [@key "succeeded"];
+    succeeded: int32 option [@yojson.default None] [@yojson.key "succeeded"];
     (* The number of pods which are terminating (in phase Pending or Running and have a deletionTimestamp).  This field is alpha-level. The job controller populates the field when the feature gate JobPodReplacementPolicy is enabled (disabled by default). *)
-    terminating: int32 option [@default None] [@key "terminating"];
-    uncounted_terminated_pods: Io_k8s_api_batch_v1_uncounted_terminated_pods.t option [@default None] [@key "uncountedTerminatedPods"];
-} [@@deriving yojson { strict = false }, show ];;
+    terminating: int32 option [@yojson.default None] [@yojson.key "terminating"];
+    uncounted_terminated_pods: Io_k8s_api_batch_v1_uncounted_terminated_pods.t option [@yojson.default None] [@yojson.key "uncountedTerminatedPods"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** JobStatus represents the current state of a Job. *)
-let create () : t = {
-    active = None;
-    completed_indexes = None;
-    completion_time = None;
-    conditions = [];
-    failed = None;
-    failed_indexes = None;
-    ready = None;
-    start_time = None;
-    succeeded = None;
-    terminating = None;
-    uncounted_terminated_pods = None;
-}
 

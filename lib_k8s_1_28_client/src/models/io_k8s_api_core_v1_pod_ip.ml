@@ -8,11 +8,7 @@
 
 type t = {
     (* IP is the IP address assigned to the pod *)
-    ip: string option [@default None] [@key "ip"];
-} [@@deriving yojson { strict = false }, show ];;
+    ip: string option [@yojson.default None] [@yojson.key "ip"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodIP represents a single IP address allocated to the pod. *)
-let create () : t = {
-    ip = None;
-}
 

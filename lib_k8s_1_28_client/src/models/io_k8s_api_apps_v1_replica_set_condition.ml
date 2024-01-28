@@ -8,23 +8,15 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
+    last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
     (* A human readable message indicating details about the transition. *)
-    message: string option [@default None] [@key "message"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
     (* The reason for the condition's last transition. *)
-    reason: string option [@default None] [@key "reason"];
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
     (* Status of the condition, one of True, False, Unknown. *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* Type of replica set condition. *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ReplicaSetCondition describes the state of a replica set at a certain point. *)
-let create (status : string) (_type : string) : t = {
-    last_transition_time = None;
-    message = None;
-    reason = None;
-    status = status;
-    _type = _type;
-}
 

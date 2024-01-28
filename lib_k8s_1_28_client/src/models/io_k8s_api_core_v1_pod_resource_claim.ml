@@ -8,13 +8,8 @@
 
 type t = {
     (* Name uniquely identifies this resource claim inside the pod. This must be a DNS_LABEL. *)
-    name: string [@key "name"];
-    source: Io_k8s_api_core_v1_claim_source.t option [@default None] [@key "source"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string [@yojson.key "name"];
+    source: Io_k8s_api_core_v1_claim_source.t option [@yojson.default None] [@yojson.key "source"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodResourceClaim references exactly one ResourceClaim through a ClaimSource. It adds a name to it that uniquely identifies the ResourceClaim inside the Pod. Containers that need access to the ResourceClaim reference it with this name. *)
-let create (name : string) : t = {
-    name = name;
-    source = None;
-}
 

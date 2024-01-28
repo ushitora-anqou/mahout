@@ -8,14 +8,9 @@
 
 type t = {
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
-    name: string option [@default None] [@key "name"];
+    name: string option [@yojson.default None] [@yojson.key "name"];
     (* Specify whether the ConfigMap must be defined *)
-    optional: bool option [@default None] [@key "optional"];
-} [@@deriving yojson { strict = false }, show ];;
+    optional: bool option [@yojson.default None] [@yojson.key "optional"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ConfigMapEnvSource selects a ConfigMap to populate the environment variables with.  The contents of the target ConfigMap's Data field will represent the key-value pairs as environment variables. *)
-let create () : t = {
-    name = None;
-    optional = None;
-}
 

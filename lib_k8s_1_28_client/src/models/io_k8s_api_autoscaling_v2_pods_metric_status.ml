@@ -7,13 +7,8 @@
  *)
 
 type t = {
-    current: Io_k8s_api_autoscaling_v2_metric_value_status.t [@key "current"];
-    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@key "metric"];
-} [@@deriving yojson { strict = false }, show ];;
+    current: Io_k8s_api_autoscaling_v2_metric_value_status.t [@yojson.key "current"];
+    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@yojson.key "metric"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodsMetricStatus indicates the current value of a metric describing each pod in the current scale target (for example, transactions-processed-per-second). *)
-let create (current : Io_k8s_api_autoscaling_v2_metric_value_status.t) (metric : Io_k8s_api_autoscaling_v2_metric_identifier.t) : t = {
-    current = current;
-    metric = metric;
-}
 

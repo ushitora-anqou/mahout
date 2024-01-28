@@ -8,11 +8,7 @@
 
 type t = {
     (* Port number of the given endpoint. *)
-    port: int32 [@key "Port"];
-} [@@deriving yojson { strict = false }, show ];;
+    port: int32 [@yojson.key "Port"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** DaemonEndpoint contains information about a single Daemon endpoint. *)
-let create (port : int32) : t = {
-    port = port;
-}
 

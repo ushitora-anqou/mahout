@@ -7,11 +7,7 @@
  *)
 
 type t = {
-    required: Io_k8s_api_core_v1_node_selector.t option [@default None] [@key "required"];
-} [@@deriving yojson { strict = false }, show ];;
+    required: Io_k8s_api_core_v1_node_selector.t option [@yojson.default None] [@yojson.key "required"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** VolumeNodeAffinity defines constraints that limit what nodes this volume can be accessed from. *)
-let create () : t = {
-    required = None;
-}
 

@@ -7,27 +7,15 @@
  *)
 
 type t = {
-    build_date: string [@key "buildDate"];
-    compiler: string [@key "compiler"];
-    git_commit: string [@key "gitCommit"];
-    git_tree_state: string [@key "gitTreeState"];
-    git_version: string [@key "gitVersion"];
-    go_version: string [@key "goVersion"];
-    major: string [@key "major"];
-    minor: string [@key "minor"];
-    platform: string [@key "platform"];
-} [@@deriving yojson { strict = false }, show ];;
+    build_date: string [@yojson.key "buildDate"];
+    compiler: string [@yojson.key "compiler"];
+    git_commit: string [@yojson.key "gitCommit"];
+    git_tree_state: string [@yojson.key "gitTreeState"];
+    git_version: string [@yojson.key "gitVersion"];
+    go_version: string [@yojson.key "goVersion"];
+    major: string [@yojson.key "major"];
+    minor: string [@yojson.key "minor"];
+    platform: string [@yojson.key "platform"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Info contains versioning information. how we'll want to distribute that information. *)
-let create (build_date : string) (compiler : string) (git_commit : string) (git_tree_state : string) (git_version : string) (go_version : string) (major : string) (minor : string) (platform : string) : t = {
-    build_date = build_date;
-    compiler = compiler;
-    git_commit = git_commit;
-    git_tree_state = git_tree_state;
-    git_version = git_version;
-    go_version = go_version;
-    major = major;
-    minor = minor;
-    platform = platform;
-}
 

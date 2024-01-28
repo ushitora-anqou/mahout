@@ -8,26 +8,17 @@
 
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
-    last_transition_time: string option [@default None] [@key "lastTransitionTime"];
+    last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
     (* A human readable message indicating details about the transition. *)
-    message: string option [@default None] [@key "message"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
     (* If set, this represents the .metadata.generation that the condition was set based upon. *)
-    observed_generation: int64 option [@default None] [@key "observedGeneration"];
+    observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
     (* The reason for the condition's last transition. *)
-    reason: string [@key "reason"];
+    reason: string [@yojson.key "reason"];
     (* Status of the condition, one of True, False, Unknown. *)
-    status: string [@key "status"];
+    status: string [@yojson.key "status"];
     (* Type of the condition. *)
-    _type: string [@key "type"];
-} [@@deriving yojson { strict = false }, show ];;
+    _type: string [@yojson.key "type"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Describes the state of the storageVersion at a certain point. *)
-let create (reason : string) (status : string) (_type : string) : t = {
-    last_transition_time = None;
-    message = None;
-    observed_generation = None;
-    reason = reason;
-    status = status;
-    _type = _type;
-}
 

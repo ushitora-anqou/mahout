@@ -8,20 +8,13 @@
 
 type t = {
     (* APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. *)
-    api_group: string option [@default None] [@key "apiGroup"];
+    api_group: string option [@yojson.default None] [@yojson.key "apiGroup"];
     (* Kind is the type of resource being referenced. This is the same value as in the parameter object's metadata. *)
-    kind: string [@key "kind"];
+    kind: string [@yojson.key "kind"];
     (* Name is the name of resource being referenced. *)
-    name: string [@key "name"];
+    name: string [@yojson.key "name"];
     (* Namespace that contains the referenced resource. Must be empty for cluster-scoped resources and non-empty for namespaced resources. *)
-    namespace: string option [@default None] [@key "namespace"];
-} [@@deriving yojson { strict = false }, show ];;
+    namespace: string option [@yojson.default None] [@yojson.key "namespace"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ResourceClassParametersReference contains enough information to let you locate the parameters for a ResourceClass. *)
-let create (kind : string) (name : string) : t = {
-    api_group = None;
-    kind = kind;
-    name = name;
-    namespace = None;
-}
 

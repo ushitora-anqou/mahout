@@ -7,11 +7,7 @@
  *)
 
 type t = {
-    client_ip: Io_k8s_api_core_v1_client_ip_config.t option [@default None] [@key "clientIP"];
-} [@@deriving yojson { strict = false }, show ];;
+    client_ip: Io_k8s_api_core_v1_client_ip_config.t option [@yojson.default None] [@yojson.key "clientIP"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** SessionAffinityConfig represents the configurations of session affinity. *)
-let create () : t = {
-    client_ip = None;
-}
 

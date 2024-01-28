@@ -7,15 +7,9 @@
  *)
 
 type t = {
-    exec: Io_k8s_api_core_v1_exec_action.t option [@default None] [@key "exec"];
-    http_get: Io_k8s_api_core_v1_http_get_action.t option [@default None] [@key "httpGet"];
-    tcp_socket: Io_k8s_api_core_v1_tcp_socket_action.t option [@default None] [@key "tcpSocket"];
-} [@@deriving yojson { strict = false }, show ];;
+    exec: Io_k8s_api_core_v1_exec_action.t option [@yojson.default None] [@yojson.key "exec"];
+    http_get: Io_k8s_api_core_v1_http_get_action.t option [@yojson.default None] [@yojson.key "httpGet"];
+    tcp_socket: Io_k8s_api_core_v1_tcp_socket_action.t option [@yojson.default None] [@yojson.key "tcpSocket"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** LifecycleHandler defines a specific action that should be taken in a lifecycle hook. One and only one of the fields, except TCPSocket must be specified. *)
-let create () : t = {
-    exec = None;
-    http_get = None;
-    tcp_socket = None;
-}
 

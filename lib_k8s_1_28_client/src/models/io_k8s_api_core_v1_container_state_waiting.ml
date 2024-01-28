@@ -8,14 +8,9 @@
 
 type t = {
     (* Message regarding why the container is not yet running. *)
-    message: string option [@default None] [@key "message"];
+    message: string option [@yojson.default None] [@yojson.key "message"];
     (* (brief) reason the container is not yet running. *)
-    reason: string option [@default None] [@key "reason"];
-} [@@deriving yojson { strict = false }, show ];;
+    reason: string option [@yojson.default None] [@yojson.key "reason"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ContainerStateWaiting is a waiting state of a container. *)
-let create () : t = {
-    message = None;
-    reason = None;
-}
 

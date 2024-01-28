@@ -7,13 +7,8 @@
  *)
 
 type t = {
-    resource: Io_k8s_api_core_v1_typed_local_object_reference.t option [@default None] [@key "resource"];
-    service: Io_k8s_api_networking_v1_ingress_service_backend.t option [@default None] [@key "service"];
-} [@@deriving yojson { strict = false }, show ];;
+    resource: Io_k8s_api_core_v1_typed_local_object_reference.t option [@yojson.default None] [@yojson.key "resource"];
+    service: Io_k8s_api_networking_v1_ingress_service_backend.t option [@yojson.default None] [@yojson.key "service"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** IngressBackend describes all endpoints for a given service and port. *)
-let create () : t = {
-    resource = None;
-    service = None;
-}
 

@@ -8,22 +8,14 @@
 
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
-    fs_type: string option [@default None] [@key "fsType"];
+    fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
     (* readOnly defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
-    read_only: bool option [@default None] [@key "readOnly"];
-    secret_ref: Io_k8s_api_core_v1_object_reference.t option [@default None] [@key "secretRef"];
+    read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
+    secret_ref: Io_k8s_api_core_v1_object_reference.t option [@yojson.default None] [@yojson.key "secretRef"];
     (* volumeName is the human-readable name of the StorageOS volume.  Volume names are only unique within a namespace. *)
-    volume_name: string option [@default None] [@key "volumeName"];
+    volume_name: string option [@yojson.default None] [@yojson.key "volumeName"];
     (* volumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to \''default\'' if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created. *)
-    volume_namespace: string option [@default None] [@key "volumeNamespace"];
-} [@@deriving yojson { strict = false }, show ];;
+    volume_namespace: string option [@yojson.default None] [@yojson.key "volumeNamespace"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** Represents a StorageOS persistent volume resource. *)
-let create () : t = {
-    fs_type = None;
-    read_only = None;
-    secret_ref = None;
-    volume_name = None;
-    volume_namespace = None;
-}
 

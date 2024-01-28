@@ -8,23 +8,14 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* handler specifies the underlying runtime and configuration that the CRI implementation will use to handle pods of this class. The possible values are specific to the node & CRI configuration.  It is assumed that all handlers are available on every node, and handlers of the same name are equivalent on every node. For example, a handler called \''runc\'' might specify that the runc OCI runtime (using native Linux containers) will be used to run the containers in a pod. The Handler must be lowercase, conform to the DNS Label (RFC 1123) requirements, and is immutable. *)
-    handler: string [@key "handler"];
+    handler: string [@yojson.key "handler"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
-    overhead: Io_k8s_api_node_v1_overhead.t option [@default None] [@key "overhead"];
-    scheduling: Io_k8s_api_node_v1_scheduling.t option [@default None] [@key "scheduling"];
-} [@@deriving yojson { strict = false }, show ];;
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
+    overhead: Io_k8s_api_node_v1_overhead.t option [@yojson.default None] [@yojson.key "overhead"];
+    scheduling: Io_k8s_api_node_v1_scheduling.t option [@yojson.default None] [@yojson.key "scheduling"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** RuntimeClass defines a class of container runtime supported in the cluster. The RuntimeClass is used to determine which container runtime is used to run all containers in a pod. RuntimeClasses are manually defined by a user or cluster provisioner, and referenced in the PodSpec. The Kubelet is responsible for resolving the RuntimeClassName reference before running the pod.  For more details, see https://kubernetes.io/docs/concepts/containers/runtime-class/ *)
-let create (handler : string) : t = {
-    api_version = None;
-    handler = handler;
-    kind = None;
-    metadata = None;
-    overhead = None;
-    scheduling = None;
-}
 

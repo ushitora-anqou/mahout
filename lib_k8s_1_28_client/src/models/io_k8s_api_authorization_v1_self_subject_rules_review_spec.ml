@@ -8,11 +8,7 @@
 
 type t = {
     (* Namespace to evaluate rules for. Required. *)
-    namespace: string option [@default None] [@key "namespace"];
-} [@@deriving yojson { strict = false }, show ];;
+    namespace: string option [@yojson.default None] [@yojson.key "namespace"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** SelfSubjectRulesReviewSpec defines the specification for SelfSubjectRulesReview. *)
-let create () : t = {
-    namespace = None;
-}
 

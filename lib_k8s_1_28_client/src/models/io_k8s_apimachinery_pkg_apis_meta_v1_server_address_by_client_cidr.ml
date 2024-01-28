@@ -8,14 +8,9 @@
 
 type t = {
     (* The CIDR with which clients can match their IP to figure out the server address that they should use. *)
-    client_cidr: string [@key "clientCIDR"];
+    client_cidr: string [@yojson.key "clientCIDR"];
     (* Address of this server, suitable for a client that matches the above CIDR. This can be a hostname, hostname:port, IP or IP:port. *)
-    server_address: string [@key "serverAddress"];
-} [@@deriving yojson { strict = false }, show ];;
+    server_address: string [@yojson.key "serverAddress"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ServerAddressByClientCIDR helps the client to determine the server address that they should use, depending on the clientCIDR that they match. *)
-let create (client_cidr : string) (server_address : string) : t = {
-    client_cidr = client_cidr;
-    server_address = server_address;
-}
 

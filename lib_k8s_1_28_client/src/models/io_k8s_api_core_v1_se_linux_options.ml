@@ -8,20 +8,13 @@
 
 type t = {
     (* Level is SELinux level label that applies to the container. *)
-    level: string option [@default None] [@key "level"];
+    level: string option [@yojson.default None] [@yojson.key "level"];
     (* Role is a SELinux role label that applies to the container. *)
-    role: string option [@default None] [@key "role"];
+    role: string option [@yojson.default None] [@yojson.key "role"];
     (* Type is a SELinux type label that applies to the container. *)
-    _type: string option [@default None] [@key "type"];
+    _type: string option [@yojson.default None] [@yojson.key "type"];
     (* User is a SELinux user label that applies to the container. *)
-    user: string option [@default None] [@key "user"];
-} [@@deriving yojson { strict = false }, show ];;
+    user: string option [@yojson.default None] [@yojson.key "user"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** SELinuxOptions are the labels to be applied to the container *)
-let create () : t = {
-    level = None;
-    role = None;
-    _type = None;
-    user = None;
-}
 

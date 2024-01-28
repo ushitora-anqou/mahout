@@ -8,23 +8,14 @@
 
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* DriverName defines the name of the dynamic resource driver that is used for allocation of a ResourceClaim that uses this class.  Resource drivers have a unique name in forward domain order (acme.example.com). *)
-    driver_name: string [@key "driverName"];
+    driver_name: string [@yojson.key "driverName"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
-    parameters_ref: Io_k8s_api_resource_v1alpha2_resource_class_parameters_reference.t option [@default None] [@key "parametersRef"];
-    suitable_nodes: Io_k8s_api_core_v1_node_selector.t option [@default None] [@key "suitableNodes"];
-} [@@deriving yojson { strict = false }, show ];;
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
+    parameters_ref: Io_k8s_api_resource_v1alpha2_resource_class_parameters_reference.t option [@yojson.default None] [@yojson.key "parametersRef"];
+    suitable_nodes: Io_k8s_api_core_v1_node_selector.t option [@yojson.default None] [@yojson.key "suitableNodes"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ResourceClass is used by administrators to influence how resources are allocated.  This is an alpha type and requires enabling the DynamicResourceAllocation feature gate. *)
-let create (driver_name : string) : t = {
-    api_version = None;
-    driver_name = driver_name;
-    kind = None;
-    metadata = None;
-    parameters_ref = None;
-    suitable_nodes = None;
-}
 

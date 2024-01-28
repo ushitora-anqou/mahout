@@ -8,17 +8,11 @@
 
 type t = {
     (* A list of DNS name server IP addresses. This will be appended to the base nameservers generated from DNSPolicy. Duplicated nameservers will be removed. *)
-    nameservers: string list [@default []] [@key "nameservers"];
+    nameservers: string list [@yojson.default []] [@yojson.key "nameservers"];
     (* A list of DNS resolver options. This will be merged with the base options generated from DNSPolicy. Duplicated entries will be removed. Resolution options given in Options will override those that appear in the base DNSPolicy. *)
-    options: Io_k8s_api_core_v1_pod_dns_config_option.t list [@default []] [@key "options"];
+    options: Io_k8s_api_core_v1_pod_dns_config_option.t list [@yojson.default []] [@yojson.key "options"];
     (* A list of DNS search domains for host-name lookup. This will be appended to the base search paths generated from DNSPolicy. Duplicated search paths will be removed. *)
-    searches: string list [@default []] [@key "searches"];
-} [@@deriving yojson { strict = false }, show ];;
+    searches: string list [@yojson.default []] [@yojson.key "searches"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** PodDNSConfig defines the DNS parameters of a pod in addition to those generated from DNSPolicy. *)
-let create () : t = {
-    nameservers = [];
-    options = [];
-    searches = [];
-}
 

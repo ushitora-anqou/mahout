@@ -8,37 +8,24 @@
 
 type t = {
     (* allowVolumeExpansion shows whether the storage class allow volume expand. *)
-    allow_volume_expansion: bool option [@default None] [@key "allowVolumeExpansion"];
+    allow_volume_expansion: bool option [@yojson.default None] [@yojson.key "allowVolumeExpansion"];
     (* allowedTopologies restrict the node topologies where volumes can be dynamically provisioned. Each volume plugin defines its own supported topology specifications. An empty TopologySelectorTerm list means there is no topology restriction. This field is only honored by servers that enable the VolumeScheduling feature. *)
-    allowed_topologies: Io_k8s_api_core_v1_topology_selector_term.t list [@default []] [@key "allowedTopologies"];
+    allowed_topologies: Io_k8s_api_core_v1_topology_selector_term.t list [@yojson.default []] [@yojson.key "allowedTopologies"];
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
-    api_version: string option [@default None] [@key "apiVersion"];
+    api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
-    kind: string option [@default None] [@key "kind"];
-    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@default None] [@key "metadata"];
+    kind: string option [@yojson.default None] [@yojson.key "kind"];
+    metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     (* mountOptions controls the mountOptions for dynamically provisioned PersistentVolumes of this storage class. e.g. [\''ro\'', \''soft\'']. Not validated - mount of the PVs will simply fail if one is invalid. *)
-    mount_options: string list [@default []] [@key "mountOptions"];
+    mount_options: string list [@yojson.default []] [@yojson.key "mountOptions"];
     (* parameters holds the parameters for the provisioner that should create volumes of this storage class. *)
-    parameters: Yojson.Safe.t [@default (`List [])] [@key "parameters"];
+    parameters: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "parameters"];
     (* provisioner indicates the type of the provisioner. *)
-    provisioner: string [@key "provisioner"];
+    provisioner: string [@yojson.key "provisioner"];
     (* reclaimPolicy controls the reclaimPolicy for dynamically provisioned PersistentVolumes of this storage class. Defaults to Delete. *)
-    reclaim_policy: string option [@default None] [@key "reclaimPolicy"];
+    reclaim_policy: string option [@yojson.default None] [@yojson.key "reclaimPolicy"];
     (* volumeBindingMode indicates how PersistentVolumeClaims should be provisioned and bound.  When unset, VolumeBindingImmediate is used. This field is only honored by servers that enable the VolumeScheduling feature. *)
-    volume_binding_mode: string option [@default None] [@key "volumeBindingMode"];
-} [@@deriving yojson { strict = false }, show ];;
+    volume_binding_mode: string option [@yojson.default None] [@yojson.key "volumeBindingMode"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** StorageClass describes the parameters for a class of storage for which PersistentVolumes can be dynamically provisioned.  StorageClasses are non-namespaced; the name of the storage class according to etcd is in ObjectMeta.Name. *)
-let create (provisioner : string) : t = {
-    allow_volume_expansion = None;
-    allowed_topologies = [];
-    api_version = None;
-    kind = None;
-    metadata = None;
-    mount_options = [];
-    parameters = `List [];
-    provisioner = provisioner;
-    reclaim_policy = None;
-    volume_binding_mode = None;
-}
 

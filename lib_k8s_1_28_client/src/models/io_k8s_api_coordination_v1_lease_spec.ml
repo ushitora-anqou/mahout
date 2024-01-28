@@ -8,23 +8,15 @@
 
 type t = {
     (* MicroTime is version of Time with microsecond level precision. *)
-    acquire_time: string option [@default None] [@key "acquireTime"];
+    acquire_time: string option [@yojson.default None] [@yojson.key "acquireTime"];
     (* holderIdentity contains the identity of the holder of a current lease. *)
-    holder_identity: string option [@default None] [@key "holderIdentity"];
+    holder_identity: string option [@yojson.default None] [@yojson.key "holderIdentity"];
     (* leaseDurationSeconds is a duration that candidates for a lease need to wait to force acquire it. This is measure against time of last observed renewTime. *)
-    lease_duration_seconds: int32 option [@default None] [@key "leaseDurationSeconds"];
+    lease_duration_seconds: int32 option [@yojson.default None] [@yojson.key "leaseDurationSeconds"];
     (* leaseTransitions is the number of transitions of a lease between holders. *)
-    lease_transitions: int32 option [@default None] [@key "leaseTransitions"];
+    lease_transitions: int32 option [@yojson.default None] [@yojson.key "leaseTransitions"];
     (* MicroTime is version of Time with microsecond level precision. *)
-    renew_time: string option [@default None] [@key "renewTime"];
-} [@@deriving yojson { strict = false }, show ];;
+    renew_time: string option [@yojson.default None] [@yojson.key "renewTime"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** LeaseSpec is a specification of a Lease. *)
-let create () : t = {
-    acquire_time = None;
-    holder_identity = None;
-    lease_duration_seconds = None;
-    lease_transitions = None;
-    renew_time = None;
-}
 

@@ -8,11 +8,7 @@
 
 type t = {
     (* name represents the name of the zone. *)
-    name: string [@key "name"];
-} [@@deriving yojson { strict = false }, show ];;
+    name: string [@yojson.key "name"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ForZone provides information about which zones should consume this endpoint. *)
-let create (name : string) : t = {
-    name = name;
-}
 

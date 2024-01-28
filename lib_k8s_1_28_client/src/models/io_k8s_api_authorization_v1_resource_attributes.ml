@@ -8,29 +8,19 @@
 
 type t = {
     (* Group is the API Group of the Resource.  \''*\'' means all. *)
-    group: string option [@default None] [@key "group"];
+    group: string option [@yojson.default None] [@yojson.key "group"];
     (* Name is the name of the resource being requested for a \''get\'' or deleted for a \''delete\''. \''\'' (empty) means all. *)
-    name: string option [@default None] [@key "name"];
+    name: string option [@yojson.default None] [@yojson.key "name"];
     (* Namespace is the namespace of the action being requested.  Currently, there is no distinction between no namespace and all namespaces \''\'' (empty) is defaulted for LocalSubjectAccessReviews \''\'' (empty) is empty for cluster-scoped resources \''\'' (empty) means \''all\'' for namespace scoped resources from a SubjectAccessReview or SelfSubjectAccessReview *)
-    namespace: string option [@default None] [@key "namespace"];
+    namespace: string option [@yojson.default None] [@yojson.key "namespace"];
     (* Resource is one of the existing resource types.  \''*\'' means all. *)
-    resource: string option [@default None] [@key "resource"];
+    resource: string option [@yojson.default None] [@yojson.key "resource"];
     (* Subresource is one of the existing resource types.  \''\'' means none. *)
-    subresource: string option [@default None] [@key "subresource"];
+    subresource: string option [@yojson.default None] [@yojson.key "subresource"];
     (* Verb is a kubernetes resource API verb, like: get, list, watch, create, update, delete, proxy.  \''*\'' means all. *)
-    verb: string option [@default None] [@key "verb"];
+    verb: string option [@yojson.default None] [@yojson.key "verb"];
     (* Version is the API Version of the Resource.  \''*\'' means all. *)
-    version: string option [@default None] [@key "version"];
-} [@@deriving yojson { strict = false }, show ];;
+    version: string option [@yojson.default None] [@yojson.key "version"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ResourceAttributes includes the authorization attributes available for resource requests to the Authorizer interface *)
-let create () : t = {
-    group = None;
-    name = None;
-    namespace = None;
-    resource = None;
-    subresource = None;
-    verb = None;
-    version = None;
-}
 

@@ -8,17 +8,11 @@
 
 type t = {
     (* Represents a scope's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. *)
-    operator: string [@key "operator"];
+    operator: string [@yojson.key "operator"];
     (* The name of the scope that the selector applies to. *)
-    scope_name: string [@key "scopeName"];
+    scope_name: string [@yojson.key "scopeName"];
     (* An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch. *)
-    values: string list [@default []] [@key "values"];
-} [@@deriving yojson { strict = false }, show ];;
+    values: string list [@yojson.default []] [@yojson.key "values"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** A scoped-resource selector requirement is a selector that contains values, a scope name, and an operator that relates the scope name and values. *)
-let create (operator : string) (scope_name : string) : t = {
-    operator = operator;
-    scope_name = scope_name;
-    values = [];
-}
 

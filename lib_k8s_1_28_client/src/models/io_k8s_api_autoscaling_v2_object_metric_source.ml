@@ -7,15 +7,9 @@
  *)
 
 type t = {
-    described_object: Io_k8s_api_autoscaling_v2_cross_version_object_reference.t [@key "describedObject"];
-    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@key "metric"];
-    target: Io_k8s_api_autoscaling_v2_metric_target.t [@key "target"];
-} [@@deriving yojson { strict = false }, show ];;
+    described_object: Io_k8s_api_autoscaling_v2_cross_version_object_reference.t [@yojson.key "describedObject"];
+    metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@yojson.key "metric"];
+    target: Io_k8s_api_autoscaling_v2_metric_target.t [@yojson.key "target"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ObjectMetricSource indicates how to scale on a metric describing a kubernetes object (for example, hits-per-second on an Ingress object). *)
-let create (described_object : Io_k8s_api_autoscaling_v2_cross_version_object_reference.t) (metric : Io_k8s_api_autoscaling_v2_metric_identifier.t) (target : Io_k8s_api_autoscaling_v2_metric_target.t) : t = {
-    described_object = described_object;
-    metric = metric;
-    target = target;
-}
 

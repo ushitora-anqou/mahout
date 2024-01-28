@@ -8,14 +8,9 @@
 
 type t = {
     (* name is the name of the port on the Service. This is a mutually exclusive setting with \''Number\''. *)
-    name: string option [@default None] [@key "name"];
+    name: string option [@yojson.default None] [@yojson.key "name"];
     (* number is the numerical port number (e.g. 80) on the Service. This is a mutually exclusive setting with \''Name\''. *)
-    number: int32 option [@default None] [@key "number"];
-} [@@deriving yojson { strict = false }, show ];;
+    number: int32 option [@yojson.default None] [@yojson.key "number"];
+} [@@deriving yojson { strict = false }, show, make];;
 
-(** ServiceBackendPort is the service port being referenced. *)
-let create () : t = {
-    name = None;
-    number = None;
-}
 
