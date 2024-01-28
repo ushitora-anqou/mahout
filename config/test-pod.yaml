@@ -131,6 +131,14 @@ spec:
               fieldPath: metadata.namespace
   serviceAccountName: mahout-controller-sa
 ---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: secret-env
+type: Opaque
+stringData:
+  LOCAL_DOMAIN: "mastodon0.ket-apps.test"
+---
 apiVersion: mahout.anqou.net/v1alpha1
 kind: Mastodon
 metadata:
@@ -138,3 +146,6 @@ metadata:
   namespace: default
 spec:
   image: "ghcr.io/ushitora-anqou/ket-mastodon:4.2.1.1"
+  envFrom:
+    - secretRef:
+        name: secret-env

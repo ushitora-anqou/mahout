@@ -115,7 +115,6 @@ module Mahout_v1alpha1_api = struct
          Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson)
       resp body
 
-  (*
   let patch_mahout_v1alpha1_namespaced_mastodon ~sw client ~name ~namespace
       ~body () =
     let uri =
@@ -137,7 +136,6 @@ module Mahout_v1alpha1_api = struct
     Request.read_json_body_as
       (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.of_yojson)
       resp body
-      *)
 end
 
 let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
@@ -401,6 +399,27 @@ let controller () =
 
   ()
 
+let check_env name namespace =
+  let server_name = Sys.getenv "LOCAL_DOMAIN" in
+
+  Eio_main.run @@ fun env ->
+  Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
+  Eio.Switch.run @@ fun sw ->
+  let client =
+    (* FIXME: use ca cert *)
+    Cohttp_eio.Client.make
+      ~https:(Some (https ~authenticator:null_auth))
+      (Eio.Stdenv.net env)
+  in
+  let _ =
+    Mahout_v1alpha1_api.patch_mahout_v1alpha1_namespaced_mastodon ~sw client
+      ~name ~namespace
+      ~body:
+        (`Assoc [ ("status", `Assoc [ ("serverName", `String server_name) ]) ])
+      ()
+  in
+  ()
+
 let () =
   Mahout.Logg.setup ();
 
@@ -412,6 +431,16 @@ let () =
   let cmd =
     Cmd.(
       group (info "mahout")
-        [ v (info "controller") Term.(const controller $ const ()) ])
+        [
+          v (info "controller") Term.(const controller $ const ());
+          v (info "check-env")
+            Term.(
+              const check_env
+              $ Arg.(required & pos 0 (some string) None & info ~docv:"NAME" [])
+              $ Arg.(
+                  required
+                  & pos 1 (some string) None
+                  & info ~docv:"NAMESPACE" []));
+        ])
   in
   exit (Cmd.eval cmd)
