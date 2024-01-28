@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_resource_field_selector.t : ResourceFieldSelector represents container resources (cpu, memory) and their output format
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Container name: required for volumes, optional for env vars *)
     container_name: string option [@yojson.default None] [@yojson.key "containerName"];
@@ -13,6 +14,8 @@ type t = {
     divisor: string option [@yojson.default None] [@yojson.key "divisor"];
     (* Required: resource to select *)
     resource: string [@yojson.key "resource"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

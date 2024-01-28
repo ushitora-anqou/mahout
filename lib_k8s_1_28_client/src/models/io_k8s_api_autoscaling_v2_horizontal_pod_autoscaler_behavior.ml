@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_behavior.t : HorizontalPodAutoscalerBehavior configures the scaling behavior of the target in both Up and Down directions (scaleUp and scaleDown fields respectively).
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     scale_down: Io_k8s_api_autoscaling_v2_hpa_scaling_rules.t option [@yojson.default None] [@yojson.key "scaleDown"];
     scale_up: Io_k8s_api_autoscaling_v2_hpa_scaling_rules.t option [@yojson.default None] [@yojson.key "scaleUp"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

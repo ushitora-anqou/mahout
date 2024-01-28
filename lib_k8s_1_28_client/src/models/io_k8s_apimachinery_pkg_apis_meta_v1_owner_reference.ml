@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference.t : OwnerReference contains enough information to let you identify an owning object. An owning object must be in the same namespace as the dependent, or be cluster-scoped, so there is no namespace field.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* API version of the referent. *)
     api_version: string [@yojson.key "apiVersion"];
@@ -19,6 +20,8 @@ type t = {
     name: string [@yojson.key "name"];
     (* UID of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids *)
     uid: string [@yojson.key "uid"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

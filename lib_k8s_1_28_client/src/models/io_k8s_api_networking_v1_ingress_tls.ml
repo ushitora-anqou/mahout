@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_networking_v1_ingress_tls.t : IngressTLS describes the transport layer security associated with an ingress.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* hosts is a list of hosts included in the TLS certificate. The values in this list must match the name/s used in the tlsSecret. Defaults to the wildcard host setting for the loadbalancer controller fulfilling this Ingress, if left unspecified. *)
     hosts: string list [@yojson.default []] [@yojson.key "hosts"];
     (* secretName is the name of the secret used to terminate TLS traffic on port 443. Field is left optional to allow TLS routing based on SNI hostname alone. If the SNI host in a listener conflicts with the \''Host\'' header field used by an IngressRule, the SNI host is used for termination and value of the \''Host\'' header is used for routing. *)
     secret_name: string option [@yojson.default None] [@yojson.key "secretName"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

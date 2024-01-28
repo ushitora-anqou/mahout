@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_apps_v1_stateful_set_persistent_volume_claim_retention_policy.t : StatefulSetPersistentVolumeClaimRetentionPolicy describes the policy used for PVCs created from the StatefulSet VolumeClaimTemplates.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* WhenDeleted specifies what happens to PVCs created from StatefulSet VolumeClaimTemplates when the StatefulSet is deleted. The default policy of `Retain` causes PVCs to not be affected by StatefulSet deletion. The `Delete` policy causes those PVCs to be deleted. *)
     when_deleted: string option [@yojson.default None] [@yojson.key "whenDeleted"];
     (* WhenScaled specifies what happens to PVCs created from StatefulSet VolumeClaimTemplates when the StatefulSet is scaled down. The default policy of `Retain` causes PVCs to not be affected by a scaledown. The `Delete` policy causes the associated PVCs for any excess pods above the replica count to be deleted. *)
     when_scaled: string option [@yojson.default None] [@yojson.key "whenScaled"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_flowcontrol_v1beta2_policy_rules_with_subjects.t : PolicyRulesWithSubjects prescribes a test that applies to a request to an apiserver. The test considers the subject making the request, the verb being requested, and the resource to be acted upon. This PolicyRulesWithSubjects matches a request if and only if both (a) at least one member of subjects matches the request and (b) at least one member of resourceRules or nonResourceRules matches the request.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* `nonResourceRules` is a list of NonResourcePolicyRules that identify matching requests according to their verb and the target non-resource URL. *)
     non_resource_rules: Io_k8s_api_flowcontrol_v1beta2_non_resource_policy_rule.t list [@yojson.default []] [@yojson.key "nonResourceRules"];
@@ -13,6 +14,8 @@ type t = {
     resource_rules: Io_k8s_api_flowcontrol_v1beta2_resource_policy_rule.t list [@yojson.default []] [@yojson.key "resourceRules"];
     (* subjects is the list of normal user, serviceaccount, or group that this rule cares about. There must be at least one member in this slice. A slice that includes both the system:authenticated and system:unauthenticated user groups matches every request. Required. *)
     subjects: Io_k8s_api_flowcontrol_v1beta2_subject.t list [@yojson.default []] [@yojson.key "subjects"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

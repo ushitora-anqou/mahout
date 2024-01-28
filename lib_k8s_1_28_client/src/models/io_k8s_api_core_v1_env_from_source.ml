@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_env_from_source.t : EnvFromSource represents the source of a set of ConfigMaps
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     config_map_ref: Io_k8s_api_core_v1_config_map_env_source.t option [@yojson.default None] [@yojson.key "configMapRef"];
     (* An optional identifier to prepend to each key in the ConfigMap. Must be a C_IDENTIFIER. *)
     prefix: string option [@yojson.default None] [@yojson.key "prefix"];
     secret_ref: Io_k8s_api_core_v1_secret_env_source.t option [@yojson.default None] [@yojson.key "secretRef"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

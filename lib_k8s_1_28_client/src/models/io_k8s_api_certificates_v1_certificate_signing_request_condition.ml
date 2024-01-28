@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_certificates_v1_certificate_signing_request_condition.t : CertificateSigningRequestCondition describes a condition of a CertificateSigningRequest object
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
@@ -19,6 +20,8 @@ type t = {
     status: string [@yojson.key "status"];
     (* type of the condition. Known conditions are \''Approved\'', \''Denied\'', and \''Failed\''.  An \''Approved\'' condition is added via the /approval subresource, indicating the request was approved and should be issued by the signer.  A \''Denied\'' condition is added via the /approval subresource, indicating the request was denied and should not be issued by the signer.  A \''Failed\'' condition is added via the /status subresource, indicating the signer failed to issue the certificate.  Approved and Denied conditions are mutually exclusive. Approved, Denied, and Failed conditions cannot be removed once added.  Only one condition of a given type is allowed. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

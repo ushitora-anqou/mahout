@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_discovery_v1_for_zone.t : ForZone provides information about which zones should consume this endpoint.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* name represents the name of the zone. *)
     name: string [@yojson.key "name"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

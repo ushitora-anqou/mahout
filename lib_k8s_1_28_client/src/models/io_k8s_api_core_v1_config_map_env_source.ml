@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_config_map_env_source.t : ConfigMapEnvSource selects a ConfigMap to populate the environment variables with.  The contents of the target ConfigMap's Data field will represent the key-value pairs as environment variables.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
     name: string option [@yojson.default None] [@yojson.key "name"];
     (* Specify whether the ConfigMap must be defined *)
     optional: bool option [@yojson.default None] [@yojson.key "optional"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

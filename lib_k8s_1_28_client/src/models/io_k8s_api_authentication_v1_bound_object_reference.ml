@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_authentication_v1_bound_object_reference.t : BoundObjectReference is a reference to an object that a token is bound to.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* API version of the referent. *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -15,6 +16,8 @@ type t = {
     name: string option [@yojson.default None] [@yojson.key "name"];
     (* UID of the referent. *)
     uid: string option [@yojson.default None] [@yojson.key "uid"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

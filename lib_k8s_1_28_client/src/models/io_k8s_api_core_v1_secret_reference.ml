@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_secret_reference.t : SecretReference represents a Secret Reference. It has enough information to retrieve secret in any namespace
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* name is unique within a namespace to reference a secret resource. *)
     name: string option [@yojson.default None] [@yojson.key "name"];
     (* namespace defines the space within which the secret name must be unique. *)
     namespace: string option [@yojson.default None] [@yojson.key "namespace"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

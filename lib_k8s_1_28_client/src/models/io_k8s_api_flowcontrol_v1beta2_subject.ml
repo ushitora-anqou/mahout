@@ -6,12 +6,15 @@
  * Schema Io_k8s_api_flowcontrol_v1beta2_subject.t : Subject matches the originator of a request, as identified by the request authentication system. There are three ways of matching an originator; by user, group, or service account.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     group: Io_k8s_api_flowcontrol_v1beta2_group_subject.t option [@yojson.default None] [@yojson.key "group"];
     (* `kind` indicates which one of the other fields is non-empty. Required *)
     kind: string [@yojson.key "kind"];
     service_account: Io_k8s_api_flowcontrol_v1beta2_service_account_subject.t option [@yojson.default None] [@yojson.key "serviceAccount"];
     user: Io_k8s_api_flowcontrol_v1beta2_user_subject.t option [@yojson.default None] [@yojson.key "user"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

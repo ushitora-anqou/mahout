@@ -6,8 +6,11 @@
  * Schema Io_k8s_api_core_v1_volume_node_affinity.t : VolumeNodeAffinity defines constraints that limit what nodes this volume can be accessed from.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     required: Io_k8s_api_core_v1_node_selector.t option [@yojson.default None] [@yojson.key "required"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

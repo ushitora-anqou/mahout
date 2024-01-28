@@ -6,8 +6,11 @@
  * Schema Io_k8s_api_networking_v1alpha1_ip_address_spec.t : IPAddressSpec describe the attributes in an IP Address.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     parent_ref: Io_k8s_api_networking_v1alpha1_parent_reference.t option [@yojson.default None] [@yojson.key "parentRef"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_authorization_v1_self_subject_rules_review_spec.t : SelfSubjectRulesReviewSpec defines the specification for SelfSubjectRulesReview.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Namespace to evaluate rules for. Required. *)
     namespace: string option [@yojson.default None] [@yojson.key "namespace"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

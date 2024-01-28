@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource.t : APIResource specifies the name of a resource and whether it is namespaced.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* categories is a list of the grouped resources this resource belongs to (e.g. 'all') *)
     categories: string list [@yojson.default []] [@yojson.key "categories"];
@@ -27,6 +28,8 @@ type t = {
     verbs: string list [@yojson.default []] [@yojson.key "verbs"];
     (* version is the preferred version of the resource.  Empty implies the version of the containing resource list For subresources, this may have a different value, for example: v1 (while inside a v1beta1 version of the core resource's group)\''. *)
     version: string option [@yojson.default None] [@yojson.key "version"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

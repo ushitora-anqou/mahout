@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_autoscaling_v1_scale_status.t : ScaleStatus represents the current status of a scale subresource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* replicas is the actual number of observed instances of the scaled object. *)
     replicas: int32 [@yojson.key "replicas"];
     (* selector is the label query over pods that should match the replicas count. This is same as the label selector but in the string format to avoid introspection by clients. The string will be in the same format as the query-param syntax. More info about label selectors: https://kubernetes.io/docs/concepts/overview/working-with-objects/labels/ *)
     selector: string option [@yojson.default None] [@yojson.key "selector"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

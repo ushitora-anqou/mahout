@@ -6,9 +6,12 @@
  * Schema Io_k8s_kube_aggregator_pkg_apis_apiregistration_v1_api_service_status.t : APIServiceStatus contains derived information about an API server
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Current service state of apiService. *)
     conditions: Io_k8s_kube_aggregator_pkg_apis_apiregistration_v1_api_service_condition.t list [@yojson.default []] [@yojson.key "conditions"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

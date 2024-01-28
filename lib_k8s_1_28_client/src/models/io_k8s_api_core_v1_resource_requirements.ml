@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_resource_requirements.t : ResourceRequirements describes the compute resource requirements.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.  This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.  This field is immutable. It can only be set for containers. *)
     claims: Io_k8s_api_core_v1_resource_claim.t list [@yojson.default []] [@yojson.key "claims"];
@@ -13,6 +14,8 @@ type t = {
     limits: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "limits"];
     (* Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. Requests cannot exceed Limits. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/ *)
     requests: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "requests"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

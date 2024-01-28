@@ -6,12 +6,15 @@
  * Schema Io_k8s_api_resource_v1alpha2_allocation_result.t : AllocationResult contains attributes of an allocated resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     available_on_nodes: Io_k8s_api_core_v1_node_selector.t option [@yojson.default None] [@yojson.key "availableOnNodes"];
     (* ResourceHandles contain the state associated with an allocation that should be maintained throughout the lifetime of a claim. Each ResourceHandle contains data that should be passed to a specific kubelet plugin once it lands on a node. This data is returned by the driver after a successful allocation and is opaque to Kubernetes. Driver documentation may explain to users how to interpret this data if needed.  Setting this field is optional. It has a maximum size of 32 entries. If null (or empty), it is assumed this allocation will be processed by a single kubelet plugin with no ResourceHandle data attached. The name of the kubelet plugin invoked will match the DriverName set in the ResourceClaimStatus this AllocationResult is embedded in. *)
     resource_handles: Io_k8s_api_resource_v1alpha2_resource_handle.t list [@yojson.default []] [@yojson.key "resourceHandles"];
     (* Shareable determines whether the resource supports more than one consumer at a time. *)
     shareable: bool option [@yojson.default None] [@yojson.key "shareable"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

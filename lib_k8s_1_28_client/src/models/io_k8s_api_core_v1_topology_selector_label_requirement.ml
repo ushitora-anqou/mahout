@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_topology_selector_label_requirement.t : A topology selector requirement is a selector that matches given label. This is an alpha feature and may change in the future.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The label key that the selector applies to. *)
     key: string [@yojson.key "key"];
     (* An array of string values. One value must match the label to be selected. Each entry in Values is ORed. *)
     values: string list [@yojson.default []] [@yojson.key "values"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

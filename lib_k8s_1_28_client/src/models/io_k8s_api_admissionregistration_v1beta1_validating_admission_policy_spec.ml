@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_admissionregistration_v1beta1_validating_admission_policy_spec.t : ValidatingAdmissionPolicySpec is the specification of the desired behavior of the AdmissionPolicy.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* auditAnnotations contains CEL expressions which are used to produce audit annotations for the audit event of the API request. validations and auditAnnotations may not both be empty; a least one of validations or auditAnnotations is required. *)
     audit_annotations: Io_k8s_api_admissionregistration_v1beta1_audit_annotation.t list [@yojson.default []] [@yojson.key "auditAnnotations"];
@@ -19,6 +20,8 @@ type t = {
     validations: Io_k8s_api_admissionregistration_v1beta1_validation.t list [@yojson.default []] [@yojson.key "validations"];
     (* Variables contain definitions of variables that can be used in composition of other expressions. Each variable is defined as a named CEL expression. The variables defined here will be available under `variables` in other expressions of the policy except MatchConditions because MatchConditions are evaluated before the rest of the policy.  The expression of a variable can refer to other variables defined earlier in the list but not those after. Thus, Variables must be sorted by the order of first appearance and acyclic. *)
     variables: Io_k8s_api_admissionregistration_v1beta1_variable.t list [@yojson.default []] [@yojson.key "variables"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

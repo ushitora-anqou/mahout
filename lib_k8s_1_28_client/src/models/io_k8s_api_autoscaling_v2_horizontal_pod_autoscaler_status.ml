@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_status.t : HorizontalPodAutoscalerStatus describes the current status of a horizontal pod autoscaler.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. *)
     conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list [@yojson.default []] [@yojson.key "conditions"];
@@ -19,6 +20,8 @@ type t = {
     last_scale_time: string option [@yojson.default None] [@yojson.key "lastScaleTime"];
     (* observedGeneration is the most recent generation observed by this autoscaler. *)
     observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

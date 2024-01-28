@@ -6,11 +6,14 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_server_address_by_client_cidr.t : ServerAddressByClientCIDR helps the client to determine the server address that they should use, depending on the clientCIDR that they match.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The CIDR with which clients can match their IP to figure out the server address that they should use. *)
     client_cidr: string [@yojson.key "clientCIDR"];
     (* Address of this server, suitable for a client that matches the above CIDR. This can be a hostname, hostname:port, IP or IP:port. *)
     server_address: string [@yojson.key "serverAddress"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

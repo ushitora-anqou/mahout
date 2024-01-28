@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_event_source.t : EventSource contains information for an event.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Component from which the event is generated. *)
     component: string option [@yojson.default None] [@yojson.key "component"];
     (* Node name on which the event is generated. *)
     host: string option [@yojson.default None] [@yojson.key "host"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

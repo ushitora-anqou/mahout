@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_container_resize_policy.t : ContainerResizePolicy represents resource resize policy for the container.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Name of the resource to which this resource resize policy applies. Supported values: cpu, memory. *)
     resource_name: string [@yojson.key "resourceName"];
     (* Restart policy to apply when specified resource is resized. If not specified, it defaults to NotRequired. *)
     restart_policy: string [@yojson.key "restartPolicy"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

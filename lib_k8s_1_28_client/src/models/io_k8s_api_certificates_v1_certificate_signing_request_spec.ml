@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_certificates_v1_certificate_signing_request_spec.t : CertificateSigningRequestSpec contains the certificate request.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* expirationSeconds is the requested duration of validity of the issued certificate. The certificate signer may issue a certificate with a different validity duration so a client must check the delta between the notBefore and and notAfter fields in the issued certificate to determine the actual duration.  The v1.22+ in-tree implementations of the well-known Kubernetes signers will honor this field as long as the requested duration is not greater than the maximum duration they will honor per the --cluster-signing-duration CLI flag to the Kubernetes controller manager.  Certificate signers may not honor this field for various reasons:    1. Old signer that is unaware of the field (such as the in-tree      implementations prior to v1.22)   2. Signer whose configured maximum is shorter than the requested duration   3. Signer whose configured minimum is longer than the requested duration  The minimum valid value for expirationSeconds is 600, i.e. 10 minutes. *)
     expiration_seconds: int32 option [@yojson.default None] [@yojson.key "expirationSeconds"];
@@ -23,6 +24,8 @@ type t = {
     usages: string list [@yojson.default []] [@yojson.key "usages"];
     (* username contains the name of the user that created the CertificateSigningRequest. Populated by the API server on creation and immutable. *)
     username: string option [@yojson.default None] [@yojson.key "username"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

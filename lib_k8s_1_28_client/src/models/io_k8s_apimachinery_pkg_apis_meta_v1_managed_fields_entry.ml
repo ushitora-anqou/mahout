@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_managed_fields_entry.t : ManagedFieldsEntry is a workflow-id, a FieldSet and the group version of the resource that the fieldset applies to.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIVersion defines the version of this resource that this field set applies to. The format is \''group/version\'' just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted. *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -21,6 +22,8 @@ type t = {
     subresource: string option [@yojson.default None] [@yojson.key "subresource"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     time: string option [@yojson.default None] [@yojson.key "time"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

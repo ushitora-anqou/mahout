@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_node_condition.t : NodeCondition contains condition information for a node.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_heartbeat_time: string option [@yojson.default None] [@yojson.key "lastHeartbeatTime"];
@@ -19,6 +20,8 @@ type t = {
     status: string [@yojson.key "status"];
     (* Type of node condition. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

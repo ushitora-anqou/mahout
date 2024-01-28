@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_daemon_set_status.t : DaemonSetStatus represents the current status of a daemon set.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Count of hash collisions for the DaemonSet. The DaemonSet controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ControllerRevision. *)
     collision_count: int32 option [@yojson.default None] [@yojson.key "collisionCount"];
@@ -27,6 +28,8 @@ type t = {
     observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
     (* The total number of nodes that are running updated daemon pod *)
     updated_number_scheduled: int32 option [@yojson.default None] [@yojson.key "updatedNumberScheduled"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

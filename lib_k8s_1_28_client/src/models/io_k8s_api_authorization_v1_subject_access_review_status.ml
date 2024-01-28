@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_authorization_v1_subject_access_review_status.t : SubjectAccessReviewStatus
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Allowed is required. True if the action would be allowed, false otherwise. *)
     allowed: bool [@yojson.key "allowed"];
@@ -15,6 +16,8 @@ type t = {
     evaluation_error: string option [@yojson.default None] [@yojson.key "evaluationError"];
     (* Reason is optional.  It indicates why a request was allowed or denied. *)
     reason: string option [@yojson.default None] [@yojson.key "reason"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

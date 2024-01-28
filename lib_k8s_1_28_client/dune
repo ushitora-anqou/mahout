@@ -4,7 +4,7 @@
  (name k8s_1_28_client)
  (flags
   (:standard -w -27))
- (libraries str cohttp-eio cohttp yojson ppx_deriving_yojson.runtime unix)
+ (libraries str cohttp-eio cohttp yojson)
  (preprocess
-  (pps ppx_deriving_yojson ppx_deriving.std))
+  (pps ppx_yojson_conv ppx_deriving.std))
  (wrapped true))

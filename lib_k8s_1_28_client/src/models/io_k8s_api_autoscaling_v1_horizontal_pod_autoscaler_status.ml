@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v1_horizontal_pod_autoscaler_status.t : current status of a horizontal pod autoscaler
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* currentCPUUtilizationPercentage is the current average CPU utilization over all pods, represented as a percentage of requested CPU, e.g. 70 means that an average pod is using now 70% of its requested CPU. *)
     current_cpu_utilization_percentage: int32 option [@yojson.default None] [@yojson.key "currentCPUUtilizationPercentage"];
@@ -17,6 +18,8 @@ type t = {
     last_scale_time: string option [@yojson.default None] [@yojson.key "lastScaleTime"];
     (* observedGeneration is the most recent generation observed by this autoscaler. *)
     observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

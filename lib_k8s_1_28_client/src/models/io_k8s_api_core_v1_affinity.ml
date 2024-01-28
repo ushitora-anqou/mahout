@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_core_v1_affinity.t : Affinity is a group of affinity scheduling rules.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     node_affinity: Io_k8s_api_core_v1_node_affinity.t option [@yojson.default None] [@yojson.key "nodeAffinity"];
     pod_affinity: Io_k8s_api_core_v1_pod_affinity.t option [@yojson.default None] [@yojson.key "podAffinity"];
     pod_anti_affinity: Io_k8s_api_core_v1_pod_anti_affinity.t option [@yojson.default None] [@yojson.key "podAntiAffinity"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

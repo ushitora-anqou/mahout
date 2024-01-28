@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_authorization_v1_resource_attributes.t : ResourceAttributes includes the authorization attributes available for resource requests to the Authorizer interface
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Group is the API Group of the Resource.  \''*\'' means all. *)
     group: string option [@yojson.default None] [@yojson.key "group"];
@@ -21,6 +22,8 @@ type t = {
     verb: string option [@yojson.default None] [@yojson.key "verb"];
     (* Version is the API Version of the Resource.  \''*\'' means all. *)
     version: string option [@yojson.default None] [@yojson.key "version"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

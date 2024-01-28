@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_status.t : Status is a return value for calls that don't return other objects.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -21,6 +22,8 @@ type t = {
     reason: string option [@yojson.default None] [@yojson.key "reason"];
     (* Status of the operation. One of: \''Success\'' or \''Failure\''. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#spec-and-status *)
     status: string option [@yojson.default None] [@yojson.key "status"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

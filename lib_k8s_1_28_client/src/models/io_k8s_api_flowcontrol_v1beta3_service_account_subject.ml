@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_flowcontrol_v1beta3_service_account_subject.t : ServiceAccountSubject holds detailed information for service-account-kind subject.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* `name` is the name of matching ServiceAccount objects, or \''*\'' to match regardless of name. Required. *)
     name: string [@yojson.key "name"];
     (* `namespace` is the namespace of matching ServiceAccount objects. Required. *)
     namespace: string [@yojson.key "namespace"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

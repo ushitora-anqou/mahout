@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_limit_range_item.t : LimitRangeItem defines a min/max usage limit for any resource that matches on kind.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Default resource requirement limit value by resource name if resource limit is omitted. *)
     default: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "default"];
@@ -19,6 +20,8 @@ type t = {
     min: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "min"];
     (* Type of resource that this limit applies to. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

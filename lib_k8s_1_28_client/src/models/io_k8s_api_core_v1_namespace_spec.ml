@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_namespace_spec.t : NamespaceSpec describes the attributes on a Namespace.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Finalizers is an opaque list of values that must be empty to permanently remove object from storage. More info: https://kubernetes.io/docs/tasks/administer-cluster/namespaces/ *)
     finalizers: string list [@yojson.default []] [@yojson.key "finalizers"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

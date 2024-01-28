@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_stateful_set_status.t : StatefulSetStatus represents the current state of a StatefulSet.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Total number of available pods (ready for at least minReadySeconds) targeted by this statefulset. *)
     available_replicas: int32 option [@yojson.default None] [@yojson.key "availableReplicas"];
@@ -27,6 +28,8 @@ type t = {
     update_revision: string option [@yojson.default None] [@yojson.key "updateRevision"];
     (* updatedReplicas is the number of Pods created by the StatefulSet controller from the StatefulSet version indicated by updateRevision. *)
     updated_replicas: int32 option [@yojson.default None] [@yojson.key "updatedReplicas"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

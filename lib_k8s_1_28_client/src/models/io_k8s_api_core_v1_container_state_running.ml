@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_container_state_running.t : ContainerStateRunning is a running state of a container.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     started_at: string option [@yojson.default None] [@yojson.key "startedAt"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

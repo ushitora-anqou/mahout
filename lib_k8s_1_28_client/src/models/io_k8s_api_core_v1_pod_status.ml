@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_pod_status.t : PodStatus represents information about the status of a pod. Status may trail the actual state of a system, especially if the node that hosts the pod cannot contact the control plane.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Current service state of pod. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#pod-conditions *)
     conditions: Io_k8s_api_core_v1_pod_condition.t list [@yojson.default []] [@yojson.key "conditions"];
@@ -39,6 +40,8 @@ type t = {
     resource_claim_statuses: Io_k8s_api_core_v1_pod_resource_claim_status.t list [@yojson.default []] [@yojson.key "resourceClaimStatuses"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     start_time: string option [@yojson.default None] [@yojson.key "startTime"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

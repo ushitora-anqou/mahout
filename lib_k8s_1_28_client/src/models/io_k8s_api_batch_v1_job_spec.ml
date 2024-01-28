@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_batch_v1_job_spec.t : JobSpec describes how the job execution will look like.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Specifies the duration in seconds relative to the startTime that the job may be continuously active before the system tries to terminate it; value must be positive integer. If a Job is suspended (at creation or through an update), this timer will effectively be stopped and reset when the Job is resumed again. *)
     active_deadline_seconds: int64 option [@yojson.default None] [@yojson.key "activeDeadlineSeconds"];
@@ -32,6 +33,8 @@ type t = {
     template: Io_k8s_api_core_v1_pod_template_spec.t [@yojson.key "template"];
     (* ttlSecondsAfterFinished limits the lifetime of a Job that has finished execution (either Complete or Failed). If this field is set, ttlSecondsAfterFinished after the Job finishes, it is eligible to be automatically deleted. When the Job is being deleted, its lifecycle guarantees (e.g. finalizers) will be honored. If this field is unset, the Job won't be automatically deleted. If this field is set to zero, the Job becomes eligible to be deleted immediately after it finishes. *)
     ttl_seconds_after_finished: int32 option [@yojson.default None] [@yojson.key "ttlSecondsAfterFinished"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_flocker_volume_source.t : Represents a Flocker volume mounted by the Flocker agent. One and only one of datasetName and datasetUUID should be set. Flocker volumes do not support ownership management or SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* datasetName is Name of the dataset stored as metadata -> name on the dataset for Flocker should be considered as deprecated *)
     dataset_name: string option [@yojson.default None] [@yojson.key "datasetName"];
     (* datasetUUID is the UUID of the dataset. This is unique identifier of a Flocker dataset *)
     dataset_uuid: string option [@yojson.default None] [@yojson.key "datasetUUID"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

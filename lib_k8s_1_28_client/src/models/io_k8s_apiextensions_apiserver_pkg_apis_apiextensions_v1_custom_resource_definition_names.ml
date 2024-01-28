@@ -6,6 +6,7 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_names.t : CustomResourceDefinitionNames indicates the names to serve this CustomResourceDefinition
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* categories is a list of grouped resources this custom resource belongs to (e.g. 'all'). This is published in API discovery documents, and used by clients to support invocations like `kubectl get all`. *)
     categories: string list [@yojson.default []] [@yojson.key "categories"];
@@ -19,6 +20,8 @@ type t = {
     short_names: string list [@yojson.default []] [@yojson.key "shortNames"];
     (* singular is the singular name of the resource. It must be all lowercase. Defaults to lowercased `kind`. *)
     singular: string option [@yojson.default None] [@yojson.key "singular"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

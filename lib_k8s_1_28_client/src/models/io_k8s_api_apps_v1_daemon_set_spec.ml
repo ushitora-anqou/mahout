@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_daemon_set_spec.t : DaemonSetSpec is the specification of a daemon set.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The minimum number of seconds for which a newly created DaemonSet pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready). *)
     min_ready_seconds: int32 option [@yojson.default None] [@yojson.key "minReadySeconds"];
@@ -14,6 +15,8 @@ type t = {
     selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t [@yojson.key "selector"];
     template: Io_k8s_api_core_v1_pod_template_spec.t [@yojson.key "template"];
     update_strategy: Io_k8s_api_apps_v1_daemon_set_update_strategy.t option [@yojson.default None] [@yojson.key "updateStrategy"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_host_alias.t : HostAlias holds the mapping between IP and hostnames that will be injected as an entry in the pod's hosts file.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Hostnames for the above IP address. *)
     hostnames: string list [@yojson.default []] [@yojson.key "hostnames"];
     (* IP address of the host file entry. *)
     ip: string option [@yojson.default None] [@yojson.key "ip"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

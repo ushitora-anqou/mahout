@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_admissionregistration_v1alpha1_param_ref.t : ParamRef describes how to locate the params to be used as input to expressions of rules applied by a policy binding.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* `name` is the name of the resource being referenced.  `name` and `selector` are mutually exclusive properties. If one is set, the other must be unset. *)
     name: string option [@yojson.default None] [@yojson.key "name"];
@@ -14,6 +15,8 @@ type t = {
     (* `parameterNotFoundAction` controls the behavior of the binding when the resource exists, and name or selector is valid, but there are no parameters matched by the binding. If the value is set to `Allow`, then no matched parameters will be treated as successful validation by the binding. If set to `Deny`, then no matched parameters will be subject to the `failurePolicy` of the policy.  Allowed values are `Allow` or `Deny` Default to `Deny` *)
     parameter_not_found_action: string option [@yojson.default None] [@yojson.key "parameterNotFoundAction"];
     selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "selector"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

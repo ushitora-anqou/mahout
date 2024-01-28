@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_portworx_volume_source.t : PortworxVolumeSource represents a Portworx volume resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* fSType represents the filesystem type to mount Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
     fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
@@ -13,6 +14,8 @@ type t = {
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* volumeID uniquely identifies a Portworx volume *)
     volume_id: string [@yojson.key "volumeID"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

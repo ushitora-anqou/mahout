@@ -6,8 +6,11 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_validation.t : CustomResourceValidation is a list of validation methods for CustomResources.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     open_apiv3_schema: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_json_schema_props.t option [@yojson.default None] [@yojson.key "openAPIV3Schema"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

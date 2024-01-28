@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_daemon_endpoint.t : DaemonEndpoint contains information about a single Daemon endpoint.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Port number of the given endpoint. *)
     port: int32 [@yojson.key "Port"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

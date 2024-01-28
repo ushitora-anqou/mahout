@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_authorization_v1_non_resource_rule.t : NonResourceRule holds information that describes a rule for the non-resource
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* NonResourceURLs is a set of partial urls that a user should have access to.  *s are allowed, but only as the full, final step in the path.  \''*\'' means all. *)
     non_resource_urls: string list [@yojson.default []] [@yojson.key "nonResourceURLs"];
     (* Verb is a list of kubernetes non-resource API verbs, like: get, post, put, delete, patch, head, options.  \''*\'' means all. *)
     verbs: string list [@yojson.default []] [@yojson.key "verbs"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

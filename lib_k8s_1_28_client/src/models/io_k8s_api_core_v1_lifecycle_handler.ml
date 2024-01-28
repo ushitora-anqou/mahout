@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_core_v1_lifecycle_handler.t : LifecycleHandler defines a specific action that should be taken in a lifecycle hook. One and only one of the fields, except TCPSocket must be specified.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     exec: Io_k8s_api_core_v1_exec_action.t option [@yojson.default None] [@yojson.key "exec"];
     http_get: Io_k8s_api_core_v1_http_get_action.t option [@yojson.default None] [@yojson.key "httpGet"];
     tcp_socket: Io_k8s_api_core_v1_tcp_socket_action.t option [@yojson.default None] [@yojson.key "tcpSocket"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

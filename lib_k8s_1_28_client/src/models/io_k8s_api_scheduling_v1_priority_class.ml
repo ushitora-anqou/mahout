@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_scheduling_v1_priority_class.t : PriorityClass defines mapping from a priority class name to the priority integer value. The value can be any valid integer.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -20,6 +21,8 @@ type t = {
     preemption_policy: string option [@yojson.default None] [@yojson.key "preemptionPolicy"];
     (* value represents the integer value of this priority class. This is the actual priority that pods receive when they have the name of this class in their pod spec. *)
     value: int32 [@yojson.key "value"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_core_v1_service_status.t : ServiceStatus represents the current status of a service.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Current service state *)
     conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@yojson.default []] [@yojson.key "conditions"];
     load_balancer: Io_k8s_api_core_v1_load_balancer_status.t option [@yojson.default None] [@yojson.key "loadBalancer"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

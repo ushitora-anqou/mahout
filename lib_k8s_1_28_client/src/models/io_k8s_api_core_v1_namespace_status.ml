@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_namespace_status.t : NamespaceStatus is information about the current status of a Namespace.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Represents the latest available observations of a namespace's current state. *)
     conditions: Io_k8s_api_core_v1_namespace_condition.t list [@yojson.default []] [@yojson.key "conditions"];
     (* Phase is the current lifecycle phase of the namespace. More info: https://kubernetes.io/docs/tasks/administer-cluster/namespaces/ *)
     phase: string option [@yojson.default None] [@yojson.key "phase"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

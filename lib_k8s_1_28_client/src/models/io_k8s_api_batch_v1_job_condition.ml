@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_batch_v1_job_condition.t : JobCondition describes current state of a job.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_probe_time: string option [@yojson.default None] [@yojson.key "lastProbeTime"];
@@ -19,6 +20,8 @@ type t = {
     status: string [@yojson.key "status"];
     (* Type of job condition, Complete or Failed. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

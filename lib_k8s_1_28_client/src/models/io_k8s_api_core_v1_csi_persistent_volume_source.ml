@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_csi_persistent_volume_source.t : Represents storage that is managed by an external CSI volume driver (Beta feature)
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     controller_expand_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "controllerExpandSecretRef"];
     controller_publish_secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "controllerPublishSecretRef"];
@@ -22,6 +23,8 @@ type t = {
     volume_attributes: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "volumeAttributes"];
     (* volumeHandle is the unique volume name returned by the CSI volume plugin’s CreateVolume to refer to the volume on all subsequent calls. Required. *)
     volume_handle: string [@yojson.key "volumeHandle"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

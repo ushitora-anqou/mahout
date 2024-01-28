@@ -1,5 +1,3 @@
-open Ppx_deriving_yojson_runtime
-
 let unwrap to_json json =
     match to_json json with
     | Result.Ok json -> json

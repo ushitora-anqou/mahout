@@ -6,12 +6,15 @@
  * Schema Io_k8s_api_admissionregistration_v1beta1_validating_admission_policy_status.t : ValidatingAdmissionPolicyStatus represents the status of an admission validation policy.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The conditions represent the latest available observations of a policy's current state. *)
     conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@yojson.default []] [@yojson.key "conditions"];
     (* The generation observed by the controller. *)
     observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
     type_checking: Io_k8s_api_admissionregistration_v1beta1_type_checking.t option [@yojson.default None] [@yojson.key "typeChecking"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

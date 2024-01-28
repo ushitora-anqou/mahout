@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_status_cause.t : StatusCause provides more information about an api.Status failure, including cases when multiple errors are encountered.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The field of the resource that has caused this error, as named by its JSON serialization. May include dot and postfix notation for nested attributes. Arrays are zero-indexed.  Fields may appear more than once in an array of causes due to fields having multiple errors. Optional.  Examples:   \''name\'' - the field \''name\'' on the current resource   \''items[0].name\'' - the field \''name\'' on the first array entry in \''items\'' *)
     field: string option [@yojson.default None] [@yojson.key "field"];
@@ -13,6 +14,8 @@ type t = {
     message: string option [@yojson.default None] [@yojson.key "message"];
     (* A machine-readable description of the cause of the error. If this value is empty there is no information available. *)
     reason: string option [@yojson.default None] [@yojson.key "reason"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

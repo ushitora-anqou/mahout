@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v2_metric_status.t : MetricStatus describes the last-read state of a single metric.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     container_resource: Io_k8s_api_autoscaling_v2_container_resource_metric_status.t option [@yojson.default None] [@yojson.key "containerResource"];
     _external: Io_k8s_api_autoscaling_v2_external_metric_status.t option [@yojson.default None] [@yojson.key "external"];
@@ -14,6 +15,8 @@ type t = {
     resource: Io_k8s_api_autoscaling_v2_resource_metric_status.t option [@yojson.default None] [@yojson.key "resource"];
     (* type is the type of metric source.  It will be one of \''ContainerResource\'', \''External\'', \''Object\'', \''Pods\'' or \''Resource\'', each corresponds to a matching field in the object. Note: \''ContainerResource\'' type is available on when the feature-gate HPAContainerMetrics is enabled *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

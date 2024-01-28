@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_node_v1_overhead.t : Overhead structure represents the resource overhead associated with running a pod.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* podFixed represents the fixed resource overhead associated with running a pod. *)
     pod_fixed: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "podFixed"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

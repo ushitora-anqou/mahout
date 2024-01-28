@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_pod_spec.t : PodSpec is a description of a pod.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Optional duration in seconds the pod may be active on the node relative to StartTime before the system will actively try to mark it failed and kill associated containers. Value must be a positive integer. *)
     active_deadline_seconds: int64 option [@yojson.default None] [@yojson.key "activeDeadlineSeconds"];
@@ -81,6 +82,8 @@ type t = {
     topology_spread_constraints: Io_k8s_api_core_v1_topology_spread_constraint.t list [@yojson.default []] [@yojson.key "topologySpreadConstraints"];
     (* List of volumes that can be mounted by containers belonging to the pod. More info: https://kubernetes.io/docs/concepts/storage/volumes *)
     volumes: Io_k8s_api_core_v1_volume.t list [@yojson.default []] [@yojson.key "volumes"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

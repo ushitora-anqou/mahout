@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_resource_v1alpha2_resource_claim_scheduling_status.t : ResourceClaimSchedulingStatus contains information about one particular ResourceClaim with \''WaitForFirstConsumer\'' allocation mode.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Name matches the pod.spec.resourceClaims[*].Name field. *)
     name: string option [@yojson.default None] [@yojson.key "name"];
     (* UnsuitableNodes lists nodes that the ResourceClaim cannot be allocated for.  The size of this field is limited to 128, the same as for PodSchedulingSpec.PotentialNodes. This may get increased in the future, but not reduced. *)
     unsuitable_nodes: string list [@yojson.default []] [@yojson.key "unsuitableNodes"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

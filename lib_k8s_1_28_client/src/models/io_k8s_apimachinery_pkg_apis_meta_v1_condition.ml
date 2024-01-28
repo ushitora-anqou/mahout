@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t : Condition contains details for one aspect of the current state of this API Resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_transition_time: string [@yojson.key "lastTransitionTime"];
@@ -19,6 +20,8 @@ type t = {
     status: string [@yojson.key "status"];
     (* type of condition in CamelCase or in foo.example.com/CamelCase. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_condition.t : CustomResourceDefinitionCondition contains details for the current condition of this pod.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_transition_time: string option [@yojson.default None] [@yojson.key "lastTransitionTime"];
@@ -17,6 +18,8 @@ type t = {
     status: string [@yojson.key "status"];
     (* type is the type of the condition. Types include Established, NamesAccepted and Terminating. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

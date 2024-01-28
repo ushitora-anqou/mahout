@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_resource_v1alpha2_pod_scheduling_context_status.t : PodSchedulingContextStatus describes where resources for the Pod can be allocated.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* ResourceClaims describes resource availability for each pod.spec.resourceClaim entry where the corresponding ResourceClaim uses \''WaitForFirstConsumer\'' allocation mode. *)
     resource_claims: Io_k8s_api_resource_v1alpha2_resource_claim_scheduling_status.t list [@yojson.default []] [@yojson.key "resourceClaims"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

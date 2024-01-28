@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_service_account_token_projection.t : ServiceAccountTokenProjection represents a projected service account token volume. This projection can be used to insert a service account token into the pods runtime filesystem for use against APIs (Kubernetes API Server or otherwise).
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* audience is the intended audience of the token. A recipient of a token must identify itself with an identifier specified in the audience of the token, and otherwise should reject the token. The audience defaults to the identifier of the apiserver. *)
     audience: string option [@yojson.default None] [@yojson.key "audience"];
@@ -13,6 +14,8 @@ type t = {
     expiration_seconds: int64 option [@yojson.default None] [@yojson.key "expirationSeconds"];
     (* path is the path relative to the mount point of the file to project the token into. *)
     path: string [@yojson.key "path"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_storage_v1_storage_class.t : StorageClass describes the parameters for a class of storage for which PersistentVolumes can be dynamically provisioned.  StorageClasses are non-namespaced; the name of the storage class according to etcd is in ObjectMeta.Name.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* allowVolumeExpansion shows whether the storage class allow volume expand. *)
     allow_volume_expansion: bool option [@yojson.default None] [@yojson.key "allowVolumeExpansion"];
@@ -26,6 +27,8 @@ type t = {
     reclaim_policy: string option [@yojson.default None] [@yojson.key "reclaimPolicy"];
     (* volumeBindingMode indicates how PersistentVolumeClaims should be provisioned and bound.  When unset, VolumeBindingImmediate is used. This field is only honored by servers that enable the VolumeScheduling feature. *)
     volume_binding_mode: string option [@yojson.default None] [@yojson.key "volumeBindingMode"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

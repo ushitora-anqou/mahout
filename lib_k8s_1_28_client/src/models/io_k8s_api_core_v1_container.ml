@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_container.t : A single application container that you want to run within a pod.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Arguments to the entrypoint. The container image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
     args: string list [@yojson.default []] [@yojson.key "args"];
@@ -49,6 +50,8 @@ type t = {
     volume_mounts: Io_k8s_api_core_v1_volume_mount.t list [@yojson.default []] [@yojson.key "volumeMounts"];
     (* Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. *)
     working_dir: string option [@yojson.default None] [@yojson.key "workingDir"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

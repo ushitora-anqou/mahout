@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_nfs_volume_source.t : Represents an NFS mount that lasts the lifetime of a pod. NFS volumes do not support ownership management or SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* path that is exported by the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs *)
     path: string [@yojson.key "path"];
@@ -13,6 +14,8 @@ type t = {
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* server is the hostname or IP address of the NFS server. More info: https://kubernetes.io/docs/concepts/storage/volumes#nfs *)
     server: string [@yojson.key "server"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

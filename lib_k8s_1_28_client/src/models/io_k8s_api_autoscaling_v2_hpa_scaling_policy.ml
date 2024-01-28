@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v2_hpa_scaling_policy.t : HPAScalingPolicy is a single policy which must hold true for a specified past interval.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* periodSeconds specifies the window of time for which the policy should hold true. PeriodSeconds must be greater than zero and less than or equal to 1800 (30 min). *)
     period_seconds: int32 [@yojson.key "periodSeconds"];
@@ -13,6 +14,8 @@ type t = {
     _type: string [@yojson.key "type"];
     (* value contains the amount of change which is permitted by the policy. It must be greater than zero *)
     value: int32 [@yojson.key "value"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_local_volume_source.t : Local represents directly-attached storage with node affinity (Beta feature)
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* fsType is the filesystem type to mount. It applies only when the Path is a block device. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. The default value is to auto-select a filesystem if unspecified. *)
     fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
     (* path of the full path to the volume on the node. It can be either a directory or block device (disk, partition, ...). *)
     path: string [@yojson.key "path"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

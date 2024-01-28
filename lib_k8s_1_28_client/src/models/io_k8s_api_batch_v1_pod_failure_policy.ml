@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_batch_v1_pod_failure_policy.t : PodFailurePolicy describes how failed pods influence the backoffLimit.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* A list of pod failure policy rules. The rules are evaluated in order. Once a rule matches a Pod failure, the remaining of the rules are ignored. When no rule matches the Pod failure, the default handling applies - the counter of pod failures is incremented and it is checked against the backoffLimit. At most 20 elements are allowed. *)
     rules: Io_k8s_api_batch_v1_pod_failure_policy_rule.t list [@yojson.default []] [@yojson.key "rules"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

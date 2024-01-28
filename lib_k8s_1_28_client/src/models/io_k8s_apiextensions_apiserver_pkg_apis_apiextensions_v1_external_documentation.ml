@@ -6,9 +6,12 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_external_documentation.t : ExternalDocumentation allows referencing an external resource for extended documentation.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     description: string option [@yojson.default None] [@yojson.key "description"];
     url: string option [@yojson.default None] [@yojson.key "url"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

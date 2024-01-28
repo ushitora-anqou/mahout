@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_volume.t : Volume represents a named volume in a pod that may be accessed by any container in the pod.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     aws_elastic_block_store: Io_k8s_api_core_v1_aws_elastic_block_store_volume_source.t option [@yojson.default None] [@yojson.key "awsElasticBlockStore"];
     azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@yojson.default None] [@yojson.key "azureDisk"];
@@ -38,6 +39,8 @@ type t = {
     secret: Io_k8s_api_core_v1_secret_volume_source.t option [@yojson.default None] [@yojson.key "secret"];
     storageos: Io_k8s_api_core_v1_storage_os_volume_source.t option [@yojson.default None] [@yojson.key "storageos"];
     vsphere_volume: Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t option [@yojson.default None] [@yojson.key "vsphereVolume"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

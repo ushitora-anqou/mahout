@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_autoscaling_v2_pods_metric_status.t : PodsMetricStatus indicates the current value of a metric describing each pod in the current scale target (for example, transactions-processed-per-second).
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     current: Io_k8s_api_autoscaling_v2_metric_value_status.t [@yojson.key "current"];
     metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@yojson.key "metric"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

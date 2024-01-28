@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_probe.t : Probe describes a health check to be performed against a container to determine whether it is alive or ready to receive traffic.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     exec: Io_k8s_api_core_v1_exec_action.t option [@yojson.default None] [@yojson.key "exec"];
     (* Minimum consecutive failures for the probe to be considered failed after having succeeded. Defaults to 3. Minimum value is 1. *)
@@ -23,6 +24,8 @@ type t = {
     termination_grace_period_seconds: int64 option [@yojson.default None] [@yojson.key "terminationGracePeriodSeconds"];
     (* Number of seconds after which the probe times out. Defaults to 1 second. Minimum value is 1. More info: https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle#container-probes *)
     timeout_seconds: int32 option [@yojson.default None] [@yojson.key "timeoutSeconds"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

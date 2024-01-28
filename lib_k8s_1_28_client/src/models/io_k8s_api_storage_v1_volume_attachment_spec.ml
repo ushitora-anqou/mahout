@@ -6,12 +6,15 @@
  * Schema Io_k8s_api_storage_v1_volume_attachment_spec.t : VolumeAttachmentSpec is the specification of a VolumeAttachment request.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* attacher indicates the name of the volume driver that MUST handle this request. This is the name returned by GetPluginName(). *)
     attacher: string [@yojson.key "attacher"];
     (* nodeName represents the node that the volume should be attached to. *)
     node_name: string [@yojson.key "nodeName"];
     source: Io_k8s_api_storage_v1_volume_attachment_source.t [@yojson.key "source"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

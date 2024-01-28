@@ -18,6 +18,18 @@ rules:
   - update
   - watch
 - apiGroups:
+  - "apps"
+  resources:
+  - deployments
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
   - ""
   resources:
   - pods/finalizers
@@ -102,9 +114,7 @@ spec:
 apiVersion: mahout.anqou.net/v1alpha1
 kind: Mastodon
 metadata:
-  name: mastodon0
+  name: mastodon1
+  namespace: default
 spec:
-  image: "ghcr.io/mastodon/mastodon:4.2.1"
-  envFrom:
-    - secretRef:
-        name: secret-env
+  image: "ghcr.io/ushitora-anqou/ket-mastodon:4.2.1.1"

@@ -6,6 +6,7 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_version.t : CustomResourceDefinitionVersion describes a version for CRD.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* additionalPrinterColumns specifies additional columns returned in Table output. See https://kubernetes.io/docs/reference/using-api/api-concepts/#receiving-resources-as-tables for details. If no columns are specified, a single column displaying the age of the custom resource is used. *)
     additional_printer_columns: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_column_definition.t list [@yojson.default []] [@yojson.key "additionalPrinterColumns"];
@@ -21,6 +22,8 @@ type t = {
     (* storage indicates this version should be used when persisting custom resources to storage. There must be exactly one version with storage=true. *)
     storage: bool [@yojson.key "storage"];
     subresources: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_subresources.t option [@yojson.default None] [@yojson.key "subresources"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_version_info.t : Info contains versioning information. how we'll want to distribute that information.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     build_date: string [@yojson.key "buildDate"];
     compiler: string [@yojson.key "compiler"];
@@ -16,6 +17,8 @@ type t = {
     major: string [@yojson.key "major"];
     minor: string [@yojson.key "minor"];
     platform: string [@yojson.key "platform"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

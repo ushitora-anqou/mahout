@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_taint.t : The node this Taint is attached to has the \''effect\'' on any pod that does not tolerate the Taint.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Required. The effect of the taint on pods that do not tolerate the taint. Valid effects are NoSchedule, PreferNoSchedule and NoExecute. *)
     effect: string [@yojson.key "effect"];
@@ -15,6 +16,8 @@ type t = {
     time_added: string option [@yojson.default None] [@yojson.key "timeAdded"];
     (* The taint value corresponding to the taint key. *)
     value: string option [@yojson.default None] [@yojson.key "value"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

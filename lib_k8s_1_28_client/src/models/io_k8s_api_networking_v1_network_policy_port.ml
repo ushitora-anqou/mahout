@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_networking_v1_network_policy_port.t : NetworkPolicyPort describes a port to allow traffic on
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* endPort indicates that the range of ports from port to endPort if set, inclusive, should be allowed by the policy. This field cannot be defined if the port field is not defined or if the port field is defined as a named (string) port. The endPort must be equal or greater than port. *)
     end_port: int32 option [@yojson.default None] [@yojson.key "endPort"];
@@ -13,6 +14,8 @@ type t = {
     port: string option [@yojson.default None] [@yojson.key "port"];
     (* protocol represents the protocol (TCP, UDP, or SCTP) which traffic must match. If not specified, this field defaults to TCP. *)
     protocol: string option [@yojson.default None] [@yojson.key "protocol"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

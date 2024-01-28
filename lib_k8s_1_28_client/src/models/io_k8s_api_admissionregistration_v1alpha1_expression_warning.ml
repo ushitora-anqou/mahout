@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_admissionregistration_v1alpha1_expression_warning.t : ExpressionWarning is a warning information that targets a specific expression.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The path to the field that refers the expression. For example, the reference to the expression of the first item of validations is \''spec.validations[0].expression\'' *)
     field_ref: string [@yojson.key "fieldRef"];
     (* The content of type checking information in a human-readable form. Each line of the warning contains the type that the expression is checked against, followed by the type check error from the compiler. *)
     warning: string [@yojson.key "warning"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

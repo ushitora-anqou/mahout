@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_storage_os_persistent_volume_source.t : Represents a StorageOS persistent volume resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
     fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
@@ -16,6 +17,8 @@ type t = {
     volume_name: string option [@yojson.default None] [@yojson.key "volumeName"];
     (* volumeNamespace specifies the scope of the volume within StorageOS.  If no namespace is specified then the Pod's namespace will be used.  This allows the Kubernetes name scoping to be mirrored within StorageOS for tighter integration. Set VolumeName to any name to override the default behaviour. Set to \''default\'' if you are not using namespaces within StorageOS. Namespaces that do not pre-exist within StorageOS will be created. *)
     volume_namespace: string option [@yojson.default None] [@yojson.key "volumeNamespace"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

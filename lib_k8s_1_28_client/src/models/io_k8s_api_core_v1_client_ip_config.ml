@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_client_ip_config.t : ClientIPConfig represents the configurations of Client IP based session affinity.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* timeoutSeconds specifies the seconds of ClientIP type session sticky time. The value must be >0 && <=86400(for 1 day) if ServiceAffinity == \''ClientIP\''. Default value is 10800(for 3 hours). *)
     timeout_seconds: int32 option [@yojson.default None] [@yojson.key "timeoutSeconds"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_pod_template_spec.t : PodTemplateSpec describes the data a pod should have when created from a template
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     spec: Io_k8s_api_core_v1_pod_spec.t option [@yojson.default None] [@yojson.key "spec"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

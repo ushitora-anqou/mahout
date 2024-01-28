@@ -6,6 +6,7 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_column_definition.t : CustomResourceColumnDefinition specifies a column for server side printing.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* description is a human readable description of this column. *)
     description: string option [@yojson.default None] [@yojson.key "description"];
@@ -19,6 +20,8 @@ type t = {
     priority: int32 option [@yojson.default None] [@yojson.key "priority"];
     (* type is an OpenAPI type definition for this column. See https://github.com/OAI/OpenAPI-Specification/blob/master/versions/2.0.md#data-types for details. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

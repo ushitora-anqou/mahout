@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_container_status.t : ContainerStatus contains details for the current status of this container.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* AllocatedResources represents the compute resources allocated for this container by the node. Kubelet sets this value to Container.Resources.Requests upon successful pod admission and after successfully admitting desired pod resize. *)
     allocated_resources: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "allocatedResources"];
@@ -26,6 +27,8 @@ type t = {
     (* Started indicates whether the container has finished its postStart lifecycle hook and passed its startup probe. Initialized as false, becomes true after startupProbe is considered successful. Resets to false when the container is restarted, or if kubelet loses state temporarily. In both cases, startup probes will run again. Is always true when no startupProbe is defined and container is running and has passed the postStart lifecycle hook. The null value must be treated the same as false. *)
     started: bool option [@yojson.default None] [@yojson.key "started"];
     state: Io_k8s_api_core_v1_container_state.t option [@yojson.default None] [@yojson.key "state"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_admissionregistration_v1beta1_named_rule_with_operations.t : NamedRuleWithOperations is a tuple of Operations and Resources with ResourceNames.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIGroups is the API groups the resources belong to. '*' is all groups. If '*' is present, the length of the slice must be one. Required. *)
     api_groups: string list [@yojson.default []] [@yojson.key "apiGroups"];
@@ -19,6 +20,8 @@ type t = {
     resources: string list [@yojson.default []] [@yojson.key "resources"];
     (* scope specifies the scope of this rule. Valid values are \''Cluster\'', \''Namespaced\'', and \''*\'' \''Cluster\'' means that only cluster-scoped resources will match this rule. Namespace API objects are cluster-scoped. \''Namespaced\'' means that only namespaced resources will match this rule. \''*\'' means that there are no scope restrictions. Subresources match the scope of their parent resource. Default is \''*\''. *)
     scope: string option [@yojson.default None] [@yojson.key "scope"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

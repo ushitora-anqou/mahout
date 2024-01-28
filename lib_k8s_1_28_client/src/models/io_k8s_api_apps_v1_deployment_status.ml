@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_deployment_status.t : DeploymentStatus is the most recently observed status of the Deployment.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Total number of available pods (ready for at least minReadySeconds) targeted by this deployment. *)
     available_replicas: int32 option [@yojson.default None] [@yojson.key "availableReplicas"];
@@ -23,6 +24,8 @@ type t = {
     unavailable_replicas: int32 option [@yojson.default None] [@yojson.key "unavailableReplicas"];
     (* Total number of non-terminated pods targeted by this deployment that have the desired template spec. *)
     updated_replicas: int32 option [@yojson.default None] [@yojson.key "updatedReplicas"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_node_status.t : NodeStatus is information about the current status of a node.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* List of addresses reachable to the node. Queried from cloud provider, if available. More info: https://kubernetes.io/docs/concepts/nodes/node/#addresses Note: This field is declared as mergeable, but the merge key is not sufficiently unique, which can cause data corruption when it is merged. Callers should instead use a full-replacement patch. See https://pr.k8s.io/79391 for an example. Consumers should assume that addresses can change during the lifetime of a Node. However, there are some exceptions where this may not be possible, such as Pods that inherit a Node's address in its own status or consumers of the downward API (status.hostIP). *)
     addresses: Io_k8s_api_core_v1_node_address.t list [@yojson.default []] [@yojson.key "addresses"];
@@ -26,6 +27,8 @@ type t = {
     volumes_attached: Io_k8s_api_core_v1_attached_volume.t list [@yojson.default []] [@yojson.key "volumesAttached"];
     (* List of attachable volumes in use (mounted) by the node. *)
     volumes_in_use: string list [@yojson.default []] [@yojson.key "volumesInUse"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

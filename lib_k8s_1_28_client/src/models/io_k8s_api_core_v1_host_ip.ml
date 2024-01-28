@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_host_ip.t : HostIP represents a single IP address allocated to the host.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* IP is the IP address assigned to the host *)
     ip: string option [@yojson.default None] [@yojson.key "ip"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

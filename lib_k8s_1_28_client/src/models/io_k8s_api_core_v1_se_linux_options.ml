@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_se_linux_options.t : SELinuxOptions are the labels to be applied to the container
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Level is SELinux level label that applies to the container. *)
     level: string option [@yojson.default None] [@yojson.key "level"];
@@ -15,6 +16,8 @@ type t = {
     _type: string option [@yojson.default None] [@yojson.key "type"];
     (* User is a SELinux user label that applies to the container. *)
     user: string option [@yojson.default None] [@yojson.key "user"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

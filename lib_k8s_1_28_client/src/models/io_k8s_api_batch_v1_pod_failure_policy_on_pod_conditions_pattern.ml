@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_batch_v1_pod_failure_policy_on_pod_conditions_pattern.t : PodFailurePolicyOnPodConditionsPattern describes a pattern for matching an actual pod condition type.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Specifies the required Pod condition status. To match a pod condition it is required that the specified status equals the pod condition status. Defaults to True. *)
     status: string [@yojson.key "status"];
     (* Specifies the required Pod condition type. To match a pod condition it is required that specified type equals the pod condition type. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

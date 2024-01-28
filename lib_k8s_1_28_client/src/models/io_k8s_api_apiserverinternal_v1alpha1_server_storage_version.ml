@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apiserverinternal_v1alpha1_server_storage_version.t : An API server instance reports the version it can decode and the version it encodes objects to when persisting objects in the backend.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The ID of the reporting API server. *)
     api_server_id: string option [@yojson.default None] [@yojson.key "apiServerID"];
@@ -15,6 +16,8 @@ type t = {
     encoding_version: string option [@yojson.default None] [@yojson.key "encodingVersion"];
     (* The API server can serve these versions. DecodableVersions must include all ServedVersions. *)
     served_versions: string list [@yojson.default []] [@yojson.key "servedVersions"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

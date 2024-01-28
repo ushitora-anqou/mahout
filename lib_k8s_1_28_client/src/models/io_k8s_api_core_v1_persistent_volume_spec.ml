@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_persistent_volume_spec.t : PersistentVolumeSpec is the specification of a persistent volume.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* accessModes contains all ways the volume can be mounted. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes *)
     access_modes: string list [@yojson.default []] [@yojson.key "accessModes"];
@@ -43,6 +44,8 @@ type t = {
     (* volumeMode defines if a volume is intended to be used with a formatted filesystem or to remain in raw block state. Value of Filesystem is implied when not included in spec. *)
     volume_mode: string option [@yojson.default None] [@yojson.key "volumeMode"];
     vsphere_volume: Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t option [@yojson.default None] [@yojson.key "vsphereVolume"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

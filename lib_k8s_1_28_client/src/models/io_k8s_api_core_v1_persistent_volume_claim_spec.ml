@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_persistent_volume_claim_spec.t : PersistentVolumeClaimSpec describes the common attributes of storage devices and allows a Source for provider-specific attributes
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* accessModes contains the desired access modes the volume should have. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1 *)
     access_modes: string list [@yojson.default []] [@yojson.key "accessModes"];
@@ -19,6 +20,8 @@ type t = {
     volume_mode: string option [@yojson.default None] [@yojson.key "volumeMode"];
     (* volumeName is the binding reference to the PersistentVolume backing this claim. *)
     volume_name: string option [@yojson.default None] [@yojson.key "volumeName"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

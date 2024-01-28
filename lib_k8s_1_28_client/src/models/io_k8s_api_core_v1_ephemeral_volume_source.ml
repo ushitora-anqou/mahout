@@ -6,8 +6,11 @@
  * Schema Io_k8s_api_core_v1_ephemeral_volume_source.t : Represents an ephemeral volume that is handled by a normal storage driver.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     volume_claim_template: Io_k8s_api_core_v1_persistent_volume_claim_template.t option [@yojson.default None] [@yojson.key "volumeClaimTemplate"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

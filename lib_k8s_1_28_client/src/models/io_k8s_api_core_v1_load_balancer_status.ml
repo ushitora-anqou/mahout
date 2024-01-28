@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_load_balancer_status.t : LoadBalancerStatus represents the status of a load-balancer.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Ingress is a list containing ingress points for the load-balancer. Traffic intended for the service should be sent to these ingress points. *)
     ingress: Io_k8s_api_core_v1_load_balancer_ingress.t list [@yojson.default []] [@yojson.key "ingress"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

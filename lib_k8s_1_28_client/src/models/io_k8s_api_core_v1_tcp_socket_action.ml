@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_tcp_socket_action.t : TCPSocketAction describes an action based on opening a socket
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Optional: Host name to connect to, defaults to the pod IP. *)
     host: string option [@yojson.default None] [@yojson.key "host"];
     (* IntOrString is a type that can hold an int32 or a string.  When used in JSON or YAML marshalling and unmarshalling, it produces or consumes the inner type.  This allows you to have, for example, a JSON field that can accept a name or number. *)
     port: string [@yojson.key "port"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

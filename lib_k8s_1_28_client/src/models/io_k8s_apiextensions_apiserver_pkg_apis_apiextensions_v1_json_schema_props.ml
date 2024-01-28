@@ -6,6 +6,7 @@
  * Schema t : JSONSchemaProps is a JSON-Schema following Specification Draft 4 (http://json-schema.org/).
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     ref: string option [@yojson.default None] [@yojson.key "$ref"];
     schema: string option [@yojson.default None] [@yojson.key "$schema"];
@@ -64,6 +65,8 @@ type t = {
     x_kubernetes_preserve_unknown_fields: bool option [@yojson.default None] [@yojson.key "x-kubernetes-preserve-unknown-fields"];
     (* x-kubernetes-validations describes a list of validation rules written in the CEL expression language. This field is an alpha-level. Using this field requires the feature gate `CustomResourceValidationExpressions` to be enabled. *)
     x_kubernetes_validations: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_validation_rule.t list [@yojson.default []] [@yojson.key "x-kubernetes-validations"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v1_horizontal_pod_autoscaler_spec.t : specification of a horizontal pod autoscaler.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* maxReplicas is the upper limit for the number of pods that can be set by the autoscaler; cannot be smaller than MinReplicas. *)
     max_replicas: int32 [@yojson.key "maxReplicas"];
@@ -14,6 +15,8 @@ type t = {
     scale_target_ref: Io_k8s_api_autoscaling_v1_cross_version_object_reference.t [@yojson.key "scaleTargetRef"];
     (* targetCPUUtilizationPercentage is the target average CPU utilization (represented as a percentage of requested CPU) over all the pods; if not specified the default autoscaling policy will be used. *)
     target_cpu_utilization_percentage: int32 option [@yojson.default None] [@yojson.key "targetCPUUtilizationPercentage"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

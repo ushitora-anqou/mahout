@@ -6,11 +6,14 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_group_version_for_discovery.t : GroupVersion contains the \''group/version\'' and \''version\'' string of a version. It is made a struct to keep extensibility.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* groupVersion specifies the API group and version in the form \''group/version\'' *)
     group_version: string [@yojson.key "groupVersion"];
     (* version specifies the version in the form of \''version\''. This is to save the clients the trouble of splitting the GroupVersion. *)
     version: string [@yojson.key "version"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

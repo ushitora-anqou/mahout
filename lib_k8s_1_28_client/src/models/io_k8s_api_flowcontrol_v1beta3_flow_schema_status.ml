@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_flowcontrol_v1beta3_flow_schema_status.t : FlowSchemaStatus represents the current state of a FlowSchema.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* `conditions` is a list of the current states of FlowSchema. *)
     conditions: Io_k8s_api_flowcontrol_v1beta3_flow_schema_condition.t list [@yojson.default []] [@yojson.key "conditions"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

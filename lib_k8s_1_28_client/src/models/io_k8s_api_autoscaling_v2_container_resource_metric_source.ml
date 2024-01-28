@@ -6,12 +6,15 @@
  * Schema Io_k8s_api_autoscaling_v2_container_resource_metric_source.t : ContainerResourceMetricSource indicates how to scale on a resource metric known to Kubernetes, as specified in requests and limits, describing each pod in the current scale target (e.g. CPU or memory).  The values will be averaged together before being compared to the target.  Such metrics are built in to Kubernetes, and have special scaling options on top of those available to normal per-pod metrics using the \''pods\'' source.  Only one \''target\'' type should be set.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* container is the name of the container in the pods of the scaling target *)
     container: string [@yojson.key "container"];
     (* name is the name of the resource in question. *)
     name: string [@yojson.key "name"];
     target: Io_k8s_api_autoscaling_v2_metric_target.t [@yojson.key "target"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

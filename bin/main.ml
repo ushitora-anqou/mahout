@@ -27,6 +27,7 @@ module K = struct
   module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
   module Key_to_path = Io_k8s_api_core_v1_key_to_path
   module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
+  module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
 end
 
 module Net_anqou_mahout = struct
@@ -106,6 +107,7 @@ module Mahout_v1alpha1_api = struct
          Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson)
       resp body
 
+  (*
   let patch_mahout_v1alpha1_namespaced_mastodon ~sw client ~name ~namespace
       ~body () =
     let uri =
@@ -127,19 +129,16 @@ module Mahout_v1alpha1_api = struct
     Request.read_json_body_as
       (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.of_yojson)
       resp body
+      *)
 end
 
-(*
-let reconcile_mastodon ~sw client
-    (req : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) =
-  Logs.info (fun m -> m "%s %s" req._type (Yojson.Safe.to_string req._object));
-
+let create_or_update_gateway ~sw client
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let nginx_image = "nginx:1.25.3" in
-  let mastodon =
-    Net_anqou_mahout.V1alpha1.Mastodon.of_yojson req._object |> Result.get_ok
-  in
+
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let mastodon_image = (Option.get mastodon.spec).image in
 
   let body =
     let selector_labels =
@@ -150,79 +149,108 @@ let reconcile_mastodon ~sw client
           ("app.kubernetes.io/part-of", `String "mastodon");
         ]
     in
-    K.Deployment.make ~api_version:"v1" ~kind:"Deployment"
-      ~metadata:(K.Object_meta.make ~name:(name ^ "-nginx") ~namespace ())
+    K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
+      ~metadata:
+        (K.Object_meta.make ~name:(name ^ "-gateway-nginx") ~namespace
+           ~owner_references:
+             K.Owner_reference.
+               [
+                 make
+                   ~api_version:(Option.get mastodon.api_version)
+                   ~kind:(Option.get mastodon.kind)
+                   ~uid:(Option.get (Option.get mastodon.metadata).uid)
+                   ~name ~controller:true ();
+               ]
+           ())
       ~spec:
-        (let selector =
-           K.Label_selector.make ~match_labels:selector_labels ()
-         in
-         let template =
-           K.Pod_template_spec.make
-             ~metadata:(K.Object_meta.make ~labels:selector_labels ())
-             ~spec:
-               (let containers =
-                  K.Container.
-                    [
-                      make ~name:"gateway" ~image:nginx_image
-                        ~ports:K.Container_port.[ create 80l ]
-                        ~volume_mounts:
-                          K.Volume_mount.
-                            [
-                              {
-                                (create "/mnt/public" "mnt-public") with
-                                read_only = Some true;
-                              };
-                              {
-                                (create "/etc/nginx/conf.d" "nginx-conf") with
-                                read_only = Some true;
-                              };
-                            ]
-                        ();
-                    ]
-                in
-                K.Pod_spec.
-                  {
-                    (create containers) with
-                    init_containers = [];
-                    volumes =
-                      K.Volume.
-                        [
-                          {
-                            (create "mnt-public") with
-                            empty_dir =
-                              Some K.Empty_dir_volume_source.(create ());
-                          };
-                          {
-                            (create "nginx-conf") with
-                            config_map =
-                              Some
-                                K.Config_map_volume_source.
-                                  {
-                                    (create ()) with
-                                    name = Some "gateway-nginx-conf";
-                                    items =
-                                      K.Key_to_path.
-                                        [
-                                          create "mastodon0-nginx.conf"
-                                            "mastodon0.conf";
-                                        ];
-                                  };
-                          };
-                        ];
-                  })
-             ()
-         in
-         K.Deployment_spec.
-           { (create selector template) with replicas = Some 1l })
+        K.Deployment_spec.(
+          make ~replicas:1l
+            ~selector:(K.Label_selector.make ~match_labels:selector_labels ())
+            ~template:
+              (K.Pod_template_spec.make
+                 ~metadata:(K.Object_meta.make ~labels:selector_labels ())
+                 ~spec:
+                   K.Pod_spec.(
+                     make
+                       ~init_containers:
+                         K.Container.
+                           [
+                             make ~name:"copy-assets" ~image:mastodon_image
+                               ~command:
+                                 [
+                                   "bash";
+                                   "-c";
+                                   "cp -ra /opt/mastodon/public/* /mnt/public/";
+                                 ]
+                               ~volume_mounts:
+                                 K.Volume_mount.
+                                   [
+                                     make ~mount_path:"/mnt/public"
+                                       ~name:"mnt-public" ();
+                                   ]
+                               ();
+                           ]
+                       ~containers:
+                         K.Container.
+                           [
+                             make ~name:"gateway" ~image:nginx_image
+                               ~ports:
+                                 K.Container_port.
+                                   [ make ~container_port:80l () ]
+                               ~volume_mounts:
+                                 K.Volume_mount.
+                                   [
+                                     make ~mount_path:"/mnt/public"
+                                       ~name:"mnt-public" ~read_only:true ();
+                                     make ~mount_path:"/etc/nginx/conf.d"
+                                       ~name:"nginx-conf" ~read_only:true ();
+                                   ]
+                               ();
+                           ]
+                       ~volumes:
+                         K.Volume.
+                           [
+                             make ~name:"mnt-public"
+                               ~empty_dir:(K.Empty_dir_volume_source.make ())
+                               ();
+                             make ~name:"nginx-conf"
+                               ~config_map:
+                                 K.Config_map_volume_source.(
+                                   make ~name:"gateway-nginx-conf"
+                                     ~items:
+                                       K.Key_to_path.
+                                         [
+                                           make ~key:"mastodon0-nginx.conf"
+                                             ~path:"mastodon0.conf" ();
+                                         ]
+                                     ())
+                               ();
+                           ]
+                       ())
+                 ())
+            ())
       ()
   in
-
+  Logs.info (fun m ->
+      m "%s" (body |> K.Deployment.to_yojson |> Yojson.Safe.to_string));
   let _ =
     K.Apps_v1_api.create_apps_v1_namespaced_deployment ~sw client ~namespace
       ~body ()
   in
   ()
-  *)
+
+let reconcile_mastodon ~sw client
+    (req : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) =
+  Logs.info (fun m -> m "%s %s" req._type (Yojson.Safe.to_string req._object));
+
+  let mastodon =
+    match Net_anqou_mahout.V1alpha1.Mastodon.of_yojson req._object with
+    | Ok x -> x
+    | Error msg -> failwith msg
+  in
+  create_or_update_gateway ~sw client ~mastodon;
+
+  ()
 
 let controller () =
   Eio_main.run @@ fun env ->
@@ -250,7 +278,8 @@ let controller () =
   *)
   Mahout_v1alpha1_api.watch_mahout_v1alpha1_namespaced_mastodon ~sw client
     ~namespace:"default" ~watch:true ()
-  |> K.Json_response_scanner.iter (*(reconcile_mastodon ~sw client)*)
+  |> K.Json_response_scanner.iter (reconcile_mastodon ~sw client)
+  (*
        (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
          Logs.info (fun m ->
              m "%s %s" result._type (Yojson.Safe.to_string result._object));
@@ -273,7 +302,7 @@ let controller () =
              in
              Logs.info (fun m -> m "patched");
              ()
-         | _ -> ());
+         | _ -> ()) *);
 
   ()
 

@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_node_address.t : NodeAddress contains information for the node's address.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The node address. *)
     address: string [@yojson.key "address"];
     (* Node address type, one of Hostname, ExternalIP or InternalIP. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

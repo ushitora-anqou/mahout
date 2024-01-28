@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_authorization_v1_subject_access_review_spec.t : SubjectAccessReviewSpec is a description of the access request.  Exactly one of ResourceAuthorizationAttributes and NonResourceAuthorizationAttributes must be set
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Extra corresponds to the user.Info.GetExtra() method from the authenticator.  Since that is input to the authorizer it needs a reflection here. *)
     extra: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "extra"];
@@ -17,6 +18,8 @@ type t = {
     uid: string option [@yojson.default None] [@yojson.key "uid"];
     (* User is the user you're testing for. If you specify \''User\'' but not \''Groups\'', then is it interpreted as \''What if User were not a member of any groups *)
     user: string option [@yojson.default None] [@yojson.key "user"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

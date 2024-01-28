@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_resource_v1alpha2_resource_claim_consumer_reference.t : ResourceClaimConsumerReference contains enough information to let you locate the consumer of a ResourceClaim. The user must be a resource in the same namespace as the ResourceClaim.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. *)
     api_group: string option [@yojson.default None] [@yojson.key "apiGroup"];
@@ -15,6 +16,8 @@ type t = {
     resource: string [@yojson.key "resource"];
     (* UID identifies exactly one incarnation of the resource. *)
     uid: string [@yojson.key "uid"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

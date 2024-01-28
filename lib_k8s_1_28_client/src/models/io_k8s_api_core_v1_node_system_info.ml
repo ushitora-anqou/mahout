@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_node_system_info.t : NodeSystemInfo is a set of ids/uuids to uniquely identify the node.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The Architecture reported by the node *)
     architecture: string [@yojson.key "architecture"];
@@ -27,6 +28,8 @@ type t = {
     os_image: string [@yojson.key "osImage"];
     (* SystemUUID reported by the node. For unique machine identification MachineID is preferred. This field is specific to Red Hat hosts https://access.redhat.com/documentation/en-us/red_hat_subscription_management/1/html/rhsm/uuid *)
     system_uuid: string [@yojson.key "systemUUID"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

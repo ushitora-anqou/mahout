@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_authentication_v1_token_review_status.t : TokenReviewStatus is the result of the token authentication request.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Audiences are audience identifiers chosen by the authenticator that are compatible with both the TokenReview and token. An identifier is any identifier in the intersection of the TokenReviewSpec audiences and the token's audiences. A client of the TokenReview API that sets the spec.audiences field should validate that a compatible audience identifier is returned in the status.audiences field to ensure that the TokenReview server is audience aware. If a TokenReview returns an empty status.audience field where status.authenticated is \''true\'', the token is valid against the audience of the Kubernetes API server. *)
     audiences: string list [@yojson.default []] [@yojson.key "audiences"];
@@ -14,6 +15,8 @@ type t = {
     (* Error indicates that the token couldn't be checked *)
     error: string option [@yojson.default None] [@yojson.key "error"];
     user: Io_k8s_api_authentication_v1_user_info.t option [@yojson.default None] [@yojson.key "user"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

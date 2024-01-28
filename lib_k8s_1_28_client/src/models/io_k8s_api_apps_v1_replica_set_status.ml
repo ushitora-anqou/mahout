@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_replica_set_status.t : ReplicaSetStatus represents the current status of a ReplicaSet.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The number of available replicas (ready for at least minReadySeconds) for this replica set. *)
     available_replicas: int32 option [@yojson.default None] [@yojson.key "availableReplicas"];
@@ -19,6 +20,8 @@ type t = {
     ready_replicas: int32 option [@yojson.default None] [@yojson.key "readyReplicas"];
     (* Replicas is the most recently observed number of replicas. More info: https://kubernetes.io/docs/concepts/workloads/controllers/replicationcontroller/#what-is-a-replicationcontroller *)
     replicas: int32 [@yojson.key "replicas"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

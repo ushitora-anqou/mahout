@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_flowcontrol_v1beta3_group_subject.t : GroupSubject holds detailed information for group-kind subject.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* name is the user group that matches, or \''*\'' to match all user groups. See https://github.com/kubernetes/apiserver/blob/master/pkg/authentication/user/user.go for some well-known group names. Required. *)
     name: string [@yojson.key "name"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

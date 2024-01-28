@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_networking_v1_http_ingress_rule_value.t : HTTPIngressRuleValue is a list of http selectors pointing to backends. In the example: http://<host>/<path>?<searchpart> -> backend where where parts of the url correspond to RFC 3986, this resource will be used to match against everything after the last '/' and before the first '?' or '#'.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* paths is a collection of paths that map requests to backends. *)
     paths: Io_k8s_api_networking_v1_http_ingress_path.t list [@yojson.default []] [@yojson.key "paths"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

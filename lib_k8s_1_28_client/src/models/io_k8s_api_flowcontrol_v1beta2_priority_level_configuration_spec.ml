@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_flowcontrol_v1beta2_priority_level_configuration_spec.t : PriorityLevelConfigurationSpec specifies the configuration of a priority level.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     exempt: Io_k8s_api_flowcontrol_v1beta2_exempt_priority_level_configuration.t option [@yojson.default None] [@yojson.key "exempt"];
     limited: Io_k8s_api_flowcontrol_v1beta2_limited_priority_level_configuration.t option [@yojson.default None] [@yojson.key "limited"];
     (* `type` indicates whether this priority level is subject to limitation on request execution.  A value of `\''Exempt\''` means that requests of this priority level are not subject to a limit (and thus are never queued) and do not detract from the capacity made available to other priority levels.  A value of `\''Limited\''` means that (a) requests of this priority level _are_ subject to limits and (b) some of the server's limited capacity is made available exclusively to this priority level. Required. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

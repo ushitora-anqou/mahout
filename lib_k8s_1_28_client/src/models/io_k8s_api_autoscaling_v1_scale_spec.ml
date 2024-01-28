@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_autoscaling_v1_scale_spec.t : ScaleSpec describes the attributes of a scale subresource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* replicas is the desired number of instances for the scaled object. *)
     replicas: int32 option [@yojson.default None] [@yojson.key "replicas"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

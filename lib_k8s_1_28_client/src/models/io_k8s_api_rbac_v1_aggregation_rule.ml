@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_rbac_v1_aggregation_rule.t : AggregationRule describes how to locate ClusterRoles to aggregate into the ClusterRole
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* ClusterRoleSelectors holds a list of selectors which will be used to find ClusterRoles and create the rules. If any of the selectors match, then the ClusterRole's permissions will be added *)
     cluster_role_selectors: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t list [@yojson.default []] [@yojson.key "clusterRoleSelectors"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

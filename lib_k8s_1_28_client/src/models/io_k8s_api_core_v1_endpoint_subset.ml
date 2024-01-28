@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_endpoint_subset.t : EndpointSubset is a group of addresses with a common set of ports. The expanded set of endpoints is the Cartesian product of Addresses x Ports. For example, given:   {    Addresses: [{\''ip\'': \''10.10.1.1\''}, {\''ip\'': \''10.10.2.2\''}],    Ports:     [{\''name\'': \''a\'', \''port\'': 8675}, {\''name\'': \''b\'', \''port\'': 309}]  }  The resulting set of endpoints can be viewed as:   a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],  b: [ 10.10.1.1:309, 10.10.2.2:309 ]
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* IP addresses which offer the related ports that are marked as ready. These endpoints should be considered safe for load balancers and clients to utilize. *)
     addresses: Io_k8s_api_core_v1_endpoint_address.t list [@yojson.default []] [@yojson.key "addresses"];
@@ -13,6 +14,8 @@ type t = {
     not_ready_addresses: Io_k8s_api_core_v1_endpoint_address.t list [@yojson.default []] [@yojson.key "notReadyAddresses"];
     (* Port numbers available on the related IP addresses. *)
     ports: Io_k8s_api_core_v1_endpoint_port.t list [@yojson.default []] [@yojson.key "ports"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

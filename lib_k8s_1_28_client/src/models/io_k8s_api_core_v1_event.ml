@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_event.t : Event is a report of an event somewhere in the cluster.  Events have a limited retention time and triggers and messages may evolve with time.  Event consumers should not rely on the timing of an event with a given Reason reflecting a consistent underlying trigger, or the continued existence of events with that Reason.  Events should be treated as informative, best-effort, supplemental data.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* What action was taken/failed regarding to the Regarding object. *)
     action: string option [@yojson.default None] [@yojson.key "action"];
@@ -36,6 +37,8 @@ type t = {
     source: Io_k8s_api_core_v1_event_source.t option [@yojson.default None] [@yojson.key "source"];
     (* Type of this event (Normal, Warning), new types could be added in the future *)
     _type: string option [@yojson.default None] [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

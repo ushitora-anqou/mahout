@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_persistent_volume_claim_status.t : PersistentVolumeClaimStatus is the current status of a persistent volume claim.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* accessModes contains the actual access modes the volume backing the PVC has. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes-1 *)
     access_modes: string list [@yojson.default []] [@yojson.key "accessModes"];
@@ -19,6 +20,8 @@ type t = {
     conditions: Io_k8s_api_core_v1_persistent_volume_claim_condition.t list [@yojson.default []] [@yojson.key "conditions"];
     (* phase represents the current phase of PersistentVolumeClaim. *)
     phase: string option [@yojson.default None] [@yojson.key "phase"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

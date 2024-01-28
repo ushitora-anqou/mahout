@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v2_cross_version_object_reference.t : CrossVersionObjectReference contains enough information to let you identify the referred resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* apiVersion is the API version of the referent *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -13,6 +14,8 @@ type t = {
     kind: string [@yojson.key "kind"];
     (* name is the name of the referent; More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names *)
     name: string [@yojson.key "name"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_scope_selector.t : A scope selector represents the AND of the selectors represented by the scoped-resource selector requirements.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* A list of scope selector requirements by scope of the resources. *)
     match_expressions: Io_k8s_api_core_v1_scoped_resource_selector_requirement.t list [@yojson.default []] [@yojson.key "matchExpressions"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_admissionregistration_v1_mutating_webhook.t : MutatingWebhook describes an admission webhook and the resources and operations it applies to.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* AdmissionReviewVersions is an ordered list of preferred `AdmissionReview` versions the Webhook expects. API server will try to use first version in the list which it supports. If none of the versions specified in this list supported by API server, validation will fail for this object. If a persisted webhook configuration specifies allowed versions and does not include any versions known to the API Server, calls to the webhook will fail and be subject to the failure policy. *)
     admission_review_versions: string list [@yojson.default []] [@yojson.key "admissionReviewVersions"];
@@ -28,6 +29,8 @@ type t = {
     side_effects: string [@yojson.key "sideEffects"];
     (* TimeoutSeconds specifies the timeout for this webhook. After the timeout passes, the webhook call will be ignored or the API call will fail based on the failure policy. The timeout value must be between 1 and 30 seconds. Default to 10 seconds. *)
     timeout_seconds: int32 option [@yojson.default None] [@yojson.key "timeoutSeconds"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

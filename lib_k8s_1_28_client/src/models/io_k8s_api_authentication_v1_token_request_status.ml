@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_authentication_v1_token_request_status.t : TokenRequestStatus is the result of a token request.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     expiration_timestamp: string [@yojson.key "expirationTimestamp"];
     (* Token is the opaque bearer token. *)
     token: string [@yojson.key "token"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

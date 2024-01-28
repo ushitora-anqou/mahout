@@ -6,6 +6,7 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_service_reference.t : ServiceReference holds a reference to Service.legacy.k8s.io
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* name is the name of the service. Required *)
     name: string [@yojson.key "name"];
@@ -15,6 +16,8 @@ type t = {
     path: string option [@yojson.default None] [@yojson.key "path"];
     (* port is an optional service port at which the webhook will be contacted. `port` should be a valid port number (1-65535, inclusive). Defaults to 443 for backward compatibility. *)
     port: int32 option [@yojson.default None] [@yojson.key "port"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

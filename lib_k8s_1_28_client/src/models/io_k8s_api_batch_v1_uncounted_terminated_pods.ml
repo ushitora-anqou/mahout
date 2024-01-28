@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_batch_v1_uncounted_terminated_pods.t : UncountedTerminatedPods holds UIDs of Pods that have terminated but haven't been accounted in Job status counters.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* failed holds UIDs of failed Pods. *)
     failed: string list [@yojson.default []] [@yojson.key "failed"];
     (* succeeded holds UIDs of succeeded Pods. *)
     succeeded: string list [@yojson.default []] [@yojson.key "succeeded"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

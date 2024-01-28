@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_resource_quota_status.t : ResourceQuotaStatus defines the enforced hard limits and observed use.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Hard is the set of enforced hard limits for each named resource. More info: https://kubernetes.io/docs/concepts/policy/resource-quotas/ *)
     hard: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "hard"];
     (* Used is the current observed total usage of the resource in the namespace. *)
     used: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "used"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

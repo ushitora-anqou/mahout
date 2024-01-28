@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_autoscaling_v2_metric_identifier.t : MetricIdentifier defines the name and optionally selector for a metric
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* name is the name of the given metric *)
     name: string [@yojson.key "name"];
     selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "selector"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

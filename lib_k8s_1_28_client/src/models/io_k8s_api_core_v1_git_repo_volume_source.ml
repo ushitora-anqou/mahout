@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_git_repo_volume_source.t : Represents a volume that is populated with the contents of a git repository. Git repo volumes do not support ownership management. Git repo volumes support SELinux relabeling.  DEPRECATED: GitRepo is deprecated. To provision a container with a git repo, mount an EmptyDir into an InitContainer that clones the repo using git, then mount the EmptyDir into the Pod's container.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* directory is the target directory name. Must not contain or start with '..'.  If '.' is supplied, the volume directory will be the git repository.  Otherwise, if specified, the volume will contain the git repository in the subdirectory with the given name. *)
     directory: string option [@yojson.default None] [@yojson.key "directory"];
@@ -13,6 +14,8 @@ type t = {
     repository: string [@yojson.key "repository"];
     (* revision is the commit hash for the specified revision. *)
     revision: string option [@yojson.default None] [@yojson.key "revision"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

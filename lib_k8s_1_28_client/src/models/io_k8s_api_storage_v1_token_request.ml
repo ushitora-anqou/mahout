@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_storage_v1_token_request.t : TokenRequest contains parameters of a service account token.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* audience is the intended audience of the token in \''TokenRequestSpec\''. It will default to the audiences of kube apiserver. *)
     audience: string [@yojson.key "audience"];
     (* expirationSeconds is the duration of validity of the token in \''TokenRequestSpec\''. It has the same default value of \''ExpirationSeconds\'' in \''TokenRequestSpec\''. *)
     expiration_seconds: int64 option [@yojson.default None] [@yojson.key "expirationSeconds"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

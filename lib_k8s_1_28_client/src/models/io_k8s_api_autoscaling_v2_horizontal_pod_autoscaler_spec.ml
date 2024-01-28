@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_spec.t : HorizontalPodAutoscalerSpec describes the desired functionality of the HorizontalPodAutoscaler.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     behavior: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_behavior.t option [@yojson.default None] [@yojson.key "behavior"];
     (* maxReplicas is the upper limit for the number of replicas to which the autoscaler can scale up. It cannot be less that minReplicas. *)
@@ -15,6 +16,8 @@ type t = {
     (* minReplicas is the lower limit for the number of replicas to which the autoscaler can scale down.  It defaults to 1 pod.  minReplicas is allowed to be 0 if the alpha feature gate HPAScaleToZero is enabled and at least one Object or External metric is configured.  Scaling is active as long as at least one metric value is available. *)
     min_replicas: int32 option [@yojson.default None] [@yojson.key "minReplicas"];
     scale_target_ref: Io_k8s_api_autoscaling_v2_cross_version_object_reference.t [@yojson.key "scaleTargetRef"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

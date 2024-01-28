@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_attached_volume.t : AttachedVolume describes a volume attached to a node
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* DevicePath represents the device path where the volume should be available *)
     device_path: string [@yojson.key "devicePath"];
     (* Name of the attached volume *)
     name: string [@yojson.key "name"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

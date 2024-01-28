@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_volume_mount.t : VolumeMount describes a mounting of a Volume within a container.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Path within the container at which the volume should be mounted.  Must not contain ':'. *)
     mount_path: string [@yojson.key "mountPath"];
@@ -19,6 +20,8 @@ type t = {
     sub_path: string option [@yojson.default None] [@yojson.key "subPath"];
     (* Expanded path within the volume from which the container's volume should be mounted. Behaves similarly to SubPath but environment variable references $(VAR_NAME) are expanded using the container's environment. Defaults to \''\'' (volume's root). SubPathExpr and SubPath are mutually exclusive. *)
     sub_path_expr: string option [@yojson.default None] [@yojson.key "subPathExpr"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

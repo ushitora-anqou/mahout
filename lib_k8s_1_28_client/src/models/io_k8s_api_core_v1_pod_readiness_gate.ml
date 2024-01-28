@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_pod_readiness_gate.t : PodReadinessGate contains the reference to a pod condition
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* ConditionType refers to a condition in the pod's condition list with matching type. *)
     condition_type: string [@yojson.key "conditionType"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

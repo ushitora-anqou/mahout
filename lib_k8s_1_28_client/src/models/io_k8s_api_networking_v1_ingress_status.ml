@@ -6,8 +6,11 @@
  * Schema Io_k8s_api_networking_v1_ingress_status.t : IngressStatus describe the current state of the Ingress.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     load_balancer: Io_k8s_api_networking_v1_ingress_load_balancer_status.t option [@yojson.default None] [@yojson.key "loadBalancer"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_storage_v1_volume_attachment_status.t : VolumeAttachmentStatus is the status of a VolumeAttachment request.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     attach_error: Io_k8s_api_storage_v1_volume_error.t option [@yojson.default None] [@yojson.key "attachError"];
     (* attached indicates the volume is successfully attached. This field must only be set by the entity completing the attach operation, i.e. the external-attacher. *)
@@ -13,6 +14,8 @@ type t = {
     (* attachmentMetadata is populated with any information returned by the attach operation, upon successful attach, that must be passed into subsequent WaitForAttach or Mount calls. This field must only be set by the entity completing the attach operation, i.e. the external-attacher. *)
     attachment_metadata: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "attachmentMetadata"];
     detach_error: Io_k8s_api_storage_v1_volume_error.t option [@yojson.default None] [@yojson.key "detachError"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

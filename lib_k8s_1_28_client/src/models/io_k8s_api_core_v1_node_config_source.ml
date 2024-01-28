@@ -6,8 +6,11 @@
  * Schema Io_k8s_api_core_v1_node_config_source.t : NodeConfigSource specifies a source of node configuration. Exactly one subfield (excluding metadata) must be non-nil. This API is deprecated since 1.22
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     config_map: Io_k8s_api_core_v1_config_map_node_config_source.t option [@yojson.default None] [@yojson.key "configMap"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

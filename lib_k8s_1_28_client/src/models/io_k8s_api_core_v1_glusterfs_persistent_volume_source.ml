@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_glusterfs_persistent_volume_source.t : Represents a Glusterfs mount that lasts the lifetime of a pod. Glusterfs volumes do not support ownership management or SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* endpoints is the endpoint name that details Glusterfs topology. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod *)
     endpoints: string [@yojson.key "endpoints"];
@@ -15,6 +16,8 @@ type t = {
     path: string [@yojson.key "path"];
     (* readOnly here will force the Glusterfs volume to be mounted with read-only permissions. Defaults to false. More info: https://examples.k8s.io/volumes/glusterfs/README.md#create-a-pod *)
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

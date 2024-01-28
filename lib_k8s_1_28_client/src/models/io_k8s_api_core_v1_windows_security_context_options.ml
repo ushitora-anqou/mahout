@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_windows_security_context_options.t : WindowsSecurityContextOptions contain Windows-specific options and credentials.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* GMSACredentialSpec is where the GMSA admission webhook (https://github.com/kubernetes-sigs/windows-gmsa) inlines the contents of the GMSA credential spec named by the GMSACredentialSpecName field. *)
     gmsa_credential_spec: string option [@yojson.default None] [@yojson.key "gmsaCredentialSpec"];
@@ -15,6 +16,8 @@ type t = {
     host_process: bool option [@yojson.default None] [@yojson.key "hostProcess"];
     (* The UserName in Windows to run the entrypoint of the container process. Defaults to the user specified in image metadata if unspecified. May also be set in PodSecurityContext. If set in both SecurityContext and PodSecurityContext, the value specified in SecurityContext takes precedence. *)
     run_as_user_name: string option [@yojson.default None] [@yojson.key "runAsUserName"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

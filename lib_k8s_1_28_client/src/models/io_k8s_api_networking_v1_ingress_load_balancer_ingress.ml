@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_networking_v1_ingress_load_balancer_ingress.t : IngressLoadBalancerIngress represents the status of a load-balancer ingress point.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* hostname is set for load-balancer ingress points that are DNS based. *)
     hostname: string option [@yojson.default None] [@yojson.key "hostname"];
@@ -13,6 +14,8 @@ type t = {
     ip: string option [@yojson.default None] [@yojson.key "ip"];
     (* ports provides information about the ports exposed by this LoadBalancer. *)
     ports: Io_k8s_api_networking_v1_ingress_port_status.t list [@yojson.default []] [@yojson.key "ports"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

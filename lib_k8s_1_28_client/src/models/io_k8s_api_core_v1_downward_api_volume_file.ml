@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_downward_api_volume_file.t : DownwardAPIVolumeFile represents information to create the file containing the pod field
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     field_ref: Io_k8s_api_core_v1_object_field_selector.t option [@yojson.default None] [@yojson.key "fieldRef"];
     (* Optional: mode bits used to set permissions on this file, must be an octal value between 0000 and 0777 or a decimal value between 0 and 511. YAML accepts both octal and decimal values, JSON requires decimal values for mode bits. If not specified, the volume defaultMode will be used. This might be in conflict with other options that affect the file mode, like fsGroup, and the result can be other mode bits set. *)
@@ -13,6 +14,8 @@ type t = {
     (* Required: Path is  the relative path name of the file to be created. Must not be absolute or contain the '..' path. Must be utf-8 encoded. The first item of the relative path must not start with '..' *)
     path: string [@yojson.key "path"];
     resource_field_ref: Io_k8s_api_core_v1_resource_field_selector.t option [@yojson.default None] [@yojson.key "resourceFieldRef"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

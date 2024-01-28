@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_lifecycle.t : Lifecycle describes actions that the management system should take in response to container lifecycle events. For the PostStart and PreStop lifecycle handlers, management of the container blocks until the action is complete, unless the container process fails, in which case the handler is aborted.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     post_start: Io_k8s_api_core_v1_lifecycle_handler.t option [@yojson.default None] [@yojson.key "postStart"];
     pre_stop: Io_k8s_api_core_v1_lifecycle_handler.t option [@yojson.default None] [@yojson.key "preStop"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

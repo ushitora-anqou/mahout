@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_flowcontrol_v1beta3_resource_policy_rule.t : ResourcePolicyRule is a predicate that matches some resource requests, testing the request's verb and the target resource. A ResourcePolicyRule matches a resource request if and only if: (a) at least one member of verbs matches the request, (b) at least one member of apiGroups matches the request, (c) at least one member of resources matches the request, and (d) either (d1) the request does not specify a namespace (i.e., `Namespace==\''\''`) and clusterScope is true or (d2) the request specifies a namespace and least one member of namespaces matches the request's namespace.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* `apiGroups` is a list of matching API groups and may not be empty. \''*\'' matches all API groups and, if present, must be the only entry. Required. *)
     api_groups: string list [@yojson.default []] [@yojson.key "apiGroups"];
@@ -17,6 +18,8 @@ type t = {
     resources: string list [@yojson.default []] [@yojson.key "resources"];
     (* `verbs` is a list of matching verbs and may not be empty. \''*\'' matches all verbs and, if present, must be the only entry. Required. *)
     verbs: string list [@yojson.default []] [@yojson.key "verbs"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

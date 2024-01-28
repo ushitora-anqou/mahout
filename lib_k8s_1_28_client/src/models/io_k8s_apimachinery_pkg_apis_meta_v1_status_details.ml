@@ -6,6 +6,7 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_status_details.t : StatusDetails is a set of additional properties that MAY be set by the server to provide additional information about a response. The Reason field of a Status object defines what attributes will be set. Clients must ignore fields that do not match the defined type of each attribute, and should assume that any attribute may be empty, invalid, or under defined.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The Causes array includes more details associated with the StatusReason failure. Not all StatusReasons may provide detailed causes. *)
     causes: Io_k8s_apimachinery_pkg_apis_meta_v1_status_cause.t list [@yojson.default []] [@yojson.key "causes"];
@@ -19,6 +20,8 @@ type t = {
     retry_after_seconds: int32 option [@yojson.default None] [@yojson.key "retryAfterSeconds"];
     (* UID of the resource. (when there is a single resource which can be described). More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names#uids *)
     uid: string option [@yojson.default None] [@yojson.key "uid"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

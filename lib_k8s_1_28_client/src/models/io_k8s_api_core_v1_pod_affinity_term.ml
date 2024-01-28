@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_pod_affinity_term.t : Defines a set of pods (namely those matching the labelSelector relative to the given namespace(s)) that this pod should be co-located (affinity) or not co-located (anti-affinity) with, where co-located is defined as running on a node whose value of the label with key <topologyKey> matches that of any node on which a pod of the set of pods is running
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     label_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "labelSelector"];
     namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "namespaceSelector"];
@@ -13,6 +14,8 @@ type t = {
     namespaces: string list [@yojson.default []] [@yojson.key "namespaces"];
     (* This pod should be co-located (affinity) or not co-located (anti-affinity) with the pods matching the labelSelector in the specified namespaces, where co-located is defined as running on a node whose value of the label with key topologyKey matches that of any node on which any of the selected pods is running. Empty topologyKey is not allowed. *)
     topology_key: string [@yojson.key "topologyKey"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

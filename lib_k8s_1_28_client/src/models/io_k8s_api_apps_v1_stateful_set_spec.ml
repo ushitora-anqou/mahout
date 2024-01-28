@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_stateful_set_spec.t : A StatefulSetSpec is the specification of a StatefulSet.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Minimum number of seconds for which a newly created pod should be ready without any of its container crashing for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) *)
     min_ready_seconds: int32 option [@yojson.default None] [@yojson.key "minReadySeconds"];
@@ -24,6 +25,8 @@ type t = {
     update_strategy: Io_k8s_api_apps_v1_stateful_set_update_strategy.t option [@yojson.default None] [@yojson.key "updateStrategy"];
     (* volumeClaimTemplates is a list of claims that pods are allowed to reference. The StatefulSet controller is responsible for mapping network identities to claims in a way that maintains the identity of a pod. Every claim in this list must have at least one matching (by name) volumeMount in one container in the template. A claim in this list takes precedence over any volumes in the template, with the same name. *)
     volume_claim_templates: Io_k8s_api_core_v1_persistent_volume_claim.t list [@yojson.default []] [@yojson.key "volumeClaimTemplates"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_azure_disk_volume_source.t : AzureDisk represents an Azure Data Disk mount on the host and bind mount to the pod.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* cachingMode is the Host Caching mode: None, Read Only, Read Write. *)
     caching_mode: string option [@yojson.default None] [@yojson.key "cachingMode"];
@@ -19,6 +20,8 @@ type t = {
     kind: string option [@yojson.default None] [@yojson.key "kind"];
     (* readOnly Defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

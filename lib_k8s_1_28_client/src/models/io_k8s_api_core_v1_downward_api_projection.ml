@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_downward_api_projection.t : Represents downward API info for projecting into a projected volume. Note that this is identical to a downwardAPI volume source without the default mode.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Items is a list of DownwardAPIVolume file *)
     items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@yojson.default []] [@yojson.key "items"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

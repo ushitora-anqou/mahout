@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_certificates_v1_certificate_signing_request.t : CertificateSigningRequest objects provide a mechanism to obtain x509 certificates by submitting a certificate signing request, and having it asynchronously approved and issued.  Kubelets use this API to obtain:  1. client certificates to authenticate to kube-apiserver (with the \''kubernetes.io/kube-apiserver-client-kubelet\'' signerName).  2. serving certificates for TLS endpoints kube-apiserver can connect to securely (with the \''kubernetes.io/kubelet-serving\'' signerName).  This API can be used to request client certificates to authenticate to kube-apiserver (with the \''kubernetes.io/kube-apiserver-client\'' signerName), or to obtain certificates from custom non-Kubernetes signers.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -14,6 +15,8 @@ type t = {
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     spec: Io_k8s_api_certificates_v1_certificate_signing_request_spec.t [@yojson.key "spec"];
     status: Io_k8s_api_certificates_v1_certificate_signing_request_status.t option [@yojson.default None] [@yojson.key "status"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_rbac_v1_role_ref.t : RoleRef contains information that points to the role being used
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIGroup is the group for the resource being referenced *)
     api_group: string [@yojson.key "apiGroup"];
@@ -13,6 +14,8 @@ type t = {
     kind: string [@yojson.key "kind"];
     (* Name is the name of resource being referenced *)
     name: string [@yojson.key "name"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_networking_v1_network_policy_peer.t : NetworkPolicyPeer describes a peer to allow traffic to/from. Only certain combinations of fields are allowed
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     ip_block: Io_k8s_api_networking_v1_ip_block.t option [@yojson.default None] [@yojson.key "ipBlock"];
     namespace_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "namespaceSelector"];
     pod_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "podSelector"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

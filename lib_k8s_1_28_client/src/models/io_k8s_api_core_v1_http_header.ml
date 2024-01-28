@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_http_header.t : HTTPHeader describes a custom header to be used in HTTP probes
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The header field name. This will be canonicalized upon output, so case-variant names will be understood as the same header. *)
     name: string [@yojson.key "name"];
     (* The header field value *)
     value: string [@yojson.key "value"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

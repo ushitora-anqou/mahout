@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_core_v1_pod_scheduling_gate.t : PodSchedulingGate is associated to a Pod to guard its scheduling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Name of the scheduling gate. Each scheduling gate must have a unique name field. *)
     name: string [@yojson.key "name"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

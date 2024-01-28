@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_volume_projection.t : Projection that may be projected along with other supported volume types
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     config_map: Io_k8s_api_core_v1_config_map_projection.t option [@yojson.default None] [@yojson.key "configMap"];
     downward_api: Io_k8s_api_core_v1_downward_api_projection.t option [@yojson.default None] [@yojson.key "downwardAPI"];
     secret: Io_k8s_api_core_v1_secret_projection.t option [@yojson.default None] [@yojson.key "secret"];
     service_account_token: Io_k8s_api_core_v1_service_account_token_projection.t option [@yojson.default None] [@yojson.key "serviceAccountToken"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

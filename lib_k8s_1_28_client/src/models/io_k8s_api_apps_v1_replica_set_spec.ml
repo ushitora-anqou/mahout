@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apps_v1_replica_set_spec.t : ReplicaSetSpec is the specification of a ReplicaSet.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Minimum number of seconds for which a newly created pod should be ready without any of its container crashing, for it to be considered available. Defaults to 0 (pod will be considered available as soon as it is ready) *)
     min_ready_seconds: int32 option [@yojson.default None] [@yojson.key "minReadySeconds"];
@@ -13,6 +14,8 @@ type t = {
     replicas: int32 option [@yojson.default None] [@yojson.key "replicas"];
     selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t [@yojson.key "selector"];
     template: Io_k8s_api_core_v1_pod_template_spec.t option [@yojson.default None] [@yojson.key "template"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

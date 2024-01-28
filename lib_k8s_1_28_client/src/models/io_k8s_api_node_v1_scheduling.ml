@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_node_v1_scheduling.t : Scheduling specifies the scheduling constraints for nodes supporting a RuntimeClass.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* nodeSelector lists labels that must be present on nodes that support this RuntimeClass. Pods using this RuntimeClass can only be scheduled to a node matched by this selector. The RuntimeClass nodeSelector is merged with a pod's existing nodeSelector. Any conflicts will cause the pod to be rejected in admission. *)
     node_selector: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "nodeSelector"];
     (* tolerations are appended (excluding duplicates) to pods running with this RuntimeClass during admission, effectively unioning the set of nodes tolerated by the pod and the RuntimeClass. *)
     tolerations: Io_k8s_api_core_v1_toleration.t list [@yojson.default []] [@yojson.key "tolerations"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,11 +6,14 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_preconditions.t : Preconditions must be fulfilled before an operation (update, delete, etc.) is carried out.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Specifies the target ResourceVersion *)
     resource_version: string option [@yojson.default None] [@yojson.key "resourceVersion"];
     (* Specifies the target UID. *)
     uid: string option [@yojson.default None] [@yojson.key "uid"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

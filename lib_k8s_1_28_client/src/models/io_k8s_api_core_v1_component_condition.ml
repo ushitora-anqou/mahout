@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_component_condition.t : Information about the condition of a component.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Condition error code for a component. For example, a health check error code. *)
     error: string option [@yojson.default None] [@yojson.key "error"];
@@ -15,6 +16,8 @@ type t = {
     status: string [@yojson.key "status"];
     (* Type of condition for a component. Valid value: \''Healthy\'' *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

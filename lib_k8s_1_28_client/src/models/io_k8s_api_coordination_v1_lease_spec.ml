@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_coordination_v1_lease_spec.t : LeaseSpec is a specification of a Lease.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* MicroTime is version of Time with microsecond level precision. *)
     acquire_time: string option [@yojson.default None] [@yojson.key "acquireTime"];
@@ -17,6 +18,8 @@ type t = {
     lease_transitions: int32 option [@yojson.default None] [@yojson.key "leaseTransitions"];
     (* MicroTime is version of Time with microsecond level precision. *)
     renew_time: string option [@yojson.default None] [@yojson.key "renewTime"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

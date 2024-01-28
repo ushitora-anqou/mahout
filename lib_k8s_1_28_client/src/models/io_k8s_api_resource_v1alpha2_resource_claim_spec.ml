@@ -6,12 +6,15 @@
  * Schema Io_k8s_api_resource_v1alpha2_resource_claim_spec.t : ResourceClaimSpec defines how a resource is to be allocated.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Allocation can start immediately or when a Pod wants to use the resource. \''WaitForFirstConsumer\'' is the default. *)
     allocation_mode: string option [@yojson.default None] [@yojson.key "allocationMode"];
     parameters_ref: Io_k8s_api_resource_v1alpha2_resource_claim_parameters_reference.t option [@yojson.default None] [@yojson.key "parametersRef"];
     (* ResourceClassName references the driver and additional parameters via the name of a ResourceClass that was created as part of the driver deployment. *)
     resource_class_name: string [@yojson.key "resourceClassName"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

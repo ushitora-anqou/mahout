@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_config_map_node_config_source.t : ConfigMapNodeConfigSource contains the information to reference a ConfigMap as a config source for the Node. This API is deprecated since 1.22: https://git.k8s.io/enhancements/keps/sig-node/281-dynamic-kubelet-configuration
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* KubeletConfigKey declares which key of the referenced ConfigMap corresponds to the KubeletConfiguration structure This field is required in all cases. *)
     kubelet_config_key: string [@yojson.key "kubeletConfigKey"];
@@ -17,6 +18,8 @@ type t = {
     resource_version: string option [@yojson.default None] [@yojson.key "resourceVersion"];
     (* UID is the metadata.UID of the referenced ConfigMap. This field is forbidden in Node.Spec, and required in Node.Status. *)
     uid: string option [@yojson.default None] [@yojson.key "uid"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

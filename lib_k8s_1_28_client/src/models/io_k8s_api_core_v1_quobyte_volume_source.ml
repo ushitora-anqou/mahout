@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_quobyte_volume_source.t : Represents a Quobyte mount that lasts the lifetime of a pod. Quobyte volumes do not support ownership management or SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* group to map volume access to Default is no group *)
     group: string option [@yojson.default None] [@yojson.key "group"];
@@ -19,6 +20,8 @@ type t = {
     user: string option [@yojson.default None] [@yojson.key "user"];
     (* volume is a string that references an already created Quobyte volume by name. *)
     volume: string [@yojson.key "volume"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

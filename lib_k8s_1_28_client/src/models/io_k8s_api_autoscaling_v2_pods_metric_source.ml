@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_autoscaling_v2_pods_metric_source.t : PodsMetricSource indicates how to scale on a metric describing each pod in the current scale target (for example, transactions-processed-per-second). The values will be averaged together before being compared to the target value.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     metric: Io_k8s_api_autoscaling_v2_metric_identifier.t [@yojson.key "metric"];
     target: Io_k8s_api_autoscaling_v2_metric_target.t [@yojson.key "target"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

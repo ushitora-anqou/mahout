@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_csi_volume_source.t : Represents a source location of a volume to mount, managed by an external CSI driver
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster. *)
     driver: string [@yojson.key "driver"];
@@ -16,6 +17,8 @@ type t = {
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values. *)
     volume_attributes: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "volumeAttributes"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

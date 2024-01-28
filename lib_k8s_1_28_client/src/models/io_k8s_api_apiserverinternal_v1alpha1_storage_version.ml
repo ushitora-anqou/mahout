@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_apiserverinternal_v1alpha1_storage_version.t : Storage version of a specific resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
@@ -15,6 +16,8 @@ type t = {
     (* StorageVersionSpec is an empty spec. *)
     spec: Yojson.Safe.t [@yojson.key "spec"];
     status: Io_k8s_api_apiserverinternal_v1alpha1_storage_version_status.t [@yojson.key "status"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

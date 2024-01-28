@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t : Represents a vSphere volume resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* fsType is filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Implicitly inferred to be \''ext4\'' if unspecified. *)
     fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
@@ -15,6 +16,8 @@ type t = {
     storage_policy_name: string option [@yojson.default None] [@yojson.key "storagePolicyName"];
     (* volumePath is the path that identifies vSphere volume vmdk *)
     volume_path: string [@yojson.key "volumePath"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

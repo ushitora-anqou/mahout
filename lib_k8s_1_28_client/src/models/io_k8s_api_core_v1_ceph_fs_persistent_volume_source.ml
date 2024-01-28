@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_ceph_fs_persistent_volume_source.t : Represents a Ceph Filesystem mount that lasts the lifetime of a pod Cephfs volumes do not support ownership management or SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* monitors is Required: Monitors is a collection of Ceph monitors More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it *)
     monitors: string list [@yojson.default []] [@yojson.key "monitors"];
@@ -18,6 +19,8 @@ type t = {
     secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "secretRef"];
     (* user is Optional: User is the rados user name, default is admin More info: https://examples.k8s.io/volumes/cephfs/README.md#how-to-use-it *)
     user: string option [@yojson.default None] [@yojson.key "user"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_iscsi_persistent_volume_source.t : ISCSIPersistentVolumeSource represents an ISCSI disk. ISCSI volumes can only be mounted as read/write once. ISCSI volumes support ownership management and SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication *)
     chap_auth_discovery: bool option [@yojson.default None] [@yojson.key "chapAuthDiscovery"];
@@ -28,6 +29,8 @@ type t = {
     secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "secretRef"];
     (* targetPortal is iSCSI Target Portal. The Portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260). *)
     target_portal: string [@yojson.key "targetPortal"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

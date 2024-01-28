@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_discovery_v1_endpoint.t : Endpoint represents a single logical \''backend\'' implementing a service.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* addresses of this endpoint. The contents of this field are interpreted according to the corresponding EndpointSlice addressType field. Consumers must handle different types of addresses in the context of their own capabilities. This must contain at least one address but no more than 100. These are all assumed to be fungible and clients may choose to only use the first element. Refer to: https://issue.k8s.io/106267 *)
     addresses: string list [@yojson.default []] [@yojson.key "addresses"];
@@ -20,6 +21,8 @@ type t = {
     target_ref: Io_k8s_api_core_v1_object_reference.t option [@yojson.default None] [@yojson.key "targetRef"];
     (* zone is the name of the Zone this endpoint exists in. *)
     zone: string option [@yojson.default None] [@yojson.key "zone"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_http_get_action.t : HTTPGetAction describes an action based on HTTP Get requests.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Host name to connect to, defaults to the pod IP. You probably want to set \''Host\'' in httpHeaders instead. *)
     host: string option [@yojson.default None] [@yojson.key "host"];
@@ -17,6 +18,8 @@ type t = {
     port: string [@yojson.key "port"];
     (* Scheme to use for connecting to the host. Defaults to HTTP. *)
     scheme: string option [@yojson.default None] [@yojson.key "scheme"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

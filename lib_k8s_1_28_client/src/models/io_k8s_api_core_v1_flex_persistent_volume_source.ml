@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_flex_persistent_volume_source.t : FlexPersistentVolumeSource represents a generic persistent volume resource that is provisioned/attached using an exec based plugin.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* driver is the name of the driver to use for this volume. *)
     driver: string [@yojson.key "driver"];
@@ -16,6 +17,8 @@ type t = {
     (* readOnly is Optional: defaults to false (read/write). ReadOnly here will force the ReadOnly setting in VolumeMounts. *)
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     secret_ref: Io_k8s_api_core_v1_secret_reference.t option [@yojson.default None] [@yojson.key "secretRef"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

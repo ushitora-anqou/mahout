@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_admissionregistration_v1beta1_match_resources.t : MatchResources decides whether to run the admission control policy on an object based on whether it meets the match criteria. The exclude rules take precedence over include rules (if a resource matches both, it is excluded)
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* ExcludeResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy should not care about. The exclude rules take precedence over include rules (if a resource matches both, it is excluded) *)
     exclude_resource_rules: Io_k8s_api_admissionregistration_v1beta1_named_rule_with_operations.t list [@yojson.default []] [@yojson.key "excludeResourceRules"];
@@ -15,6 +16,8 @@ type t = {
     object_selector: Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector.t option [@yojson.default None] [@yojson.key "objectSelector"];
     (* ResourceRules describes what operations on what resources/subresources the ValidatingAdmissionPolicy matches. The policy cares about an operation if it matches _any_ Rule. *)
     resource_rules: Io_k8s_api_admissionregistration_v1beta1_named_rule_with_operations.t list [@yojson.default []] [@yojson.key "resourceRules"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

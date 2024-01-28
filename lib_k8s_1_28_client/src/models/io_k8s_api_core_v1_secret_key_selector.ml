@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_secret_key_selector.t : SecretKeySelector selects a key of a Secret.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The key of the secret to select from.  Must be a valid secret key. *)
     key: string [@yojson.key "key"];
@@ -13,6 +14,8 @@ type t = {
     name: string option [@yojson.default None] [@yojson.key "name"];
     (* Specify whether the Secret or its key must be defined *)
     optional: bool option [@yojson.default None] [@yojson.key "optional"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

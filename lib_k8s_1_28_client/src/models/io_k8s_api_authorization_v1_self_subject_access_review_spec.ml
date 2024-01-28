@@ -6,9 +6,12 @@
  * Schema Io_k8s_api_authorization_v1_self_subject_access_review_spec.t : SelfSubjectAccessReviewSpec is a description of the access request.  Exactly one of ResourceAuthorizationAttributes and NonResourceAuthorizationAttributes must be set
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     non_resource_attributes: Io_k8s_api_authorization_v1_non_resource_attributes.t option [@yojson.default None] [@yojson.key "nonResourceAttributes"];
     resource_attributes: Io_k8s_api_authorization_v1_resource_attributes.t option [@yojson.default None] [@yojson.key "resourceAttributes"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

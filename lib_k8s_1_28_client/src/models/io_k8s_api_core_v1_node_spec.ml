@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_node_spec.t : NodeSpec describes the attributes that a node is created with.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     config_source: Io_k8s_api_core_v1_node_config_source.t option [@yojson.default None] [@yojson.key "configSource"];
     (* Deprecated. Not all kubelets will set this field. Remove field after 1.13. see: https://issues.k8s.io/61966 *)
@@ -20,6 +21,8 @@ type t = {
     taints: Io_k8s_api_core_v1_taint.t list [@yojson.default []] [@yojson.key "taints"];
     (* Unschedulable controls node schedulability of new pods. By default, node is schedulable. More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration *)
     unschedulable: bool option [@yojson.default None] [@yojson.key "unschedulable"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

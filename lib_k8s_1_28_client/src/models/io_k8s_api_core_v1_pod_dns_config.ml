@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_pod_dns_config.t : PodDNSConfig defines the DNS parameters of a pod in addition to those generated from DNSPolicy.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* A list of DNS name server IP addresses. This will be appended to the base nameservers generated from DNSPolicy. Duplicated nameservers will be removed. *)
     nameservers: string list [@yojson.default []] [@yojson.key "nameservers"];
@@ -13,6 +14,8 @@ type t = {
     options: Io_k8s_api_core_v1_pod_dns_config_option.t list [@yojson.default []] [@yojson.key "options"];
     (* A list of DNS search domains for host-name lookup. This will be appended to the base search paths generated from DNSPolicy. Duplicated search paths will be removed. *)
     searches: string list [@yojson.default []] [@yojson.key "searches"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

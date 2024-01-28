@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_flowcontrol_v1beta2_limit_response.t : LimitResponse defines how to handle requests that can not be executed right now.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     queuing: Io_k8s_api_flowcontrol_v1beta2_queuing_configuration.t option [@yojson.default None] [@yojson.key "queuing"];
     (* `type` is \''Queue\'' or \''Reject\''. \''Queue\'' means that requests that can not be executed upon arrival are held in a queue until they can be executed or a queuing limit is reached. \''Reject\'' means that requests that can not be executed upon arrival are rejected. Required. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

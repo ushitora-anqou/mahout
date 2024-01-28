@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_scale_io_persistent_volume_source.t : ScaleIOPersistentVolumeSource represents a persistent ScaleIO volume
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* fsType is the filesystem type to mount. Must be a filesystem type supported by the host operating system. Ex. \''ext4\'', \''xfs\'', \''ntfs\''. Default is \''xfs\'' *)
     fs_type: string option [@yojson.default None] [@yojson.key "fsType"];
@@ -26,6 +27,8 @@ type t = {
     system: string [@yojson.key "system"];
     (* volumeName is the name of a volume already created in the ScaleIO system that is associated with this volume source. *)
     volume_name: string option [@yojson.default None] [@yojson.key "volumeName"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_rbac_v1_policy_rule.t : PolicyRule holds information that describes a policy rule, but does not contain information about who the rule applies to or which namespace the rule applies to.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIGroups is the name of the APIGroup that contains the resources.  If multiple API groups are specified, any action requested against one of the enumerated resources in any API group will be allowed. \''\'' represents the core API group and \''*\'' represents all API groups. *)
     api_groups: string list [@yojson.default []] [@yojson.key "apiGroups"];
@@ -17,6 +18,8 @@ type t = {
     resources: string list [@yojson.default []] [@yojson.key "resources"];
     (* Verbs is a list of Verbs that apply to ALL the ResourceKinds contained in this rule. '*' represents all verbs. *)
     verbs: string list [@yojson.default []] [@yojson.key "verbs"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

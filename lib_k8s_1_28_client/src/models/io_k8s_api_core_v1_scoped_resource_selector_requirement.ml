@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_scoped_resource_selector_requirement.t : A scoped-resource selector requirement is a selector that contains values, a scope name, and an operator that relates the scope name and values.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Represents a scope's relationship to a set of values. Valid operators are In, NotIn, Exists, DoesNotExist. *)
     operator: string [@yojson.key "operator"];
@@ -13,6 +14,8 @@ type t = {
     scope_name: string [@yojson.key "scopeName"];
     (* An array of string values. If the operator is In or NotIn, the values array must be non-empty. If the operator is Exists or DoesNotExist, the values array must be empty. This array is replaced during a strategic merge patch. *)
     values: string list [@yojson.default []] [@yojson.key "values"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

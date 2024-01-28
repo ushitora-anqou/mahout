@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_resource_v1alpha2_resource_class_parameters_reference.t : ResourceClassParametersReference contains enough information to let you locate the parameters for a ResourceClass.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* APIGroup is the group for the resource being referenced. It is empty for the core API. This matches the group in the APIVersion that is used when creating the resources. *)
     api_group: string option [@yojson.default None] [@yojson.key "apiGroup"];
@@ -15,6 +16,8 @@ type t = {
     name: string [@yojson.key "name"];
     (* Namespace that contains the referenced resource. Must be empty for cluster-scoped resources and non-empty for namespaced resources. *)
     namespace: string option [@yojson.default None] [@yojson.key "namespace"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

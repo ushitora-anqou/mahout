@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_core_v1_container_port.t : ContainerPort represents a network port in a single container.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* Number of port to expose on the pod's IP address. This must be a valid port number, 0 < x < 65536. *)
     container_port: int32 [@yojson.key "containerPort"];
@@ -17,6 +18,8 @@ type t = {
     name: string option [@yojson.default None] [@yojson.key "name"];
     (* Protocol for port. Must be UDP, TCP, or SCTP. Defaults to \''TCP\''. *)
     protocol: string option [@yojson.default None] [@yojson.key "protocol"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

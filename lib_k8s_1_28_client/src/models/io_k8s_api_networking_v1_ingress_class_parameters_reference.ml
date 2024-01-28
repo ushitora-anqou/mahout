@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_networking_v1_ingress_class_parameters_reference.t : IngressClassParametersReference identifies an API object. This can be used to specify a cluster or namespace-scoped resource.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* apiGroup is the group for the resource being referenced. If APIGroup is not specified, the specified Kind must be in the core API group. For any other third-party types, APIGroup is required. *)
     api_group: string option [@yojson.default None] [@yojson.key "apiGroup"];
@@ -17,6 +18,8 @@ type t = {
     namespace: string option [@yojson.default None] [@yojson.key "namespace"];
     (* scope represents if this refers to a cluster or namespace scoped resource. This may be set to \''Cluster\'' (default) or \''Namespace\''. *)
     scope: string option [@yojson.default None] [@yojson.key "scope"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

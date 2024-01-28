@@ -6,8 +6,11 @@
  * Schema Io_k8s_api_core_v1_session_affinity_config.t : SessionAffinityConfig represents the configurations of session affinity.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     client_ip: Io_k8s_api_core_v1_client_ip_config.t option [@yojson.default None] [@yojson.key "clientIP"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_seccomp_profile.t : SeccompProfile defines a pod/container's seccomp profile settings. Only one profile source may be set.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is \''Localhost\''. Must NOT be set for any other type. *)
     localhost_profile: string option [@yojson.default None] [@yojson.key "localhostProfile"];
     (* type indicates which kind of seccomp profile will be applied. Valid options are:  Localhost - a profile defined in a file on the node should be used. RuntimeDefault - the container runtime default profile should be used. Unconfined - no profile should be applied. *)
     _type: string [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

@@ -6,6 +6,7 @@
  * Schema Io_k8s_api_batch_v1_job_status.t : JobStatus represents the current state of a Job.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* The number of pending and running pods. *)
     active: int32 option [@yojson.default None] [@yojson.key "active"];
@@ -28,6 +29,8 @@ type t = {
     (* The number of pods which are terminating (in phase Pending or Running and have a deletionTimestamp).  This field is alpha-level. The job controller populates the field when the feature gate JobPodReplacementPolicy is enabled (disabled by default). *)
     terminating: int32 option [@yojson.default None] [@yojson.key "terminating"];
     uncounted_terminated_pods: Io_k8s_api_batch_v1_uncounted_terminated_pods.t option [@yojson.default None] [@yojson.key "uncountedTerminatedPods"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

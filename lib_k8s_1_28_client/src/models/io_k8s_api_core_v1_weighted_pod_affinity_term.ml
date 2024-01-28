@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_core_v1_weighted_pod_affinity_term.t : The weights of all of the matched WeightedPodAffinityTerm fields are added per-node to find the most preferred node(s)
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     pod_affinity_term: Io_k8s_api_core_v1_pod_affinity_term.t [@yojson.key "podAffinityTerm"];
     (* weight associated with matching the corresponding podAffinityTerm, in the range 1-100. *)
     weight: int32 [@yojson.key "weight"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

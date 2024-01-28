@@ -6,10 +6,13 @@
  * Schema Io_k8s_api_apps_v1_stateful_set_update_strategy.t : StatefulSetUpdateStrategy indicates the strategy that the StatefulSet controller will use to perform updates. It includes any additional parameters necessary to perform the update for the indicated strategy.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     rolling_update: Io_k8s_api_apps_v1_rolling_update_stateful_set_strategy.t option [@yojson.default None] [@yojson.key "rollingUpdate"];
     (* Type indicates the type of the StatefulSetUpdateStrategy. Default is RollingUpdate. *)
     _type: string option [@yojson.default None] [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 

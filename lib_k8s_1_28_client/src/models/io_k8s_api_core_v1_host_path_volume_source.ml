@@ -6,11 +6,14 @@
  * Schema Io_k8s_api_core_v1_host_path_volume_source.t : Represents a host path mapped into a pod. Host path volumes do not support ownership management or SELinux relabeling.
  *)
 
+open Ppx_yojson_conv_lib.Yojson_conv.Primitives
 type t = {
     (* path of the directory on the host. If the path is a symlink, it will follow the link to the real path. More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath *)
     path: string [@yojson.key "path"];
     (* type for HostPath Volume Defaults to \''\'' More info: https://kubernetes.io/docs/concepts/storage/volumes#hostpath *)
     _type: string option [@yojson.default None] [@yojson.key "type"];
-} [@@deriving yojson { strict = false }, show, make];;
+} [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
+let to_yojson = yojson_of_t
+let of_yojson = t_of_yojson
 
 
