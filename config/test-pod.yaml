@@ -20,6 +20,18 @@ rules:
 - apiGroups:
   - ""
   resources:
+  - configmaps
+  verbs:
+  - create
+  - delete
+  - get
+  - list
+  - patch
+  - update
+  - watch
+- apiGroups:
+  - ""
+  resources:
   - pods
   verbs:
   - create
@@ -145,7 +157,7 @@ metadata:
   name: mastodon1
   namespace: default
 spec:
-  image: "ghcr.io/ushitora-anqou/ket-mastodon:4.2.1.1"
+  image: "ghcr.io/ushitora-anqou/ket-mastodon:4.2.4.1"
   envFrom:
     - secretRef:
         name: secret-env

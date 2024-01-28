@@ -220,7 +220,7 @@ let create_or_update_gateway ~sw client
 
   let owner_references = get_owner_references mastodon in
 
-  let _body =
+  let body =
     K.Config_map.make
       ~metadata:
         (K.Object_meta.make ~name:nginx_conf_cm_name ~namespace
@@ -239,6 +239,10 @@ let create_or_update_gateway ~sw client
                        ]) );
           ])
       ()
+  in
+  let _ =
+    K.Core_v1_api.create_core_v1_namespaced_config_map ~sw client ~namespace
+      ~body ()
   in
 
   let body =
@@ -323,8 +327,6 @@ let create_or_update_gateway ~sw client
             ())
       ()
   in
-  Logs.info (fun m ->
-      m "%s" (body |> K.Deployment.to_yojson |> Yojson.Safe.to_string));
   let _ =
     K.Apps_v1_api.create_apps_v1_namespaced_deployment ~sw client ~namespace
       ~body ()
