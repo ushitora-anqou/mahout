@@ -6,14 +6,27 @@
  * Schema Io_k8s_api_core_v1_pod_affinity.t : Pod affinity is a group of inter pod affinity scheduling rules.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* The scheduler will prefer to schedule pods to nodes that satisfy the affinity expressions specified by this field, but it may choose a node that violates one or more of the expressions. The node that is most preferred is the one with the greatest sum of weights, i.e. for each node that meets all of the scheduling requirements (resource request, requiredDuringScheduling affinity expressions, etc.), compute a sum by iterating through the elements of this field and adding \''weight\'' to the sum if the node has pods which matches the corresponding podAffinityTerm; the node(s) with the highest sum are the most preferred. *)
-    preferred_during_scheduling_ignored_during_execution: Io_k8s_api_core_v1_weighted_pod_affinity_term.t list [@yojson.default []] [@yojson.key "preferredDuringSchedulingIgnoredDuringExecution"];
+    preferred_during_scheduling_ignored_during_execution: Io_k8s_api_core_v1_weighted_pod_affinity_term.t list [@default []] [@yojson.key "preferredDuringSchedulingIgnoredDuringExecution"];
     (* If the affinity requirements specified by this field are not met at scheduling time, the pod will not be scheduled onto the node. If the affinity requirements specified by this field cease to be met at some point during pod execution (e.g. due to a pod label update), the system may or may not try to eventually evict the pod from its node. When there are multiple elements, the lists of nodes corresponding to each podAffinityTerm are intersected, i.e. all terms must be satisfied. *)
-    required_during_scheduling_ignored_during_execution: Io_k8s_api_core_v1_pod_affinity_term.t list [@yojson.default []] [@yojson.key "requiredDuringSchedulingIgnoredDuringExecution"];
+    required_during_scheduling_ignored_during_execution: Io_k8s_api_core_v1_pod_affinity_term.t list [@default []] [@yojson.key "requiredDuringSchedulingIgnoredDuringExecution"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

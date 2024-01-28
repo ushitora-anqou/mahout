@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_storage_v1_csi_driver_spec.t : CSIDriverSpec is the specification of a CSIDriver.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* attachRequired indicates this CSI volume driver requires an attach operation (because it implements the CSI ControllerPublishVolume() method), and that the Kubernetes attach detach controller should call the attach volume interface which checks the volumeattachment status and waits until the volume is attached before proceeding to mounting. The CSI external-attacher coordinates with CSI volume driver and updates the volumeattachment status when the attach operation is complete. If the CSIDriverRegistry feature gate is enabled and the value is specified to false, the attach operation will be skipped. Otherwise the attach operation will be called.  This field is immutable. *)
     attach_required: bool option [@yojson.default None] [@yojson.key "attachRequired"];
@@ -21,11 +29,16 @@ type t = {
     (* storageCapacity indicates that the CSI volume driver wants pod scheduling to consider the storage capacity that the driver deployment will report by creating CSIStorageCapacity objects with capacity information, if set to true.  The check can be enabled immediately when deploying a driver. In that case, provisioning new volumes with late binding will pause until the driver deployment has published some suitable CSIStorageCapacity object.  Alternatively, the driver can be deployed with the field unset or false and it can be flipped later when storage capacity information has been published.  This field was immutable in Kubernetes <= 1.22 and now is mutable. *)
     storage_capacity: bool option [@yojson.default None] [@yojson.key "storageCapacity"];
     (* tokenRequests indicates the CSI driver needs pods' service account tokens it is mounting volume for to do necessary authentication. Kubelet will pass the tokens in VolumeContext in the CSI NodePublishVolume calls. The CSI driver should parse and validate the following VolumeContext: \''csi.storage.k8s.io/serviceAccount.tokens\'': {   \''<audience>\'': {     \''token\'': <token>,     \''expirationTimestamp\'': <expiration timestamp in RFC3339>,   },   ... }  Note: Audience in each TokenRequest should be different and at most one token is empty string. To receive a new token after expiry, RequiresRepublish can be used to trigger NodePublishVolume periodically. *)
-    token_requests: Io_k8s_api_storage_v1_token_request.t list [@yojson.default []] [@yojson.key "tokenRequests"];
+    token_requests: Io_k8s_api_storage_v1_token_request.t list [@default []] [@yojson.key "tokenRequests"];
     (* volumeLifecycleModes defines what kind of volumes this CSI volume driver supports. The default if the list is empty is \''Persistent\'', which is the usage defined by the CSI specification and implemented in Kubernetes via the usual PV/PVC mechanism.  The other mode is \''Ephemeral\''. In this mode, volumes are defined inline inside the pod spec with CSIVolumeSource and their lifecycle is tied to the lifecycle of that pod. A driver has to be aware of this because it is only going to get a NodePublishVolume call for such a volume.  For more information about implementing this mode, see https://kubernetes-csi.github.io/docs/ephemeral-local-volumes.html A driver can support one or more of these modes and more modes may be added in the future.  This field is beta. This field is immutable. *)
-    volume_lifecycle_modes: string list [@yojson.default []] [@yojson.key "volumeLifecycleModes"];
+    volume_lifecycle_modes: string list [@default []] [@yojson.key "volumeLifecycleModes"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

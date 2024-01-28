@@ -6,21 +6,29 @@
  * Schema Io_k8s_api_storage_v1_storage_class.t : StorageClass describes the parameters for a class of storage for which PersistentVolumes can be dynamically provisioned.  StorageClasses are non-namespaced; the name of the storage class according to etcd is in ObjectMeta.Name.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* allowVolumeExpansion shows whether the storage class allow volume expand. *)
     allow_volume_expansion: bool option [@yojson.default None] [@yojson.key "allowVolumeExpansion"];
     (* allowedTopologies restrict the node topologies where volumes can be dynamically provisioned. Each volume plugin defines its own supported topology specifications. An empty TopologySelectorTerm list means there is no topology restriction. This field is only honored by servers that enable the VolumeScheduling feature. *)
-    allowed_topologies: Io_k8s_api_core_v1_topology_selector_term.t list [@yojson.default []] [@yojson.key "allowedTopologies"];
+    allowed_topologies: Io_k8s_api_core_v1_topology_selector_term.t list [@default []] [@yojson.key "allowedTopologies"];
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* Kind is a string value representing the REST resource this object represents. Servers may infer this from the endpoint the client submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds *)
     kind: string option [@yojson.default None] [@yojson.key "kind"];
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     (* mountOptions controls the mountOptions for dynamically provisioned PersistentVolumes of this storage class. e.g. [\''ro\'', \''soft\'']. Not validated - mount of the PVs will simply fail if one is invalid. *)
-    mount_options: string list [@yojson.default []] [@yojson.key "mountOptions"];
+    mount_options: string list [@default []] [@yojson.key "mountOptions"];
     (* parameters holds the parameters for the provisioner that should create volumes of this storage class. *)
-    parameters: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "parameters"];
+    parameters: any [@default (`Assoc [])] [@yojson.key "parameters"];
     (* provisioner indicates the type of the provisioner. *)
     provisioner: string [@yojson.key "provisioner"];
     (* reclaimPolicy controls the reclaimPolicy for dynamically provisioned PersistentVolumes of this storage class. Defaults to Delete. *)
@@ -29,6 +37,11 @@ type t = {
     volume_binding_mode: string option [@yojson.default None] [@yojson.key "volumeBindingMode"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

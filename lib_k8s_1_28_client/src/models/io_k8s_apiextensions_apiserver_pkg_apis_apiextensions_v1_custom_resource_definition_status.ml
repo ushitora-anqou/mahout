@@ -6,15 +6,28 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_status.t : CustomResourceDefinitionStatus indicates the state of the CustomResourceDefinition
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     accepted_names: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_names.t option [@yojson.default None] [@yojson.key "acceptedNames"];
     (* conditions indicate state for particular aspects of a CustomResourceDefinition *)
-    conditions: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    conditions: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_condition.t list [@default []] [@yojson.key "conditions"];
     (* storedVersions lists all versions of CustomResources that were ever persisted. Tracking these versions allows a migration path for stored versions in etcd. The field is mutable so a migration controller can finish a migration to another version (ensuring no old objects are left in storage), and then remove the rest of the versions from this list. Versions may not be removed from `spec.versions` while they exist in this list. *)
-    stored_versions: string list [@yojson.default []] [@yojson.key "storedVersions"];
+    stored_versions: string list [@default []] [@yojson.key "storedVersions"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

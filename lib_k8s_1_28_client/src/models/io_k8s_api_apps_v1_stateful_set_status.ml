@@ -6,14 +6,22 @@
  * Schema Io_k8s_api_apps_v1_stateful_set_status.t : StatefulSetStatus represents the current state of a StatefulSet.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* Total number of available pods (ready for at least minReadySeconds) targeted by this statefulset. *)
     available_replicas: int32 option [@yojson.default None] [@yojson.key "availableReplicas"];
     (* collisionCount is the count of hash collisions for the StatefulSet. The StatefulSet controller uses this field as a collision avoidance mechanism when it needs to create the name for the newest ControllerRevision. *)
     collision_count: int32 option [@yojson.default None] [@yojson.key "collisionCount"];
     (* Represents the latest available observations of a statefulset's current state. *)
-    conditions: Io_k8s_api_apps_v1_stateful_set_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    conditions: Io_k8s_api_apps_v1_stateful_set_condition.t list [@default []] [@yojson.key "conditions"];
     (* currentReplicas is the number of Pods created by the StatefulSet controller from the StatefulSet version indicated by currentRevision. *)
     current_replicas: int32 option [@yojson.default None] [@yojson.key "currentReplicas"];
     (* currentRevision, if not empty, indicates the version of the StatefulSet used to generate Pods in the sequence [0,currentReplicas). *)
@@ -30,6 +38,11 @@ type t = {
     updated_replicas: int32 option [@yojson.default None] [@yojson.key "updatedReplicas"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

@@ -6,16 +6,29 @@
  * Schema Io_k8s_api_core_v1_pod_dns_config.t : PodDNSConfig defines the DNS parameters of a pod in addition to those generated from DNSPolicy.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* A list of DNS name server IP addresses. This will be appended to the base nameservers generated from DNSPolicy. Duplicated nameservers will be removed. *)
-    nameservers: string list [@yojson.default []] [@yojson.key "nameservers"];
+    nameservers: string list [@default []] [@yojson.key "nameservers"];
     (* A list of DNS resolver options. This will be merged with the base options generated from DNSPolicy. Duplicated entries will be removed. Resolution options given in Options will override those that appear in the base DNSPolicy. *)
-    options: Io_k8s_api_core_v1_pod_dns_config_option.t list [@yojson.default []] [@yojson.key "options"];
+    options: Io_k8s_api_core_v1_pod_dns_config_option.t list [@default []] [@yojson.key "options"];
     (* A list of DNS search domains for host-name lookup. This will be appended to the base search paths generated from DNSPolicy. Duplicated search paths will be removed. *)
-    searches: string list [@yojson.default []] [@yojson.key "searches"];
+    searches: string list [@default []] [@yojson.key "searches"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

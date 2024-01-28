@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_core_v1_pod_security_context.t : PodSecurityContext holds pod-level security attributes and common container settings. Some fields are also present in container.securityContext.  Field values of container.securityContext take precedence over field values of PodSecurityContext.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* A special supplemental group that applies to all containers in a pod. Some volume types allow the Kubelet to change the ownership of that volume to be owned by the pod:  1. The owning GID will be the FSGroup 2. The setgid bit is set (new files created in the volume will be owned by FSGroup) 3. The permission bits are OR'd with rw-rw----  If unset, the Kubelet will not modify the ownership and permissions of any volume. Note that this field cannot be set when spec.os.name is windows. *)
     fs_group: int64 option [@yojson.default None] [@yojson.key "fsGroup"];
@@ -21,12 +29,17 @@ type t = {
     se_linux_options: Io_k8s_api_core_v1_se_linux_options.t option [@yojson.default None] [@yojson.key "seLinuxOptions"];
     seccomp_profile: Io_k8s_api_core_v1_seccomp_profile.t option [@yojson.default None] [@yojson.key "seccompProfile"];
     (* A list of groups applied to the first process run in each container, in addition to the container's primary GID, the fsGroup (if specified), and group memberships defined in the container image for the uid of the container process. If unspecified, no additional groups are added to any container. Note that group memberships defined in the container image for the uid of the container process are still effective, even if they are not included in this list. Note that this field cannot be set when spec.os.name is windows. *)
-    supplemental_groups: int64 list [@yojson.default []] [@yojson.key "supplementalGroups"];
+    supplemental_groups: int64 list [@default []] [@yojson.key "supplementalGroups"];
     (* Sysctls hold a list of namespaced sysctls used for the pod. Pods with unsupported sysctls (by the container runtime) might fail to launch. Note that this field cannot be set when spec.os.name is windows. *)
-    sysctls: Io_k8s_api_core_v1_sysctl.t list [@yojson.default []] [@yojson.key "sysctls"];
+    sysctls: Io_k8s_api_core_v1_sysctl.t list [@default []] [@yojson.key "sysctls"];
     windows_options: Io_k8s_api_core_v1_windows_security_context_options.t option [@yojson.default None] [@yojson.key "windowsOptions"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

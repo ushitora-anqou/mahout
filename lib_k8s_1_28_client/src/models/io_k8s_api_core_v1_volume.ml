@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_core_v1_volume.t : Volume represents a named volume in a pod that may be accessed by any container in the pod.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     aws_elastic_block_store: Io_k8s_api_core_v1_aws_elastic_block_store_volume_source.t option [@yojson.default None] [@yojson.key "awsElasticBlockStore"];
     azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@yojson.default None] [@yojson.key "azureDisk"];
@@ -41,6 +49,11 @@ type t = {
     vsphere_volume: Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t option [@yojson.default None] [@yojson.key "vsphereVolume"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

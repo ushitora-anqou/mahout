@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_rbac_v1_cluster_role.t : ClusterRole is a cluster level, logical grouping of PolicyRules that can be referenced as a unit by a RoleBinding or ClusterRoleBinding.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     aggregation_rule: Io_k8s_api_rbac_v1_aggregation_rule.t option [@yojson.default None] [@yojson.key "aggregationRule"];
     (* APIVersion defines the versioned schema of this representation of an object. Servers should convert recognized schemas to the latest internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources *)
@@ -15,9 +23,14 @@ type t = {
     kind: string option [@yojson.default None] [@yojson.key "kind"];
     metadata: Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option [@yojson.default None] [@yojson.key "metadata"];
     (* Rules holds all the PolicyRules for this ClusterRole *)
-    rules: Io_k8s_api_rbac_v1_policy_rule.t list [@yojson.default []] [@yojson.key "rules"];
+    rules: Io_k8s_api_rbac_v1_policy_rule.t list [@default []] [@yojson.key "rules"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

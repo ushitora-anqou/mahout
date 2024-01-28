@@ -6,18 +6,31 @@
  * Schema Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_spec.t : HorizontalPodAutoscalerSpec describes the desired functionality of the HorizontalPodAutoscaler.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     behavior: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_behavior.t option [@yojson.default None] [@yojson.key "behavior"];
     (* maxReplicas is the upper limit for the number of replicas to which the autoscaler can scale up. It cannot be less that minReplicas. *)
     max_replicas: int32 [@yojson.key "maxReplicas"];
     (* metrics contains the specifications for which to use to calculate the desired replica count (the maximum replica count across all metrics will be used).  The desired replica count is calculated multiplying the ratio between the target value and the current value by the current number of pods.  Ergo, metrics used must decrease as the pod count is increased, and vice-versa.  See the individual metric source types for more information about how each type of metric must respond. If not set, the default metric will be set to 80% average CPU utilization. *)
-    metrics: Io_k8s_api_autoscaling_v2_metric_spec.t list [@yojson.default []] [@yojson.key "metrics"];
+    metrics: Io_k8s_api_autoscaling_v2_metric_spec.t list [@default []] [@yojson.key "metrics"];
     (* minReplicas is the lower limit for the number of replicas to which the autoscaler can scale down.  It defaults to 1 pod.  minReplicas is allowed to be 0 if the alpha feature gate HPAScaleToZero is enabled and at least one Object or External metric is configured.  Scaling is active as long as at least one metric value is available. *)
     min_replicas: int32 option [@yojson.default None] [@yojson.key "minReplicas"];
     scale_target_ref: Io_k8s_api_autoscaling_v2_cross_version_object_reference.t [@yojson.key "scaleTargetRef"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

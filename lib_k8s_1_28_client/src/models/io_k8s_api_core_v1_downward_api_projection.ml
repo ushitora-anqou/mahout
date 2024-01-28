@@ -6,12 +6,25 @@
  * Schema Io_k8s_api_core_v1_downward_api_projection.t : Represents downward API info for projecting into a projected volume. Note that this is identical to a downwardAPI volume source without the default mode.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* Items is a list of DownwardAPIVolume file *)
-    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@yojson.default []] [@yojson.key "items"];
+    items: Io_k8s_api_core_v1_downward_api_volume_file.t list [@default []] [@yojson.key "items"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

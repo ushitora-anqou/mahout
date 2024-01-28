@@ -6,7 +6,15 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_server_address_by_client_cidr.t : ServerAddressByClientCIDR helps the client to determine the server address that they should use, depending on the clientCIDR that they match.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* The CIDR with which clients can match their IP to figure out the server address that they should use. *)
     client_cidr: string [@yojson.key "clientCIDR"];
@@ -14,6 +22,11 @@ type t = {
     server_address: string [@yojson.key "serverAddress"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

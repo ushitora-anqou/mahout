@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_batch_v1_job_status.t : JobStatus represents the current state of a Job.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* The number of pending and running pods. *)
     active: int32 option [@yojson.default None] [@yojson.key "active"];
@@ -15,7 +23,7 @@ type t = {
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     completion_time: string option [@yojson.default None] [@yojson.key "completionTime"];
     (* The latest available observations of an object's current state. When a Job fails, one of the conditions will have type \''Failed\'' and status true. When a Job is suspended, one of the conditions will have type \''Suspended\'' and status true; when the Job is resumed, the status of this condition will become false. When a Job is completed, one of the conditions will have type \''Complete\'' and status true. More info: https://kubernetes.io/docs/concepts/workloads/controllers/jobs-run-to-completion/ *)
-    conditions: Io_k8s_api_batch_v1_job_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    conditions: Io_k8s_api_batch_v1_job_condition.t list [@default []] [@yojson.key "conditions"];
     (* The number of pods which reached phase Failed. *)
     failed: int32 option [@yojson.default None] [@yojson.key "failed"];
     (* FailedIndexes holds the failed indexes when backoffLimitPerIndex=true. The indexes are represented in the text format analogous as for the `completedIndexes` field, ie. they are kept as decimal integers separated by commas. The numbers are listed in increasing order. Three or more consecutive numbers are compressed and represented by the first and last element of the series, separated by a hyphen. For example, if the failed indexes are 1, 3, 4, 5 and 7, they are represented as \''1,3-5,7\''. This field is alpha-level. It can be used when the `JobBackoffLimitPerIndex` feature gate is enabled (disabled by default). *)
@@ -31,6 +39,11 @@ type t = {
     uncounted_terminated_pods: Io_k8s_api_batch_v1_uncounted_terminated_pods.t option [@yojson.default None] [@yojson.key "uncountedTerminatedPods"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

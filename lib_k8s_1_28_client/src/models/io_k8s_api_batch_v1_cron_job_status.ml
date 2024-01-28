@@ -6,16 +6,29 @@
  * Schema Io_k8s_api_batch_v1_cron_job_status.t : CronJobStatus represents the current state of a cron job.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* A list of pointers to currently running jobs. *)
-    active: Io_k8s_api_core_v1_object_reference.t list [@yojson.default []] [@yojson.key "active"];
+    active: Io_k8s_api_core_v1_object_reference.t list [@default []] [@yojson.key "active"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_schedule_time: string option [@yojson.default None] [@yojson.key "lastScheduleTime"];
     (* Time is a wrapper around time.Time which supports correct marshaling to YAML and JSON.  Wrappers are provided for many of the factory methods that the time package offers. *)
     last_successful_time: string option [@yojson.default None] [@yojson.key "lastSuccessfulTime"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

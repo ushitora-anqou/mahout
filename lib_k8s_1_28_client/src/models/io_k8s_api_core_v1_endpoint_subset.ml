@@ -6,16 +6,29 @@
  * Schema Io_k8s_api_core_v1_endpoint_subset.t : EndpointSubset is a group of addresses with a common set of ports. The expanded set of endpoints is the Cartesian product of Addresses x Ports. For example, given:   {    Addresses: [{\''ip\'': \''10.10.1.1\''}, {\''ip\'': \''10.10.2.2\''}],    Ports:     [{\''name\'': \''a\'', \''port\'': 8675}, {\''name\'': \''b\'', \''port\'': 309}]  }  The resulting set of endpoints can be viewed as:   a: [ 10.10.1.1:8675, 10.10.2.2:8675 ],  b: [ 10.10.1.1:309, 10.10.2.2:309 ]
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* IP addresses which offer the related ports that are marked as ready. These endpoints should be considered safe for load balancers and clients to utilize. *)
-    addresses: Io_k8s_api_core_v1_endpoint_address.t list [@yojson.default []] [@yojson.key "addresses"];
+    addresses: Io_k8s_api_core_v1_endpoint_address.t list [@default []] [@yojson.key "addresses"];
     (* IP addresses which offer the related ports but are not currently marked as ready because they have not yet finished starting, have recently failed a readiness check, or have recently failed a liveness check. *)
-    not_ready_addresses: Io_k8s_api_core_v1_endpoint_address.t list [@yojson.default []] [@yojson.key "notReadyAddresses"];
+    not_ready_addresses: Io_k8s_api_core_v1_endpoint_address.t list [@default []] [@yojson.key "notReadyAddresses"];
     (* Port numbers available on the related IP addresses. *)
-    ports: Io_k8s_api_core_v1_endpoint_port.t list [@yojson.default []] [@yojson.key "ports"];
+    ports: Io_k8s_api_core_v1_endpoint_port.t list [@default []] [@yojson.key "ports"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

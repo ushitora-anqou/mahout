@@ -6,24 +6,32 @@
  * Schema t : JSONSchemaProps is a JSON-Schema following Specification Draft 4 (http://json-schema.org/).
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     ref: string option [@yojson.default None] [@yojson.key "$ref"];
     schema: string option [@yojson.default None] [@yojson.key "$schema"];
     (* JSONSchemaPropsOrBool represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property. *)
-    additional_items: Yojson.Safe.t option [@yojson.default None] [@yojson.key "additionalItems"];
+    additional_items: any option [@yojson.default None] [@yojson.key "additionalItems"];
     (* JSONSchemaPropsOrBool represents JSONSchemaProps or a boolean value. Defaults to true for the boolean property. *)
-    additional_properties: Yojson.Safe.t option [@yojson.default None] [@yojson.key "additionalProperties"];
-    all_of: t list [@yojson.default []] [@yojson.key "allOf"];
-    any_of: t list [@yojson.default []] [@yojson.key "anyOf"];
+    additional_properties: any option [@yojson.default None] [@yojson.key "additionalProperties"];
+    all_of: t list [@default []] [@yojson.key "allOf"];
+    any_of: t list [@default []] [@yojson.key "anyOf"];
     (* JSON represents any valid JSON value. These types are supported: bool, int64, float64, string, []interface{}, map[string]interface{} and nil. *)
-    default: Yojson.Safe.t option [@yojson.default None] [@yojson.key "default"];
-    definitions: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "definitions"];
-    dependencies: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "dependencies"];
+    default: any option [@yojson.default None] [@yojson.key "default"];
+    definitions: any [@default (`Assoc [])] [@yojson.key "definitions"];
+    dependencies: any [@default (`Assoc [])] [@yojson.key "dependencies"];
     description: string option [@yojson.default None] [@yojson.key "description"];
-    enum: Yojson.Safe.t list [@yojson.default []] [@yojson.key "enum"];
+    enum: any list [@default []] [@yojson.key "enum"];
     (* JSON represents any valid JSON value. These types are supported: bool, int64, float64, string, []interface{}, map[string]interface{} and nil. *)
-    example: Yojson.Safe.t option [@yojson.default None] [@yojson.key "example"];
+    example: any option [@yojson.default None] [@yojson.key "example"];
     exclusive_maximum: bool option [@yojson.default None] [@yojson.key "exclusiveMaximum"];
     exclusive_minimum: bool option [@yojson.default None] [@yojson.key "exclusiveMinimum"];
     external_docs: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_external_documentation.t option [@yojson.default None] [@yojson.key "externalDocs"];
@@ -31,7 +39,7 @@ type t = {
     format: string option [@yojson.default None] [@yojson.key "format"];
     id: string option [@yojson.default None] [@yojson.key "id"];
     (* JSONSchemaPropsOrArray represents a value that can either be a JSONSchemaProps or an array of JSONSchemaProps. Mainly here for serialization purposes. *)
-    items: Yojson.Safe.t option [@yojson.default None] [@yojson.key "items"];
+    items: any option [@yojson.default None] [@yojson.key "items"];
     max_items: int64 option [@yojson.default None] [@yojson.key "maxItems"];
     max_length: int64 option [@yojson.default None] [@yojson.key "maxLength"];
     max_properties: int64 option [@yojson.default None] [@yojson.key "maxProperties"];
@@ -43,11 +51,11 @@ type t = {
     multiple_of: float option [@yojson.default None] [@yojson.key "multipleOf"];
     not: t option [@yojson.default None] [@yojson.key "not"];
     nullable: bool option [@yojson.default None] [@yojson.key "nullable"];
-    one_of: t list [@yojson.default []] [@yojson.key "oneOf"];
+    one_of: t list [@default []] [@yojson.key "oneOf"];
     pattern: string option [@yojson.default None] [@yojson.key "pattern"];
-    pattern_properties: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "patternProperties"];
-    properties: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "properties"];
-    required: string list [@yojson.default []] [@yojson.key "required"];
+    pattern_properties: any [@default (`Assoc [])] [@yojson.key "patternProperties"];
+    properties: any [@default (`Assoc [])] [@yojson.key "properties"];
+    required: string list [@default []] [@yojson.key "required"];
     title: string option [@yojson.default None] [@yojson.key "title"];
     _type: string option [@yojson.default None] [@yojson.key "type"];
     unique_items: bool option [@yojson.default None] [@yojson.key "uniqueItems"];
@@ -56,7 +64,7 @@ type t = {
     (* x-kubernetes-int-or-string specifies that this value is either an integer or a string. If this is true, an empty type is allowed and type as child of anyOf is permitted if following one of the following patterns:  1) anyOf:    - type: integer    - type: string 2) allOf:    - anyOf:      - type: integer      - type: string    - ... zero or more *)
     x_kubernetes_int_or_string: bool option [@yojson.default None] [@yojson.key "x-kubernetes-int-or-string"];
     (* x-kubernetes-list-map-keys annotates an array with the x-kubernetes-list-type `map` by specifying the keys used as the index of the map.  This tag MUST only be used on lists that have the \''x-kubernetes-list-type\'' extension set to \''map\''. Also, the values specified for this attribute must be a scalar typed field of the child structure (no nesting is supported).  The properties specified must either be required or have a default value, to ensure those properties are present for all list items. *)
-    x_kubernetes_list_map_keys: string list [@yojson.default []] [@yojson.key "x-kubernetes-list-map-keys"];
+    x_kubernetes_list_map_keys: string list [@default []] [@yojson.key "x-kubernetes-list-map-keys"];
     (* x-kubernetes-list-type annotates an array to further describe its topology. This extension must only be used on lists and may have 3 possible values:  1) `atomic`: the list is treated as a single entity, like a scalar.      Atomic lists will be entirely replaced when updated. This extension      may be used on any type of list (struct, scalar, ...). 2) `set`:      Sets are lists that must not have multiple items with the same value. Each      value must be a scalar, an object with x-kubernetes-map-type `atomic` or an      array with x-kubernetes-list-type `atomic`. 3) `map`:      These lists are like maps in that their elements have a non-index key      used to identify them. Order is preserved upon merge. The map tag      must only be used on a list with elements of type object. Defaults to atomic for arrays. *)
     x_kubernetes_list_type: string option [@yojson.default None] [@yojson.key "x-kubernetes-list-type"];
     (* x-kubernetes-map-type annotates an object to further describe its topology. This extension must only be used when type is object and may have 2 possible values:  1) `granular`:      These maps are actual maps (key-value pairs) and each fields are independent      from each other (they can each be manipulated by separate actors). This is      the default behaviour for all maps. 2) `atomic`: the list is treated as a single entity, like a scalar.      Atomic maps will be entirely replaced when updated. *)
@@ -64,9 +72,14 @@ type t = {
     (* x-kubernetes-preserve-unknown-fields stops the API server decoding step from pruning fields which are not specified in the validation schema. This affects fields recursively, but switches back to normal pruning behaviour if nested properties or additionalProperties are specified in the schema. This can either be true or undefined. False is forbidden. *)
     x_kubernetes_preserve_unknown_fields: bool option [@yojson.default None] [@yojson.key "x-kubernetes-preserve-unknown-fields"];
     (* x-kubernetes-validations describes a list of validation rules written in the CEL expression language. This field is an alpha-level. Using this field requires the feature gate `CustomResourceValidationExpressions` to be enabled. *)
-    x_kubernetes_validations: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_validation_rule.t list [@yojson.default []] [@yojson.key "x-kubernetes-validations"];
+    x_kubernetes_validations: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_validation_rule.t list [@default []] [@yojson.key "x-kubernetes-validations"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

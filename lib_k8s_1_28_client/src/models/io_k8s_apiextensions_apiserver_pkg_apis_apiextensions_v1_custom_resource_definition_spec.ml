@@ -6,7 +6,15 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_spec.t : CustomResourceDefinitionSpec describes how a user wants their resource to appear
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     conversion: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_conversion.t option [@yojson.default None] [@yojson.key "conversion"];
     (* group is the API group of the defined custom resource. The custom resources are served under `/apis/<group>/...`. Must match the name of the CustomResourceDefinition (in the form `<names.plural>.<group>`). *)
@@ -17,9 +25,14 @@ type t = {
     (* scope indicates whether the defined custom resource is cluster- or namespace-scoped. Allowed values are `Cluster` and `Namespaced`. *)
     scope: string [@yojson.key "scope"];
     (* versions is the list of all API versions of the defined custom resource. Version names are used to compute the order in which served versions are listed in API discovery. If the version string is \''kube-like\'', it will sort above non \''kube-like\'' version strings, which are ordered lexicographically. \''Kube-like\'' versions start with a \''v\'', then are followed by a number (the major version), then optionally the string \''alpha\'' or \''beta\'' and another number (the minor version). These are sorted first by GA > beta > alpha (where GA is a version with no suffix such as beta or alpha), and then by comparing major version, then minor version. An example sorted list of versions: v10, v2, v1, v11beta2, v10beta3, v3beta1, v12alpha1, v11alpha2, foo1, foo10. *)
-    versions: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_version.t list [@yojson.default []] [@yojson.key "versions"];
+    versions: Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_version.t list [@default []] [@yojson.key "versions"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

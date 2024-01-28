@@ -6,20 +6,33 @@
  * Schema Io_k8s_api_rbac_v1_policy_rule.t : PolicyRule holds information that describes a policy rule, but does not contain information about who the rule applies to or which namespace the rule applies to.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* APIGroups is the name of the APIGroup that contains the resources.  If multiple API groups are specified, any action requested against one of the enumerated resources in any API group will be allowed. \''\'' represents the core API group and \''*\'' represents all API groups. *)
-    api_groups: string list [@yojson.default []] [@yojson.key "apiGroups"];
+    api_groups: string list [@default []] [@yojson.key "apiGroups"];
     (* NonResourceURLs is a set of partial urls that a user should have access to.  *s are allowed, but only as the full, final step in the path Since non-resource URLs are not namespaced, this field is only applicable for ClusterRoles referenced from a ClusterRoleBinding. Rules can either apply to API resources (such as \''pods\'' or \''secrets\'') or non-resource URL paths (such as \''/api\''),  but not both. *)
-    non_resource_urls: string list [@yojson.default []] [@yojson.key "nonResourceURLs"];
+    non_resource_urls: string list [@default []] [@yojson.key "nonResourceURLs"];
     (* ResourceNames is an optional white list of names that the rule applies to.  An empty set means that everything is allowed. *)
-    resource_names: string list [@yojson.default []] [@yojson.key "resourceNames"];
+    resource_names: string list [@default []] [@yojson.key "resourceNames"];
     (* Resources is a list of resources this rule applies to. '*' represents all resources. *)
-    resources: string list [@yojson.default []] [@yojson.key "resources"];
+    resources: string list [@default []] [@yojson.key "resources"];
     (* Verbs is a list of Verbs that apply to ALL the ResourceKinds contained in this rule. '*' represents all verbs. *)
-    verbs: string list [@yojson.default []] [@yojson.key "verbs"];
+    verbs: string list [@default []] [@yojson.key "verbs"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

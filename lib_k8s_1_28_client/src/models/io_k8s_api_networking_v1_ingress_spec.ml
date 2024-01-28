@@ -6,17 +6,30 @@
  * Schema Io_k8s_api_networking_v1_ingress_spec.t : IngressSpec describes the Ingress the user wishes to exist.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     default_backend: Io_k8s_api_networking_v1_ingress_backend.t option [@yojson.default None] [@yojson.key "defaultBackend"];
     (* ingressClassName is the name of an IngressClass cluster resource. Ingress controller implementations use this field to know whether they should be serving this Ingress resource, by a transitive connection (controller -> IngressClass -> Ingress resource). Although the `kubernetes.io/ingress.class` annotation (simple constant name) was never formally defined, it was widely supported by Ingress controllers to create a direct binding between Ingress controller and Ingress resources. Newly created Ingress resources should prefer using the field. However, even though the annotation is officially deprecated, for backwards compatibility reasons, ingress controllers should still honor that annotation if present. *)
     ingress_class_name: string option [@yojson.default None] [@yojson.key "ingressClassName"];
     (* rules is a list of host rules used to configure the Ingress. If unspecified, or no rule matches, all traffic is sent to the default backend. *)
-    rules: Io_k8s_api_networking_v1_ingress_rule.t list [@yojson.default []] [@yojson.key "rules"];
+    rules: Io_k8s_api_networking_v1_ingress_rule.t list [@default []] [@yojson.key "rules"];
     (* tls represents the TLS configuration. Currently the Ingress only supports a single TLS port, 443. If multiple members of this list specify different hosts, they will be multiplexed on the same port according to the hostname specified through the SNI TLS extension, if the ingress controller fulfilling the ingress supports SNI. *)
-    tls: Io_k8s_api_networking_v1_ingress_tls.t list [@yojson.default []] [@yojson.key "tls"];
+    tls: Io_k8s_api_networking_v1_ingress_tls.t list [@default []] [@yojson.key "tls"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

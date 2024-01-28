@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_core_v1_csi_volume_source.t : Represents a source location of a volume to mount, managed by an external CSI driver
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* driver is the name of the CSI driver that handles this volume. Consult with your admin for the correct name as registered in the cluster. *)
     driver: string [@yojson.key "driver"];
@@ -16,9 +24,14 @@ type t = {
     (* readOnly specifies a read-only configuration for the volume. Defaults to false (read/write). *)
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     (* volumeAttributes stores driver-specific properties that are passed to the CSI driver. Consult your driver's documentation for supported values. *)
-    volume_attributes: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "volumeAttributes"];
+    volume_attributes: any [@default (`Assoc [])] [@yojson.key "volumeAttributes"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

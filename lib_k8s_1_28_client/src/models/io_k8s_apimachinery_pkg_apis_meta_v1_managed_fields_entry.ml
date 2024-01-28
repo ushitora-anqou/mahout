@@ -6,14 +6,22 @@
  * Schema Io_k8s_apimachinery_pkg_apis_meta_v1_managed_fields_entry.t : ManagedFieldsEntry is a workflow-id, a FieldSet and the group version of the resource that the fieldset applies to.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* APIVersion defines the version of this resource that this field set applies to. The format is \''group/version\'' just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted. *)
     api_version: string option [@yojson.default None] [@yojson.key "apiVersion"];
     (* FieldsType is the discriminator for the different fields format and version. There is currently only one possible value: \''FieldsV1\'' *)
     fields_type: string option [@yojson.default None] [@yojson.key "fieldsType"];
     (* FieldsV1 stores a set of fields in a data structure like a Trie, in JSON format.  Each key is either a '.' representing the field itself, and will always map to an empty set, or a string representing a sub-field or item. The string will follow one of these four formats: 'f:<name>', where <name> is the name of a field in a struct, or key in a map 'v:<value>', where <value> is the exact json formatted value of a list item 'i:<index>', where <index> is position of a item in a list 'k:<keys>', where <keys> is a map of  a list item's key fields to their unique values If a key maps to an empty Fields value, the field that key represents is part of the set.  The exact format is defined in sigs.k8s.io/structured-merge-diff *)
-    fields_v1: Yojson.Safe.t option [@yojson.default None] [@yojson.key "fieldsV1"];
+    fields_v1: any option [@yojson.default None] [@yojson.key "fieldsV1"];
     (* Manager is an identifier of the workflow managing these fields. *)
     manager: string option [@yojson.default None] [@yojson.key "manager"];
     (* Operation is the type of operation which lead to this ManagedFieldsEntry being created. The only valid values for this field are 'Apply' and 'Update'. *)
@@ -24,6 +32,11 @@ type t = {
     time: string option [@yojson.default None] [@yojson.key "time"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

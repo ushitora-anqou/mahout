@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_storage_v1_csi_node_driver.t : CSINodeDriver holds information about the specification of one CSI driver installed on a node
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     allocatable: Io_k8s_api_storage_v1_volume_node_resources.t option [@yojson.default None] [@yojson.key "allocatable"];
     (* name represents the name of the CSI driver that this object refers to. This MUST be the same name returned by the CSI GetPluginName() call for that driver. *)
@@ -14,9 +22,14 @@ type t = {
     (* nodeID of the node from the driver point of view. This field enables Kubernetes to communicate with storage systems that do not share the same nomenclature for nodes. For example, Kubernetes may refer to a given node as \''node1\'', but the storage system may refer to the same node as \''nodeA\''. When Kubernetes issues a command to the storage system to attach a volume to a specific node, it can use this field to refer to the node name using the ID that the storage system will understand, e.g. \''nodeA\'' instead of \''node1\''. This field is required. *)
     node_id: string [@yojson.key "nodeID"];
     (* topologyKeys is the list of keys supported by the driver. When a driver is initialized on a cluster, it provides a set of topology keys that it understands (e.g. \''company.com/zone\'', \''company.com/region\''). When a driver is initialized on a node, it provides the same topology keys along with values. Kubelet will expose these topology keys as labels on its own node object. When Kubernetes does topology aware provisioning, it can use this list to determine which labels it should retrieve from the node object and pass back to the driver. It is possible for different nodes to use different topology keys. This can be empty if driver does not support topology. *)
-    topology_keys: string list [@yojson.default []] [@yojson.key "topologyKeys"];
+    topology_keys: string list [@default []] [@yojson.key "topologyKeys"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

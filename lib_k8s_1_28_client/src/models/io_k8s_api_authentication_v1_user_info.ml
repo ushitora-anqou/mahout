@@ -6,18 +6,31 @@
  * Schema Io_k8s_api_authentication_v1_user_info.t : UserInfo holds the information about the user needed to implement the user.Info interface.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* Any additional information provided by the authenticator. *)
-    extra: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "extra"];
+    extra: any [@default (`Assoc [])] [@yojson.key "extra"];
     (* The names of groups this user is a part of. *)
-    groups: string list [@yojson.default []] [@yojson.key "groups"];
+    groups: string list [@default []] [@yojson.key "groups"];
     (* A unique value that identifies this user across time. If this user is deleted and another user by the same name is added, they will have different UIDs. *)
     uid: string option [@yojson.default None] [@yojson.key "uid"];
     (* The name that uniquely identifies this user among all active users. *)
     username: string option [@yojson.default None] [@yojson.key "username"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

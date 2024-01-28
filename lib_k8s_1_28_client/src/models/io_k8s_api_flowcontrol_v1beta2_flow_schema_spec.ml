@@ -6,16 +6,29 @@
  * Schema Io_k8s_api_flowcontrol_v1beta2_flow_schema_spec.t : FlowSchemaSpec describes how the FlowSchema's specification looks like.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     distinguisher_method: Io_k8s_api_flowcontrol_v1beta2_flow_distinguisher_method.t option [@yojson.default None] [@yojson.key "distinguisherMethod"];
     (* `matchingPrecedence` is used to choose among the FlowSchemas that match a given request. The chosen FlowSchema is among those with the numerically lowest (which we take to be logically highest) MatchingPrecedence.  Each MatchingPrecedence value must be ranged in [1,10000]. Note that if the precedence is not specified, it will be set to 1000 as default. *)
     matching_precedence: int32 option [@yojson.default None] [@yojson.key "matchingPrecedence"];
     priority_level_configuration: Io_k8s_api_flowcontrol_v1beta2_priority_level_configuration_reference.t [@yojson.key "priorityLevelConfiguration"];
     (* `rules` describes which requests will match this flow schema. This FlowSchema matches a request if and only if at least one member of rules matches the request. if it is an empty slice, there will be no requests matching the FlowSchema. *)
-    rules: Io_k8s_api_flowcontrol_v1beta2_policy_rules_with_subjects.t list [@yojson.default []] [@yojson.key "rules"];
+    rules: Io_k8s_api_flowcontrol_v1beta2_policy_rules_with_subjects.t list [@default []] [@yojson.key "rules"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

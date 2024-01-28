@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_core_v1_iscsi_volume_source.t : Represents an ISCSI disk. ISCSI volumes can only be mounted as read/write once. ISCSI volumes support ownership management and SELinux relabeling.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* chapAuthDiscovery defines whether support iSCSI Discovery CHAP authentication *)
     chap_auth_discovery: bool option [@yojson.default None] [@yojson.key "chapAuthDiscovery"];
@@ -23,7 +31,7 @@ type t = {
     (* lun represents iSCSI Target Lun number. *)
     lun: int32 [@yojson.key "lun"];
     (* portals is the iSCSI Target Portal List. The portal is either an IP or ip_addr:port if the port is other than default (typically TCP ports 860 and 3260). *)
-    portals: string list [@yojson.default []] [@yojson.key "portals"];
+    portals: string list [@default []] [@yojson.key "portals"];
     (* readOnly here will force the ReadOnly setting in VolumeMounts. Defaults to false. *)
     read_only: bool option [@yojson.default None] [@yojson.key "readOnly"];
     secret_ref: Io_k8s_api_core_v1_local_object_reference.t option [@yojson.default None] [@yojson.key "secretRef"];
@@ -31,6 +39,11 @@ type t = {
     target_portal: string [@yojson.key "targetPortal"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

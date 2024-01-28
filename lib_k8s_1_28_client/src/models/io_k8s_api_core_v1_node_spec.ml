@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_core_v1_node_spec.t : NodeSpec describes the attributes that a node is created with.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     config_source: Io_k8s_api_core_v1_node_config_source.t option [@yojson.default None] [@yojson.key "configSource"];
     (* Deprecated. Not all kubelets will set this field. Remove field after 1.13. see: https://issues.k8s.io/61966 *)
@@ -14,15 +22,20 @@ type t = {
     (* PodCIDR represents the pod IP range assigned to the node. *)
     pod_cidr: string option [@yojson.default None] [@yojson.key "podCIDR"];
     (* podCIDRs represents the IP ranges assigned to the node for usage by Pods on that node. If this field is specified, the 0th entry must match the podCIDR field. It may contain at most 1 value for each of IPv4 and IPv6. *)
-    pod_cidrs: string list [@yojson.default []] [@yojson.key "podCIDRs"];
+    pod_cidrs: string list [@default []] [@yojson.key "podCIDRs"];
     (* ID of the node assigned by the cloud provider in the format: <ProviderName>://<ProviderSpecificNodeID> *)
     provider_id: string option [@yojson.default None] [@yojson.key "providerID"];
     (* If specified, the node's taints. *)
-    taints: Io_k8s_api_core_v1_taint.t list [@yojson.default []] [@yojson.key "taints"];
+    taints: Io_k8s_api_core_v1_taint.t list [@default []] [@yojson.key "taints"];
     (* Unschedulable controls node schedulability of new pods. By default, node is schedulable. More info: https://kubernetes.io/docs/concepts/nodes/node/#manual-node-administration *)
     unschedulable: bool option [@yojson.default None] [@yojson.key "unschedulable"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

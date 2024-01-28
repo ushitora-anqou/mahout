@@ -6,16 +6,24 @@
  * Schema Io_k8s_api_policy_v1_pod_disruption_budget_status.t : PodDisruptionBudgetStatus represents information about the status of a PodDisruptionBudget. Status may trail the actual state of a system.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* Conditions contain conditions for PDB. The disruption controller sets the DisruptionAllowed condition. The following are known values for the reason field (additional reasons could be added in the future): - SyncFailed: The controller encountered an error and wasn't able to compute               the number of allowed disruptions. Therefore no disruptions are               allowed and the status of the condition will be False. - InsufficientPods: The number of pods are either at or below the number                     required by the PodDisruptionBudget. No disruptions are                     allowed and the status of the condition will be False. - SufficientPods: There are more pods than required by the PodDisruptionBudget.                   The condition will be True, and the number of allowed                   disruptions are provided by the disruptionsAllowed property. *)
-    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    conditions: Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list [@default []] [@yojson.key "conditions"];
     (* current number of healthy pods *)
     current_healthy: int32 [@yojson.key "currentHealthy"];
     (* minimum desired number of healthy pods *)
     desired_healthy: int32 [@yojson.key "desiredHealthy"];
     (* DisruptedPods contains information about pods whose eviction was processed by the API server eviction subresource handler but has not yet been observed by the PodDisruptionBudget controller. A pod will be in this map from the time when the API server processed the eviction request to the time when the pod is seen by PDB controller as having been marked for deletion (or after a timeout). The key in the map is the name of the pod and the value is the time when the API server processed the eviction request. If the deletion didn't occur and a pod is still there it will be removed from the list automatically by PodDisruptionBudget controller after some time. If everything goes smooth this map should be empty for the most of the time. Large number of entries in the map may indicate problems with pod deletions. *)
-    disrupted_pods: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "disruptedPods"];
+    disrupted_pods: any [@default (`Assoc [])] [@yojson.key "disruptedPods"];
     (* Number of pod disruptions that are currently allowed. *)
     disruptions_allowed: int32 [@yojson.key "disruptionsAllowed"];
     (* total number of pods counted by this disruption budget *)
@@ -24,6 +32,11 @@ type t = {
     observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

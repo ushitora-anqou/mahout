@@ -6,12 +6,20 @@
  * Schema Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_status.t : HorizontalPodAutoscalerStatus describes the current status of a horizontal pod autoscaler.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* conditions is the set of conditions required for this autoscaler to scale its target, and indicates whether or not those conditions are met. *)
-    conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    conditions: Io_k8s_api_autoscaling_v2_horizontal_pod_autoscaler_condition.t list [@default []] [@yojson.key "conditions"];
     (* currentMetrics is the last read state of the metrics used by this autoscaler. *)
-    current_metrics: Io_k8s_api_autoscaling_v2_metric_status.t list [@yojson.default []] [@yojson.key "currentMetrics"];
+    current_metrics: Io_k8s_api_autoscaling_v2_metric_status.t list [@default []] [@yojson.key "currentMetrics"];
     (* currentReplicas is current number of replicas of pods managed by this autoscaler, as last seen by the autoscaler. *)
     current_replicas: int32 option [@yojson.default None] [@yojson.key "currentReplicas"];
     (* desiredReplicas is the desired number of replicas of pods managed by this autoscaler, as last calculated by the autoscaler. *)
@@ -22,6 +30,11 @@ type t = {
     observed_generation: int64 option [@yojson.default None] [@yojson.key "observedGeneration"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

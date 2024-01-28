@@ -6,16 +6,24 @@
  * Schema Io_k8s_api_core_v1_ephemeral_container.t : An EphemeralContainer is a temporary container that you may add to an existing Pod for user-initiated activities such as debugging. Ephemeral containers have no resource or scheduling guarantees, and they will not be restarted when they exit or when a Pod is removed or restarted. The kubelet may evict a Pod if an ephemeral container causes the Pod to exceed its resource allocation.  To add an ephemeral container, use the ephemeralcontainers subresource of an existing Pod. Ephemeral containers may not be removed or restarted.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* Arguments to the entrypoint. The image's CMD is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
-    args: string list [@yojson.default []] [@yojson.key "args"];
+    args: string list [@default []] [@yojson.key "args"];
     (* Entrypoint array. Not executed within a shell. The image's ENTRYPOINT is used if this is not provided. Variable references $(VAR_NAME) are expanded using the container's environment. If a variable cannot be resolved, the reference in the input string will be unchanged. Double $$ are reduced to a single $, which allows for escaping the $(VAR_NAME) syntax: i.e. \''$$(VAR_NAME)\'' will produce the string literal \''$(VAR_NAME)\''. Escaped references will never be expanded, regardless of whether the variable exists or not. Cannot be updated. More info: https://kubernetes.io/docs/tasks/inject-data-application/define-command-argument-container/#running-a-command-in-a-shell *)
-    command: string list [@yojson.default []] [@yojson.key "command"];
+    command: string list [@default []] [@yojson.key "command"];
     (* List of environment variables to set in the container. Cannot be updated. *)
-    env: Io_k8s_api_core_v1_env_var.t list [@yojson.default []] [@yojson.key "env"];
+    env: Io_k8s_api_core_v1_env_var.t list [@default []] [@yojson.key "env"];
     (* List of sources to populate environment variables in the container. The keys defined within a source must be a C_IDENTIFIER. All invalid keys will be reported as an event when the container is starting. When a key exists in multiple sources, the value associated with the last source will take precedence. Values defined by an Env with a duplicate key will take precedence. Cannot be updated. *)
-    env_from: Io_k8s_api_core_v1_env_from_source.t list [@yojson.default []] [@yojson.key "envFrom"];
+    env_from: Io_k8s_api_core_v1_env_from_source.t list [@default []] [@yojson.key "envFrom"];
     (* Container image name. More info: https://kubernetes.io/docs/concepts/containers/images *)
     image: string option [@yojson.default None] [@yojson.key "image"];
     (* Image pull policy. One of Always, Never, IfNotPresent. Defaults to Always if :latest tag is specified, or IfNotPresent otherwise. Cannot be updated. More info: https://kubernetes.io/docs/concepts/containers/images#updating-images *)
@@ -25,10 +33,10 @@ type t = {
     (* Name of the ephemeral container specified as a DNS_LABEL. This name must be unique among all containers, init containers and ephemeral containers. *)
     name: string [@yojson.key "name"];
     (* Ports are not allowed for ephemeral containers. *)
-    ports: Io_k8s_api_core_v1_container_port.t list [@yojson.default []] [@yojson.key "ports"];
+    ports: Io_k8s_api_core_v1_container_port.t list [@default []] [@yojson.key "ports"];
     readiness_probe: Io_k8s_api_core_v1_probe.t option [@yojson.default None] [@yojson.key "readinessProbe"];
     (* Resources resize policy for the container. *)
-    resize_policy: Io_k8s_api_core_v1_container_resize_policy.t list [@yojson.default []] [@yojson.key "resizePolicy"];
+    resize_policy: Io_k8s_api_core_v1_container_resize_policy.t list [@default []] [@yojson.key "resizePolicy"];
     resources: Io_k8s_api_core_v1_resource_requirements.t option [@yojson.default None] [@yojson.key "resources"];
     (* Restart policy for the container to manage the restart behavior of each container within a pod. This may only be set for init containers. You cannot set this field on ephemeral containers. *)
     restart_policy: string option [@yojson.default None] [@yojson.key "restartPolicy"];
@@ -47,13 +55,18 @@ type t = {
     (* Whether this container should allocate a TTY for itself, also requires 'stdin' to be true. Default is false. *)
     tty: bool option [@yojson.default None] [@yojson.key "tty"];
     (* volumeDevices is the list of block devices to be used by the container. *)
-    volume_devices: Io_k8s_api_core_v1_volume_device.t list [@yojson.default []] [@yojson.key "volumeDevices"];
+    volume_devices: Io_k8s_api_core_v1_volume_device.t list [@default []] [@yojson.key "volumeDevices"];
     (* Pod volumes to mount into the container's filesystem. Subpath mounts are not allowed for ephemeral containers. Cannot be updated. *)
-    volume_mounts: Io_k8s_api_core_v1_volume_mount.t list [@yojson.default []] [@yojson.key "volumeMounts"];
+    volume_mounts: Io_k8s_api_core_v1_volume_mount.t list [@default []] [@yojson.key "volumeMounts"];
     (* Container's working directory. If not specified, the container runtime's default will be used, which might be configured in the container image. Cannot be updated. *)
     working_dir: string option [@yojson.default None] [@yojson.key "workingDir"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

@@ -6,15 +6,23 @@
  * Schema Io_k8s_api_core_v1_persistent_volume_spec.t : PersistentVolumeSpec is the specification of a persistent volume.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* accessModes contains all ways the volume can be mounted. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#access-modes *)
-    access_modes: string list [@yojson.default []] [@yojson.key "accessModes"];
+    access_modes: string list [@default []] [@yojson.key "accessModes"];
     aws_elastic_block_store: Io_k8s_api_core_v1_aws_elastic_block_store_volume_source.t option [@yojson.default None] [@yojson.key "awsElasticBlockStore"];
     azure_disk: Io_k8s_api_core_v1_azure_disk_volume_source.t option [@yojson.default None] [@yojson.key "azureDisk"];
     azure_file: Io_k8s_api_core_v1_azure_file_persistent_volume_source.t option [@yojson.default None] [@yojson.key "azureFile"];
     (* capacity is the description of the persistent volume's resources and capacity. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#capacity *)
-    capacity: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "capacity"];
+    capacity: any [@default (`Assoc [])] [@yojson.key "capacity"];
     cephfs: Io_k8s_api_core_v1_ceph_fs_persistent_volume_source.t option [@yojson.default None] [@yojson.key "cephfs"];
     cinder: Io_k8s_api_core_v1_cinder_persistent_volume_source.t option [@yojson.default None] [@yojson.key "cinder"];
     claim_ref: Io_k8s_api_core_v1_object_reference.t option [@yojson.default None] [@yojson.key "claimRef"];
@@ -28,7 +36,7 @@ type t = {
     iscsi: Io_k8s_api_core_v1_iscsi_persistent_volume_source.t option [@yojson.default None] [@yojson.key "iscsi"];
     local: Io_k8s_api_core_v1_local_volume_source.t option [@yojson.default None] [@yojson.key "local"];
     (* mountOptions is the list of mount options, e.g. [\''ro\'', \''soft\'']. Not validated - mount will simply fail if one is invalid. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes/#mount-options *)
-    mount_options: string list [@yojson.default []] [@yojson.key "mountOptions"];
+    mount_options: string list [@default []] [@yojson.key "mountOptions"];
     nfs: Io_k8s_api_core_v1_nfs_volume_source.t option [@yojson.default None] [@yojson.key "nfs"];
     node_affinity: Io_k8s_api_core_v1_volume_node_affinity.t option [@yojson.default None] [@yojson.key "nodeAffinity"];
     (* persistentVolumeReclaimPolicy defines what happens to a persistent volume when released from its claim. Valid options are Retain (default for manually created PersistentVolumes), Delete (default for dynamically provisioned PersistentVolumes), and Recycle (deprecated). Recycle must be supported by the volume plugin underlying this PersistentVolume. More info: https://kubernetes.io/docs/concepts/storage/persistent-volumes#reclaiming *)
@@ -46,6 +54,11 @@ type t = {
     vsphere_volume: Io_k8s_api_core_v1_vsphere_virtual_disk_volume_source.t option [@yojson.default None] [@yojson.key "vsphereVolume"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

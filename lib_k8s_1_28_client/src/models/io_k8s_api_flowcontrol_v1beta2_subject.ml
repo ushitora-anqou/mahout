@@ -6,7 +6,15 @@
  * Schema Io_k8s_api_flowcontrol_v1beta2_subject.t : Subject matches the originator of a request, as identified by the request authentication system. There are three ways of matching an originator; by user, group, or service account.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     group: Io_k8s_api_flowcontrol_v1beta2_group_subject.t option [@yojson.default None] [@yojson.key "group"];
     (* `kind` indicates which one of the other fields is non-empty. Required *)
@@ -15,6 +23,11 @@ type t = {
     user: Io_k8s_api_flowcontrol_v1beta2_user_subject.t option [@yojson.default None] [@yojson.key "user"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

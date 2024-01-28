@@ -6,18 +6,31 @@
  * Schema Io_k8s_api_authorization_v1_subject_rules_review_status.t : SubjectRulesReviewStatus contains the result of a rules check. This check can be incomplete depending on the set of authorizers the server is configured with and any errors experienced during evaluation. Because authorization rules are additive, if a rule appears in a list it's safe to assume the subject has that permission, even if that list is incomplete.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* EvaluationError can appear in combination with Rules. It indicates an error occurred during rule evaluation, such as an authorizer that doesn't support rule evaluation, and that ResourceRules and/or NonResourceRules may be incomplete. *)
     evaluation_error: string option [@yojson.default None] [@yojson.key "evaluationError"];
     (* Incomplete is true when the rules returned by this call are incomplete. This is most commonly encountered when an authorizer, such as an external authorizer, doesn't support rules evaluation. *)
     incomplete: bool [@yojson.key "incomplete"];
     (* NonResourceRules is the list of actions the subject is allowed to perform on non-resources. The list ordering isn't significant, may contain duplicates, and possibly be incomplete. *)
-    non_resource_rules: Io_k8s_api_authorization_v1_non_resource_rule.t list [@yojson.default []] [@yojson.key "nonResourceRules"];
+    non_resource_rules: Io_k8s_api_authorization_v1_non_resource_rule.t list [@default []] [@yojson.key "nonResourceRules"];
     (* ResourceRules is the list of actions the subject is allowed to perform on resources. The list ordering isn't significant, may contain duplicates, and possibly be incomplete. *)
-    resource_rules: Io_k8s_api_authorization_v1_resource_rule.t list [@yojson.default []] [@yojson.key "resourceRules"];
+    resource_rules: Io_k8s_api_authorization_v1_resource_rule.t list [@default []] [@yojson.key "resourceRules"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

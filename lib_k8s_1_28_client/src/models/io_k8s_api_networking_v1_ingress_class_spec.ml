@@ -6,13 +6,26 @@
  * Schema Io_k8s_api_networking_v1_ingress_class_spec.t : IngressClassSpec provides information about the class of an Ingress.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* controller refers to the name of the controller that should handle this class. This allows for different \''flavors\'' that are controlled by the same controller. For example, you may have different parameters for the same implementing controller. This should be specified as a domain-prefixed path no more than 250 characters in length, e.g. \''acme.io/ingress-controller\''. This field is immutable. *)
     controller: string option [@yojson.default None] [@yojson.key "controller"];
     parameters: Io_k8s_api_networking_v1_ingress_class_parameters_reference.t option [@yojson.default None] [@yojson.key "parameters"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

@@ -6,10 +6,18 @@
  * Schema Io_k8s_apiextensions_apiserver_pkg_apis_apiextensions_v1_custom_resource_definition_names.t : CustomResourceDefinitionNames indicates the names to serve this CustomResourceDefinition
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* categories is a list of grouped resources this custom resource belongs to (e.g. 'all'). This is published in API discovery documents, and used by clients to support invocations like `kubectl get all`. *)
-    categories: string list [@yojson.default []] [@yojson.key "categories"];
+    categories: string list [@default []] [@yojson.key "categories"];
     (* kind is the serialized kind of the resource. It is normally CamelCase and singular. Custom resource instances will use this value as the `kind` attribute in API calls. *)
     kind: string [@yojson.key "kind"];
     (* listKind is the serialized kind of the list for this resource. Defaults to \''`kind`List\''. *)
@@ -17,11 +25,16 @@ type t = {
     (* plural is the plural name of the resource to serve. The custom resources are served under `/apis/<group>/<version>/.../<plural>`. Must match the name of the CustomResourceDefinition (in the form `<names.plural>.<group>`). Must be all lowercase. *)
     plural: string [@yojson.key "plural"];
     (* shortNames are short names for the resource, exposed in API discovery documents, and used by clients to support invocations like `kubectl get <shortname>`. It must be all lowercase. *)
-    short_names: string list [@yojson.default []] [@yojson.key "shortNames"];
+    short_names: string list [@default []] [@yojson.key "shortNames"];
     (* singular is the singular name of the resource. It must be all lowercase. Defaults to lowercased `kind`. *)
     singular: string option [@yojson.default None] [@yojson.key "singular"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

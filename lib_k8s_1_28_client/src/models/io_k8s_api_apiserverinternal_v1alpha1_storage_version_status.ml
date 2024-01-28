@@ -6,16 +6,29 @@
  * Schema Io_k8s_api_apiserverinternal_v1alpha1_storage_version_status.t : API server instances report the versions they can decode and the version they encode objects to when persisting objects in the backend.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* If all API server instances agree on the same encoding storage version, then this field is set to that version. Otherwise this field is left empty. API servers should finish updating its storageVersionStatus entry before serving write operations, so that this field will be in sync with the reality. *)
     common_encoding_version: string option [@yojson.default None] [@yojson.key "commonEncodingVersion"];
     (* The latest available observations of the storageVersion's state. *)
-    conditions: Io_k8s_api_apiserverinternal_v1alpha1_storage_version_condition.t list [@yojson.default []] [@yojson.key "conditions"];
+    conditions: Io_k8s_api_apiserverinternal_v1alpha1_storage_version_condition.t list [@default []] [@yojson.key "conditions"];
     (* The reported versions per API server instance. *)
-    storage_versions: Io_k8s_api_apiserverinternal_v1alpha1_server_storage_version.t list [@yojson.default []] [@yojson.key "storageVersions"];
+    storage_versions: Io_k8s_api_apiserverinternal_v1alpha1_server_storage_version.t list [@default []] [@yojson.key "storageVersions"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 

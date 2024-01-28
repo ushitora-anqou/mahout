@@ -6,22 +6,35 @@
  * Schema Io_k8s_api_core_v1_limit_range_item.t : LimitRangeItem defines a min/max usage limit for any resource that matches on kind.
  *)
 
-open Ppx_yojson_conv_lib.Yojson_conv.Primitives
+[@@@warning "-32-34"]
+open (struct
+    include Ppx_yojson_conv_lib.Yojson_conv.Primitives
+    type any = Yojson.Safe.t
+    let any_of_yojson = Fun.id
+    let yojson_of_any = Fun.id
+    let pp_any = Yojson.Safe.pp
+    let show_any = Yojson.Safe.show
+end)
 type t = {
     (* Default resource requirement limit value by resource name if resource limit is omitted. *)
-    default: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "default"];
+    default: any [@default (`Assoc [])] [@yojson.key "default"];
     (* DefaultRequest is the default resource requirement request value by resource name if resource request is omitted. *)
-    default_request: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "defaultRequest"];
+    default_request: any [@default (`Assoc [])] [@yojson.key "defaultRequest"];
     (* Max usage constraints on this kind by resource name. *)
-    max: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "max"];
+    max: any [@default (`Assoc [])] [@yojson.key "max"];
     (* MaxLimitRequestRatio if specified, the named resource must have a request and limit that are both non-zero where limit divided by request is less than or equal to the enumerated value; this represents the max burst for the named resource. *)
-    max_limit_request_ratio: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "maxLimitRequestRatio"];
+    max_limit_request_ratio: any [@default (`Assoc [])] [@yojson.key "maxLimitRequestRatio"];
     (* Min usage constraints on this kind by resource name. *)
-    min: Yojson.Safe.t [@yojson.default (`List [])] [@yojson.key "min"];
+    min: any [@default (`Assoc [])] [@yojson.key "min"];
     (* Type of resource that this limit applies to. *)
     _type: string [@yojson.key "type"];
 } [@@deriving yojson, show, make] [@@yojson.allow_extra_fields];;
 let to_yojson = yojson_of_t
-let of_yojson = t_of_yojson
+let of_yojson x =
+  try
+    Ok (t_of_yojson x)
+  with
+  | Ppx_yojson_conv_lib.Yojson_conv.Of_yojson_error (e, j) ->
+      Error (Printf.sprintf "%s: %s" (Printexc.to_string e) (Yojson.Safe.to_string j))
 
 
