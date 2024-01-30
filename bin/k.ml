@@ -268,7 +268,7 @@ module Bare = struct
       Apps_v1_api.list_apps_v1_deployment_for_all_namespaces
 
     let read_status = Apps_v1_api.read_apps_v1_namespaced_deployment_status
-    let patch_status = Apps_v1_api.patch_apps_v1_namespaced_deployment
+    let patch_status = Apps_v1_api.patch_apps_v1_namespaced_deployment_status
 
     let replace_status =
       Apps_v1_api.replace_apps_v1_namespaced_deployment_status
@@ -304,7 +304,7 @@ module Bare = struct
       Batch_v1_api.list_batch_v1_job_for_all_namespaces
 
     let read_status = Batch_v1_api.read_batch_v1_namespaced_job_status
-    let patch_status = Batch_v1_api.patch_batch_v1_namespaced_job
+    let patch_status = Batch_v1_api.patch_batch_v1_namespaced_job_status
     let replace_status = Batch_v1_api.replace_batch_v1_namespaced_job_status
     let of_yojson = Io_k8s_api_batch_v1_job.of_yojson
     let to_yojson = Io_k8s_api_batch_v1_job.to_yojson
@@ -337,7 +337,7 @@ module Bare = struct
       Core_v1_api.list_core_v1_pod_for_all_namespaces
 
     let read_status = Core_v1_api.read_core_v1_namespaced_pod_status
-    let patch_status = Core_v1_api.patch_core_v1_namespaced_pod
+    let patch_status = Core_v1_api.patch_core_v1_namespaced_pod_status
     let replace_status = Core_v1_api.replace_core_v1_namespaced_pod_status
     let of_yojson = Io_k8s_api_core_v1_pod.of_yojson
     let to_yojson = Io_k8s_api_core_v1_pod.to_yojson
@@ -370,7 +370,7 @@ module Bare = struct
       Core_v1_api.list_core_v1_service_for_all_namespaces
 
     let read_status = Core_v1_api.read_core_v1_namespaced_service_status
-    let patch_status = Core_v1_api.patch_core_v1_namespaced_service
+    let patch_status = Core_v1_api.patch_core_v1_namespaced_service_status
     let replace_status = Core_v1_api.replace_core_v1_namespaced_service_status
     let of_yojson = Io_k8s_api_core_v1_service.of_yojson
     let to_yojson = Io_k8s_api_core_v1_service.to_yojson
@@ -406,8 +406,17 @@ module Make (B : Bare.S) = struct
           Some (name, Option.value ~default:"default" namespace)
   end
 
+  type t = B.t
+
   let of_yojson = B.of_yojson
   let to_yojson = B.to_yojson
+
+  type watch_event = [ `Added of t | `Modified of t | `Deleted of t ]
+
+  let string_of_watch_event : watch_event -> string = function
+    | `Added v -> "ADDED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Modified v -> "MODIFIED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Deleted v -> "DELETED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
 
   let get ~sw client ~name ~namespace () =
     B.read_namespaced ~sw client ~name ~namespace () |> expect_one
@@ -432,6 +441,22 @@ module Make (B : Bare.S) = struct
     | None -> Error `No_metadata
     | Some (_, namespace) ->
         B.create_namespaced ~sw client ~namespace ~body () |> expect_one
+
+  let watch ~sw client ~namespace () =
+    B.watch_namespaced ~sw client ~namespace ~watch:true ()
+    |> Result.map (fun scanner ->
+           scanner
+           |> Json_response_scanner.with_conv
+                (fun
+                  (ev : Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
+                  match ev._type with
+                  | "ADDED" ->
+                      `Added (ev._object |> B.of_yojson |> Result.get_ok)
+                  | "MODIFIED" ->
+                      `Modified (ev._object |> B.of_yojson |> Result.get_ok)
+                  | "DELETED" ->
+                      `Deleted (ev._object |> B.of_yojson |> Result.get_ok)
+                  | _ -> failwith "invalid watch event"))
 
   let create_or_update ~sw client ~name ~namespace f =
     match get ~sw client ~name ~namespace () with
