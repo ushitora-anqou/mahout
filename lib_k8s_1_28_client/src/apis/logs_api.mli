@@ -7,5 +7,5 @@
 
 type any = Yojson.Safe.t
 
-val log_file_handler : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> ?headers:Cohttp.Header.t -> logpath:string -> (unit, Cohttp.Response.t) result
+val log_file_handler : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> ?headers:Cohttp.Header.t -> logpath:string -> unit -> (unit, Cohttp.Response.t) result
 val log_file_list_handler : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> ?headers:Cohttp.Header.t -> unit -> (unit, Cohttp.Response.t) result

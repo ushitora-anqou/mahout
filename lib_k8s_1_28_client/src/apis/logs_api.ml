@@ -7,7 +7,7 @@
 
 type any = Yojson.Safe.t
 
-let log_file_handler ~sw client ?(headers = Request.default_headers) ~logpath =
+let log_file_handler ~sw client ?(headers = Request.default_headers) ~logpath () =
     let uri = Request.build_uri "/logs/{logpath}" in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "logpath" (fun x -> x) logpath in
