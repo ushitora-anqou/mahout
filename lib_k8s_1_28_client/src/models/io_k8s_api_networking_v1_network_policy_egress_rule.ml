@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* ports is a list of destination ports for outgoing traffic. Each item in this list is combined using a logical OR. If this field is empty or missing, this rule matches all ports (traffic not restricted by port). If this field is present and contains at least one item, then this rule allows traffic only if the traffic matches at least one port in the list. *)

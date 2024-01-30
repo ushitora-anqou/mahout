@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* APIVersion defines the version of this resource that this field set applies to. The format is \''group/version\'' just like the top-level APIVersion field. It is necessary to track the version of a field set because it cannot be automatically converted. *)

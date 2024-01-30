@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* endPort indicates that the range of ports from port to endPort if set, inclusive, should be allowed by the policy. This field cannot be defined if the port field is not defined or if the port field is defined as a named (string) port. The endPort must be equal or greater than port. *)

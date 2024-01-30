@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* localhostProfile indicates a profile defined in a file on the node should be used. The profile must be preconfigured on the node to work. Must be a descending path, relative to the kubelet's configured seccomp profile location. Must be set if type is \''Localhost\''. Must NOT be set for any other type. *)

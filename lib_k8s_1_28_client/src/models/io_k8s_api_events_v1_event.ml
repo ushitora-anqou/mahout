@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* action is what action was taken/failed regarding to the regarding object. It is machine-readable. This field cannot be empty for new Events and it can have at most 128 characters. *)

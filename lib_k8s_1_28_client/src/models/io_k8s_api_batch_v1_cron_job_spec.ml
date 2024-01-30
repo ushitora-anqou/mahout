@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* Specifies how to treat concurrent executions of a Job. Valid values are:  - \''Allow\'' (default): allows CronJobs to run concurrently; - \''Forbid\'': forbids concurrent runs, skipping next run if previous run hasn't finished yet; - \''Replace\'': cancels currently running job and replaces it with a new one *)

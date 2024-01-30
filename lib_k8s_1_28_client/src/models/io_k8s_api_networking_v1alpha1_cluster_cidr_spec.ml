@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* ipv4 defines an IPv4 IP block in CIDR notation(e.g. \''10.0.0.0/8\''). At least one of ipv4 and ipv6 must be specified. This field is immutable. *)

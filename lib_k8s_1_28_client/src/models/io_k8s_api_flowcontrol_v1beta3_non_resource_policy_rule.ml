@@ -14,6 +14,10 @@ open (struct
     let yojson_of_any = Fun.id
     let pp_any = Yojson.Safe.pp
     let show_any = Yojson.Safe.show
+    let string_of_yojson = function
+      | `String s -> s
+      | `Int i -> string_of_int i
+      | _ -> failwith "string_of_yojson: string or int needed"
 end)
 type t = {
     (* `nonResourceURLs` is a set of url prefixes that a user should have access to and may not be empty. For example:   - \''/healthz\'' is legal   - \''/hea*\'' is illegal   - \''/hea\'' is legal but matches nothing   - \''/hea/*\'' also matches nothing   - \''/healthz/*\'' matches all per-component health checks. \''*\'' matches all non-resource urls. if it is present, it must be the only entry. Required. *)

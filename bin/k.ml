@@ -342,16 +342,58 @@ module Bare = struct
     let of_yojson = Io_k8s_api_core_v1_pod.of_yojson
     let to_yojson = Io_k8s_api_core_v1_pod.to_yojson
   end
+
+  module Service = struct
+    type t = Io_k8s_api_core_v1_service.t
+    type t_list = Io_k8s_api_core_v1_service_list.t
+
+    let metadata (v : t) = v.metadata
+    let read_namespaced = Core_v1_api.read_core_v1_namespaced_service
+    let create_namespaced = Core_v1_api.create_core_v1_namespaced_service
+    let patch_namespaced = Core_v1_api.patch_core_v1_namespaced_service
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Core_v1_api.delete_core_v1_namespaced_service ~sw client ?headers ~name
+        ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced = Core_v1_api.watch_core_v1_namespaced_service_list
+    let replace_namespaced = Core_v1_api.replace_core_v1_namespaced_service
+    let list_namespaced = Core_v1_api.list_core_v1_namespaced_service
+
+    let watch_for_all_namespaces =
+      Core_v1_api.watch_core_v1_service_list_for_all_namespaces
+
+    let list_for_all_namespaces =
+      Core_v1_api.list_core_v1_service_for_all_namespaces
+
+    let read_status = Core_v1_api.read_core_v1_namespaced_service_status
+    let patch_status = Core_v1_api.patch_core_v1_namespaced_service
+    let replace_status = Core_v1_api.replace_core_v1_namespaced_service_status
+    let of_yojson = Io_k8s_api_core_v1_service.of_yojson
+    let to_yojson = Io_k8s_api_core_v1_service.to_yojson
+  end
 end
 
 include K8s_1_28_client
 
+type error =
+  [ `Connection_failure of string
+  | `No_metadata
+  | `Not_found
+  | `Scan_failure of string ]
+[@@deriving show]
+
 module Make (B : Bare.S) = struct
   open struct
-    let expect_one = function
+    let expect_one : _ -> (_, error) result = function
       | Error (resp : Cohttp.Response.t) when resp.status = `Not_found ->
           Error `Not_found
-      | Error resp -> Error (`Connection_failure resp.status)
+      | Error resp ->
+          Error
+            (`Connection_failure (Format.asprintf "%a" Http.Response.pp resp))
       | Ok scanner -> (
           match Json_response_scanner.scan scanner with
           | Error (`Msg msg) -> Error (`Scan_failure msg)
@@ -393,9 +435,15 @@ module Make (B : Bare.S) = struct
 
   let create_or_update ~sw client ~name ~namespace f =
     match get ~sw client ~name ~namespace () with
-    | Error `Not_found -> create ~sw client (f None)
+    | Error `Not_found ->
+        Logs.info (fun m -> m "not found %s %s" name namespace);
+        create ~sw client (f None)
     | Error _ as e -> e
-    | Ok v -> update ~sw client (f (Some v))
+    | Ok v ->
+        Logs.info (fun m ->
+            m "found %s %s %s" name namespace
+              (Yojson.Safe.to_string (B.to_yojson v)));
+        update ~sw client (f (Some v))
 
   let create_or_update_status ~sw client ~name ~namespace f =
     match get_status ~sw client ~name ~namespace () with
@@ -428,20 +476,31 @@ module Pod = struct
   let make = Io_k8s_api_core_v1_pod.make
 end
 
+module Service = struct
+  include Make (Bare.Service)
+
+  let make = Io_k8s_api_core_v1_service.make
+end
+
 (* Not implemented *)
-module Object_meta = Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta
-module Label_selector = Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector
-module Pod_template_spec = Io_k8s_api_core_v1_pod_template_spec
+module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
 module Container = Io_k8s_api_core_v1_container
 module Container_port = Io_k8s_api_core_v1_container_port
-module Volume_mount = Io_k8s_api_core_v1_volume_mount
-module Pod_spec = Io_k8s_api_core_v1_pod_spec
-module Volume = Io_k8s_api_core_v1_volume
-module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
-module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
-module Key_to_path = Io_k8s_api_core_v1_key_to_path
 module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
-module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
+module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
+module Env_from_source = Io_k8s_api_core_v1_env_from_source
 module Job_spec = Io_k8s_api_batch_v1_job_spec
 module Job_template_spec = Io_k8s_api_batch_v1_job_template_spec
-module Env_from_source = Io_k8s_api_core_v1_env_from_source
+module Key_to_path = Io_k8s_api_core_v1_key_to_path
+module Label_selector = Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector
+module Object_meta = Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta
+module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
+module Pod_spec = Io_k8s_api_core_v1_pod_spec
+module Pod_template_spec = Io_k8s_api_core_v1_pod_template_spec
+module Probe = Io_k8s_api_core_v1_probe
+module Service_port = Io_k8s_api_core_v1_service_port
+module Service_spec = Io_k8s_api_core_v1_service_spec
+module Tcp_socket_action = Io_k8s_api_core_v1_tcp_socket_action
+module Volume = Io_k8s_api_core_v1_volume
+module Http_get_action = Io_k8s_api_core_v1_http_get_action
+module Volume_mount = Io_k8s_api_core_v1_volume_mount
