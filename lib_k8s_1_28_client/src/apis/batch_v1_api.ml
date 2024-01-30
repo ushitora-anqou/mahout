@@ -5,9 +5,10 @@
  *
  *)
 
-let create_batch_v1_namespaced_cron_job ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -18,9 +19,8 @@ let create_batch_v1_namespaced_cron_job ~sw client ~namespace ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let create_batch_v1_namespaced_job ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -31,9 +31,8 @@ let create_batch_v1_namespaced_job ~sw client ~namespace ~body ?pretty ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let delete_batch_v1_collection_namespaced_cron_job ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_batch_v1_collection_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -53,9 +52,8 @@ let delete_batch_v1_collection_namespaced_cron_job ~sw client ~namespace ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_batch_v1_collection_namespaced_job ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_batch_v1_collection_namespaced_job ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -75,9 +73,8 @@ let delete_batch_v1_collection_namespaced_job ~sw client ~namespace ?pretty ?con
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -90,9 +87,8 @@ let delete_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_batch_v1_namespaced_job ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -105,16 +101,14 @@ let delete_batch_v1_namespaced_job ~sw client ~name ~namespace ?pretty ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let get_batch_v1_api_resources ~sw client () =
+let get_batch_v1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/batch/v1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_batch_v1_cron_job_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_batch_v1_cron_job_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/cronjobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -130,9 +124,8 @@ let list_batch_v1_cron_job_for_all_namespaces ~sw client ?allow_watch_bookmarks 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job_list.of_yojson) resp body
 
-let list_batch_v1_job_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_batch_v1_job_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/jobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -148,9 +141,8 @@ let list_batch_v1_job_for_all_namespaces ~sw client ?allow_watch_bookmarks ?cont
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job_list.of_yojson) resp body
 
-let list_batch_v1_namespaced_cron_job ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -167,9 +159,8 @@ let list_batch_v1_namespaced_cron_job ~sw client ~namespace ?pretty ?allow_watch
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job_list.of_yojson) resp body
 
-let list_batch_v1_namespaced_job ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -186,9 +177,8 @@ let list_batch_v1_namespaced_job ~sw client ~namespace ?pretty ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job_list.of_yojson) resp body
 
-let patch_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -201,9 +191,8 @@ let patch_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ~body ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let patch_batch_v1_namespaced_cron_job_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_batch_v1_namespaced_cron_job_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -216,9 +205,8 @@ let patch_batch_v1_namespaced_cron_job_status ~sw client ~name ~namespace ~body 
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let patch_batch_v1_namespaced_job ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -231,9 +219,8 @@ let patch_batch_v1_namespaced_job ~sw client ~name ~namespace ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let patch_batch_v1_namespaced_job_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_batch_v1_namespaced_job_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -246,9 +233,8 @@ let patch_batch_v1_namespaced_job_status ~sw client ~name ~namespace ~body ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let read_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ?pretty () =
+let read_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -256,9 +242,8 @@ let read_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let read_batch_v1_namespaced_cron_job_status ~sw client ~name ~namespace ?pretty () =
+let read_batch_v1_namespaced_cron_job_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -266,9 +251,8 @@ let read_batch_v1_namespaced_cron_job_status ~sw client ~name ~namespace ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let read_batch_v1_namespaced_job ~sw client ~name ~namespace ?pretty () =
+let read_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -276,9 +260,8 @@ let read_batch_v1_namespaced_job ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let read_batch_v1_namespaced_job_status ~sw client ~name ~namespace ?pretty () =
+let read_batch_v1_namespaced_job_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -286,9 +269,8 @@ let read_batch_v1_namespaced_job_status ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let replace_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -300,9 +282,8 @@ let replace_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ~body ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let replace_batch_v1_namespaced_cron_job_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_batch_v1_namespaced_cron_job_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/cronjobs/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -314,9 +295,8 @@ let replace_batch_v1_namespaced_cron_job_status ~sw client ~name ~namespace ~bod
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_cron_job.of_yojson) resp body
 
-let replace_batch_v1_namespaced_job ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -328,9 +308,8 @@ let replace_batch_v1_namespaced_job ~sw client ~name ~namespace ~body ?pretty ?d
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let replace_batch_v1_namespaced_job_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_batch_v1_namespaced_job_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/batch/v1/namespaces/{namespace}/jobs/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -342,9 +321,8 @@ let replace_batch_v1_namespaced_job_status ~sw client ~name ~namespace ~body ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_batch_v1_job.of_yojson) resp body
 
-let watch_batch_v1_cron_job_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_batch_v1_cron_job_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/watch/cronjobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -360,9 +338,8 @@ let watch_batch_v1_cron_job_list_for_all_namespaces ~sw client ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_batch_v1_job_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_batch_v1_job_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/watch/jobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -378,9 +355,8 @@ let watch_batch_v1_job_list_for_all_namespaces ~sw client ?allow_watch_bookmarks
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_batch_v1_namespaced_cron_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/watch/namespaces/{namespace}/cronjobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -398,9 +374,8 @@ let watch_batch_v1_namespaced_cron_job ~sw client ~name ~namespace ?allow_watch_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_batch_v1_namespaced_cron_job_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_batch_v1_namespaced_cron_job_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/watch/namespaces/{namespace}/cronjobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -417,9 +392,8 @@ let watch_batch_v1_namespaced_cron_job_list ~sw client ~namespace ?allow_watch_b
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_batch_v1_namespaced_job ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_batch_v1_namespaced_job ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/watch/namespaces/{namespace}/jobs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -437,9 +411,8 @@ let watch_batch_v1_namespaced_job ~sw client ~name ~namespace ?allow_watch_bookm
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_batch_v1_namespaced_job_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_batch_v1_namespaced_job_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/batch/v1/watch/namespaces/{namespace}/jobs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in

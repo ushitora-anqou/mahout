@@ -5,9 +5,10 @@
  *
  *)
 
-let create_networking_v1_ingress_class ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -17,9 +18,8 @@ let create_networking_v1_ingress_class ~sw client ~body ?pretty ?dry_run ?field_
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_class.of_yojson) resp body
 
-let create_networking_v1_namespaced_ingress ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -30,9 +30,8 @@ let create_networking_v1_namespaced_ingress ~sw client ~namespace ~body ?pretty 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let create_networking_v1_namespaced_network_policy ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -43,9 +42,8 @@ let create_networking_v1_namespaced_network_policy ~sw client ~namespace ~body ?
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_network_policy.of_yojson) resp body
 
-let delete_networking_v1_collection_ingress_class ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_networking_v1_collection_ingress_class ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -64,9 +62,8 @@ let delete_networking_v1_collection_ingress_class ~sw client ?pretty ?continue ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1_collection_namespaced_ingress ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_networking_v1_collection_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -86,9 +83,8 @@ let delete_networking_v1_collection_namespaced_ingress ~sw client ~namespace ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1_collection_namespaced_network_policy ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_networking_v1_collection_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -108,9 +104,8 @@ let delete_networking_v1_collection_namespaced_network_policy ~sw client ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1_ingress_class ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -122,9 +117,8 @@ let delete_networking_v1_ingress_class ~sw client ~name ?pretty ?dry_run ?grace_
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1_namespaced_ingress ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -137,9 +131,8 @@ let delete_networking_v1_namespaced_ingress ~sw client ~name ~namespace ?pretty 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -152,16 +145,14 @@ let delete_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let get_networking_v1_api_resources ~sw client () =
+let get_networking_v1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_networking_v1_ingress_class ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -177,9 +168,8 @@ let list_networking_v1_ingress_class ~sw client ?pretty ?allow_watch_bookmarks ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_class_list.of_yojson) resp body
 
-let list_networking_v1_ingress_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1_ingress_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -195,9 +185,8 @@ let list_networking_v1_ingress_for_all_namespaces ~sw client ?allow_watch_bookma
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_list.of_yojson) resp body
 
-let list_networking_v1_namespaced_ingress ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -214,9 +203,8 @@ let list_networking_v1_namespaced_ingress ~sw client ~namespace ?pretty ?allow_w
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_list.of_yojson) resp body
 
-let list_networking_v1_namespaced_network_policy ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -233,9 +221,8 @@ let list_networking_v1_namespaced_network_policy ~sw client ~namespace ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_network_policy_list.of_yojson) resp body
 
-let list_networking_v1_network_policy_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1_network_policy_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/networkpolicies" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -251,9 +238,8 @@ let list_networking_v1_network_policy_for_all_namespaces ~sw client ?allow_watch
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_network_policy_list.of_yojson) resp body
 
-let patch_networking_v1_ingress_class ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -265,9 +251,8 @@ let patch_networking_v1_ingress_class ~sw client ~name ~body ?pretty ?dry_run ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_class.of_yojson) resp body
 
-let patch_networking_v1_namespaced_ingress ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -280,9 +265,8 @@ let patch_networking_v1_namespaced_ingress ~sw client ~name ~namespace ~body ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let patch_networking_v1_namespaced_ingress_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_networking_v1_namespaced_ingress_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -295,9 +279,8 @@ let patch_networking_v1_namespaced_ingress_status ~sw client ~name ~namespace ~b
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let patch_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -310,18 +293,16 @@ let patch_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ~b
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_network_policy.of_yojson) resp body
 
-let read_networking_v1_ingress_class ~sw client ~name ?pretty () =
+let read_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_class.of_yojson) resp body
 
-let read_networking_v1_namespaced_ingress ~sw client ~name ~namespace ?pretty () =
+let read_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -329,9 +310,8 @@ let read_networking_v1_namespaced_ingress ~sw client ~name ~namespace ?pretty ()
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let read_networking_v1_namespaced_ingress_status ~sw client ~name ~namespace ?pretty () =
+let read_networking_v1_namespaced_ingress_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -339,9 +319,8 @@ let read_networking_v1_namespaced_ingress_status ~sw client ~name ~namespace ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let read_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ?pretty () =
+let read_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -349,9 +328,8 @@ let read_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_network_policy.of_yojson) resp body
 
-let replace_networking_v1_ingress_class ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/ingressclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -362,9 +340,8 @@ let replace_networking_v1_ingress_class ~sw client ~name ~body ?pretty ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress_class.of_yojson) resp body
 
-let replace_networking_v1_namespaced_ingress ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -376,9 +353,8 @@ let replace_networking_v1_namespaced_ingress ~sw client ~name ~namespace ~body ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let replace_networking_v1_namespaced_ingress_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_networking_v1_namespaced_ingress_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/ingresses/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -390,9 +366,8 @@ let replace_networking_v1_namespaced_ingress_status ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_ingress.of_yojson) resp body
 
-let replace_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/namespaces/{namespace}/networkpolicies/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -404,9 +379,8 @@ let replace_networking_v1_namespaced_network_policy ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1_network_policy.of_yojson) resp body
 
-let watch_networking_v1_ingress_class ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_ingress_class ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/ingressclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -423,9 +397,8 @@ let watch_networking_v1_ingress_class ~sw client ~name ?allow_watch_bookmarks ?c
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_ingress_class_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_ingress_class_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/ingressclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -441,9 +414,8 @@ let watch_networking_v1_ingress_class_list ~sw client ?allow_watch_bookmarks ?co
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_ingress_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_ingress_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/ingresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -459,9 +431,8 @@ let watch_networking_v1_ingress_list_for_all_namespaces ~sw client ?allow_watch_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_namespaced_ingress ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_namespaced_ingress ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/namespaces/{namespace}/ingresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -479,9 +450,8 @@ let watch_networking_v1_namespaced_ingress ~sw client ~name ~namespace ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_namespaced_ingress_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_namespaced_ingress_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/namespaces/{namespace}/ingresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -498,9 +468,8 @@ let watch_networking_v1_namespaced_ingress_list ~sw client ~namespace ?allow_wat
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_namespaced_network_policy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/namespaces/{namespace}/networkpolicies/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -518,9 +487,8 @@ let watch_networking_v1_namespaced_network_policy ~sw client ~name ~namespace ?a
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_namespaced_network_policy_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_namespaced_network_policy_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/namespaces/{namespace}/networkpolicies" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -537,9 +505,8 @@ let watch_networking_v1_namespaced_network_policy_list ~sw client ~namespace ?al
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1_network_policy_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1_network_policy_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1/watch/networkpolicies" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in

@@ -5,9 +5,10 @@
  *
  *)
 
-let get_core_api_versions ~sw client () =
+type any = Yojson.Safe.t
+
+let get_core_api_versions ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/api/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_versions.of_yojson) resp body

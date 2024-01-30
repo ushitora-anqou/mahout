@@ -5,4 +5,6 @@
  *
  *)
 
-val get_authorization_api_group : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> unit -> Io_k8s_apimachinery_pkg_apis_meta_v1_api_group.t Json_response_scanner.t
+type any = Yojson.Safe.t
+
+val get_authorization_api_group : sw:Eio.Switch.t -> Cohttp_eio.Client.t -> ?headers:Cohttp.Header.t -> unit -> (Io_k8s_apimachinery_pkg_apis_meta_v1_api_group.t Json_response_scanner.t, Cohttp.Response.t) result

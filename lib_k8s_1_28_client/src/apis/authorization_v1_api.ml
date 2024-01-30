@@ -5,9 +5,10 @@
  *
  *)
 
-let create_authorization_v1_namespaced_local_subject_access_review ~sw client ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+type any = Yojson.Safe.t
+
+let create_authorization_v1_namespaced_local_subject_access_review ~sw client ?(headers = Request.default_headers) ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/apis/authorization.k8s.io/v1/namespaces/{namespace}/localsubjectaccessreviews" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -18,9 +19,8 @@ let create_authorization_v1_namespaced_local_subject_access_review ~sw client ~n
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_authorization_v1_local_subject_access_review.of_yojson) resp body
 
-let create_authorization_v1_self_subject_access_review ~sw client ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_authorization_v1_self_subject_access_review ~sw client ?(headers = Request.default_headers) ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/apis/authorization.k8s.io/v1/selfsubjectaccessreviews" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
     let uri = Request.maybe_add_query_param uri "fieldManager" (fun x -> x) field_manager in
@@ -30,9 +30,8 @@ let create_authorization_v1_self_subject_access_review ~sw client ~body ?dry_run
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_authorization_v1_self_subject_access_review.of_yojson) resp body
 
-let create_authorization_v1_self_subject_rules_review ~sw client ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_authorization_v1_self_subject_rules_review ~sw client ?(headers = Request.default_headers) ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/apis/authorization.k8s.io/v1/selfsubjectrulesreviews" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
     let uri = Request.maybe_add_query_param uri "fieldManager" (fun x -> x) field_manager in
@@ -42,9 +41,8 @@ let create_authorization_v1_self_subject_rules_review ~sw client ~body ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_authorization_v1_self_subject_rules_review.of_yojson) resp body
 
-let create_authorization_v1_subject_access_review ~sw client ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_authorization_v1_subject_access_review ~sw client ?(headers = Request.default_headers) ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/apis/authorization.k8s.io/v1/subjectaccessreviews" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
     let uri = Request.maybe_add_query_param uri "fieldManager" (fun x -> x) field_manager in
@@ -54,9 +52,8 @@ let create_authorization_v1_subject_access_review ~sw client ~body ?dry_run ?fie
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_authorization_v1_subject_access_review.of_yojson) resp body
 
-let get_authorization_v1_api_resources ~sw client () =
+let get_authorization_v1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/authorization.k8s.io/v1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body

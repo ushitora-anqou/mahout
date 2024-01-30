@@ -5,9 +5,10 @@
  *
  *)
 
-let create_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -18,9 +19,8 @@ let create_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~names
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let create_resource_v1alpha2_namespaced_resource_claim ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -31,9 +31,8 @@ let create_resource_v1alpha2_namespaced_resource_claim ~sw client ~namespace ~bo
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let create_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -44,9 +43,8 @@ let create_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template.of_yojson) resp body
 
-let create_resource_v1alpha2_resource_class ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -56,9 +54,8 @@ let create_resource_v1alpha2_resource_class ~sw client ~body ?pretty ?dry_run ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_class.of_yojson) resp body
 
-let delete_resource_v1alpha2_collection_namespaced_pod_scheduling_context ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_resource_v1alpha2_collection_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -78,9 +75,8 @@ let delete_resource_v1alpha2_collection_namespaced_pod_scheduling_context ~sw cl
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_resource_v1alpha2_collection_namespaced_resource_claim ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_resource_v1alpha2_collection_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -100,9 +96,8 @@ let delete_resource_v1alpha2_collection_namespaced_resource_claim ~sw client ~na
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_resource_v1alpha2_collection_namespaced_resource_claim_template ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_resource_v1alpha2_collection_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -122,9 +117,8 @@ let delete_resource_v1alpha2_collection_namespaced_resource_claim_template ~sw c
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_resource_v1alpha2_collection_resource_class ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_resource_v1alpha2_collection_resource_class ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -143,9 +137,8 @@ let delete_resource_v1alpha2_collection_resource_class ~sw client ?pretty ?conti
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -158,9 +151,8 @@ let delete_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let delete_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -173,9 +165,8 @@ let delete_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let delete_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -188,9 +179,8 @@ let delete_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template.of_yojson) resp body
 
-let delete_resource_v1alpha2_resource_class ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -202,16 +192,14 @@ let delete_resource_v1alpha2_resource_class ~sw client ~name ?pretty ?dry_run ?g
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_class.of_yojson) resp body
 
-let get_resource_v1alpha2_api_resources ~sw client () =
+let get_resource_v1alpha2_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -228,9 +216,8 @@ let list_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context_list.of_yojson) resp body
 
-let list_resource_v1alpha2_namespaced_resource_claim ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -247,9 +234,8 @@ let list_resource_v1alpha2_namespaced_resource_claim ~sw client ~namespace ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_list.of_yojson) resp body
 
-let list_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -266,9 +252,8 @@ let list_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template_list.of_yojson) resp body
 
-let list_resource_v1alpha2_pod_scheduling_context_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_pod_scheduling_context_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/podschedulingcontexts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -284,9 +269,8 @@ let list_resource_v1alpha2_pod_scheduling_context_for_all_namespaces ~sw client 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context_list.of_yojson) resp body
 
-let list_resource_v1alpha2_resource_claim_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_resource_claim_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -302,9 +286,8 @@ let list_resource_v1alpha2_resource_claim_for_all_namespaces ~sw client ?allow_w
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_list.of_yojson) resp body
 
-let list_resource_v1alpha2_resource_claim_template_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_resource_claim_template_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclaimtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -320,9 +303,8 @@ let list_resource_v1alpha2_resource_claim_template_for_all_namespaces ~sw client
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template_list.of_yojson) resp body
 
-let list_resource_v1alpha2_resource_class ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -338,9 +320,8 @@ let list_resource_v1alpha2_resource_class ~sw client ?pretty ?allow_watch_bookma
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_class_list.of_yojson) resp body
 
-let patch_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -353,9 +334,8 @@ let patch_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let patch_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -368,9 +348,8 @@ let patch_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client 
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let patch_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -383,9 +362,8 @@ let patch_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespac
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let patch_resource_v1alpha2_namespaced_resource_claim_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_resource_v1alpha2_namespaced_resource_claim_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -398,9 +376,8 @@ let patch_resource_v1alpha2_namespaced_resource_claim_status ~sw client ~name ~n
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let patch_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -413,9 +390,8 @@ let patch_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name 
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template.of_yojson) resp body
 
-let patch_resource_v1alpha2_resource_class ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -427,9 +403,8 @@ let patch_resource_v1alpha2_resource_class ~sw client ~name ~body ?pretty ?dry_r
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_class.of_yojson) resp body
 
-let read_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~namespace ?pretty () =
+let read_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -437,9 +412,8 @@ let read_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~n
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let read_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ~name ~namespace ?pretty () =
+let read_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -447,9 +421,8 @@ let read_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ~
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let read_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespace ?pretty () =
+let read_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -457,9 +430,8 @@ let read_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let read_resource_v1alpha2_namespaced_resource_claim_status ~sw client ~name ~namespace ?pretty () =
+let read_resource_v1alpha2_namespaced_resource_claim_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -467,9 +439,8 @@ let read_resource_v1alpha2_namespaced_resource_claim_status ~sw client ~name ~na
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let read_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name ~namespace ?pretty () =
+let read_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -477,18 +448,16 @@ let read_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name ~
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template.of_yojson) resp body
 
-let read_resource_v1alpha2_resource_class ~sw client ~name ?pretty () =
+let read_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_class.of_yojson) resp body
 
-let replace_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -500,9 +469,8 @@ let replace_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let replace_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/podschedulingcontexts/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -514,9 +482,8 @@ let replace_resource_v1alpha2_namespaced_pod_scheduling_context_status ~sw clien
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_pod_scheduling_context.of_yojson) resp body
 
-let replace_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -528,9 +495,8 @@ let replace_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let replace_resource_v1alpha2_namespaced_resource_claim_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_resource_v1alpha2_namespaced_resource_claim_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaims/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -542,9 +508,8 @@ let replace_resource_v1alpha2_namespaced_resource_claim_status ~sw client ~name 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim.of_yojson) resp body
 
-let replace_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/namespaces/{namespace}/resourceclaimtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -556,9 +521,8 @@ let replace_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_claim_template.of_yojson) resp body
 
-let replace_resource_v1alpha2_resource_class ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/resourceclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -569,9 +533,8 @@ let replace_resource_v1alpha2_resource_class ~sw client ~name ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_resource_v1alpha2_resource_class.of_yojson) resp body
 
-let watch_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/namespaces/{namespace}/podschedulingcontexts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -589,9 +552,8 @@ let watch_resource_v1alpha2_namespaced_pod_scheduling_context ~sw client ~name ~
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_namespaced_pod_scheduling_context_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_namespaced_pod_scheduling_context_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/namespaces/{namespace}/podschedulingcontexts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -608,9 +570,8 @@ let watch_resource_v1alpha2_namespaced_pod_scheduling_context_list ~sw client ~n
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_namespaced_resource_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/namespaces/{namespace}/resourceclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -628,9 +589,8 @@ let watch_resource_v1alpha2_namespaced_resource_claim ~sw client ~name ~namespac
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_namespaced_resource_claim_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_namespaced_resource_claim_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/namespaces/{namespace}/resourceclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -647,9 +607,8 @@ let watch_resource_v1alpha2_namespaced_resource_claim_list ~sw client ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_namespaced_resource_claim_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/namespaces/{namespace}/resourceclaimtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -667,9 +626,8 @@ let watch_resource_v1alpha2_namespaced_resource_claim_template ~sw client ~name 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_namespaced_resource_claim_template_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_namespaced_resource_claim_template_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/namespaces/{namespace}/resourceclaimtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -686,9 +644,8 @@ let watch_resource_v1alpha2_namespaced_resource_claim_template_list ~sw client ~
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_pod_scheduling_context_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_pod_scheduling_context_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/podschedulingcontexts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -704,9 +661,8 @@ let watch_resource_v1alpha2_pod_scheduling_context_list_for_all_namespaces ~sw c
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_resource_claim_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_resource_claim_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/resourceclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -722,9 +678,8 @@ let watch_resource_v1alpha2_resource_claim_list_for_all_namespaces ~sw client ?a
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_resource_claim_template_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_resource_claim_template_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/resourceclaimtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -740,9 +695,8 @@ let watch_resource_v1alpha2_resource_claim_template_list_for_all_namespaces ~sw 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_resource_class ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_resource_class ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/resourceclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -759,9 +713,8 @@ let watch_resource_v1alpha2_resource_class ~sw client ~name ?allow_watch_bookmar
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_resource_v1alpha2_resource_class_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_resource_v1alpha2_resource_class_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/resource.k8s.io/v1alpha2/watch/resourceclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in

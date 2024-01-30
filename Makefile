@@ -27,4 +27,4 @@ setup-mahout:
 	kubectl apply -f config/test-pod.yaml || true
 	sleep 3
 	kubectl apply -f config/test-pod.yaml || true
-	kubectl logs test-pod -f
+	kubectl logs deploy/mastodon-operator

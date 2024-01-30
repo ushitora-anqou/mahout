@@ -5,9 +5,10 @@
  *
  *)
 
-let create_networking_v1alpha1_cluster_cidr ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -17,9 +18,8 @@ let create_networking_v1alpha1_cluster_cidr ~sw client ~body ?pretty ?dry_run ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_cluster_cidr.of_yojson) resp body
 
-let create_networking_v1alpha1_ip_address ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -29,9 +29,8 @@ let create_networking_v1alpha1_ip_address ~sw client ~body ?pretty ?dry_run ?fie
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_ip_address.of_yojson) resp body
 
-let delete_networking_v1alpha1_cluster_cidr ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -43,9 +42,8 @@ let delete_networking_v1alpha1_cluster_cidr ~sw client ~name ?pretty ?dry_run ?g
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1alpha1_collection_cluster_cidr ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_networking_v1alpha1_collection_cluster_cidr ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -64,9 +62,8 @@ let delete_networking_v1alpha1_collection_cluster_cidr ~sw client ?pretty ?conti
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1alpha1_collection_ip_address ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_networking_v1alpha1_collection_ip_address ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -85,9 +82,8 @@ let delete_networking_v1alpha1_collection_ip_address ~sw client ?pretty ?continu
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_networking_v1alpha1_ip_address ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -99,16 +95,14 @@ let delete_networking_v1alpha1_ip_address ~sw client ~name ?pretty ?dry_run ?gra
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let get_networking_v1alpha1_api_resources ~sw client () =
+let get_networking_v1alpha1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_networking_v1alpha1_cluster_cidr ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -124,9 +118,8 @@ let list_networking_v1alpha1_cluster_cidr ~sw client ?pretty ?allow_watch_bookma
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_cluster_cidr_list.of_yojson) resp body
 
-let list_networking_v1alpha1_ip_address ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -142,9 +135,8 @@ let list_networking_v1alpha1_ip_address ~sw client ?pretty ?allow_watch_bookmark
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_ip_address_list.of_yojson) resp body
 
-let patch_networking_v1alpha1_cluster_cidr ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -156,9 +148,8 @@ let patch_networking_v1alpha1_cluster_cidr ~sw client ~name ~body ?pretty ?dry_r
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_cluster_cidr.of_yojson) resp body
 
-let patch_networking_v1alpha1_ip_address ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -170,27 +161,24 @@ let patch_networking_v1alpha1_ip_address ~sw client ~name ~body ?pretty ?dry_run
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_ip_address.of_yojson) resp body
 
-let read_networking_v1alpha1_cluster_cidr ~sw client ~name ?pretty () =
+let read_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_cluster_cidr.of_yojson) resp body
 
-let read_networking_v1alpha1_ip_address ~sw client ~name ?pretty () =
+let read_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_ip_address.of_yojson) resp body
 
-let replace_networking_v1alpha1_cluster_cidr ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/clustercidrs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -201,9 +189,8 @@ let replace_networking_v1alpha1_cluster_cidr ~sw client ~name ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_cluster_cidr.of_yojson) resp body
 
-let replace_networking_v1alpha1_ip_address ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/ipaddresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -214,9 +201,8 @@ let replace_networking_v1alpha1_ip_address ~sw client ~name ~body ?pretty ?dry_r
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_networking_v1alpha1_ip_address.of_yojson) resp body
 
-let watch_networking_v1alpha1_cluster_cidr ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1alpha1_cluster_cidr ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/watch/clustercidrs/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -233,9 +219,8 @@ let watch_networking_v1alpha1_cluster_cidr ~sw client ~name ?allow_watch_bookmar
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1alpha1_cluster_cidr_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1alpha1_cluster_cidr_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/watch/clustercidrs" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -251,9 +236,8 @@ let watch_networking_v1alpha1_cluster_cidr_list ~sw client ?allow_watch_bookmark
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1alpha1_ip_address ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1alpha1_ip_address ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/watch/ipaddresses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -270,9 +254,8 @@ let watch_networking_v1alpha1_ip_address ~sw client ~name ?allow_watch_bookmarks
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_networking_v1alpha1_ip_address_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_networking_v1alpha1_ip_address_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/networking.k8s.io/v1alpha1/watch/ipaddresses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in

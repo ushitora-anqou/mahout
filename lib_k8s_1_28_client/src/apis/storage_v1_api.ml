@@ -5,9 +5,10 @@
  *
  *)
 
-let create_storage_v1_csi_driver ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -17,9 +18,8 @@ let create_storage_v1_csi_driver ~sw client ~body ?pretty ?dry_run ?field_manage
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_driver.of_yojson) resp body
 
-let create_storage_v1_csi_node ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -29,9 +29,8 @@ let create_storage_v1_csi_node ~sw client ~body ?pretty ?dry_run ?field_manager 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_node.of_yojson) resp body
 
-let create_storage_v1_namespaced_csi_storage_capacity ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -42,9 +41,8 @@ let create_storage_v1_namespaced_csi_storage_capacity ~sw client ~namespace ~bod
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_storage_capacity.of_yojson) resp body
 
-let create_storage_v1_storage_class ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -54,9 +52,8 @@ let create_storage_v1_storage_class ~sw client ~body ?pretty ?dry_run ?field_man
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_storage_class.of_yojson) resp body
 
-let create_storage_v1_volume_attachment ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -66,9 +63,8 @@ let create_storage_v1_volume_attachment ~sw client ~body ?pretty ?dry_run ?field
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let delete_storage_v1_collection_csi_driver ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_storage_v1_collection_csi_driver ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -87,9 +83,8 @@ let delete_storage_v1_collection_csi_driver ~sw client ?pretty ?continue ?dry_ru
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_storage_v1_collection_csi_node ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_storage_v1_collection_csi_node ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -108,9 +103,8 @@ let delete_storage_v1_collection_csi_node ~sw client ?pretty ?continue ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_storage_v1_collection_namespaced_csi_storage_capacity ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_storage_v1_collection_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -130,9 +124,8 @@ let delete_storage_v1_collection_namespaced_csi_storage_capacity ~sw client ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_storage_v1_collection_storage_class ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_storage_v1_collection_storage_class ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -151,9 +144,8 @@ let delete_storage_v1_collection_storage_class ~sw client ?pretty ?continue ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_storage_v1_collection_volume_attachment ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_storage_v1_collection_volume_attachment ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -172,9 +164,8 @@ let delete_storage_v1_collection_volume_attachment ~sw client ?pretty ?continue 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_storage_v1_csi_driver ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -186,9 +177,8 @@ let delete_storage_v1_csi_driver ~sw client ~name ?pretty ?dry_run ?grace_period
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_driver.of_yojson) resp body
 
-let delete_storage_v1_csi_node ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -200,9 +190,8 @@ let delete_storage_v1_csi_node ~sw client ~name ?pretty ?dry_run ?grace_period_s
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_node.of_yojson) resp body
 
-let delete_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -215,9 +204,8 @@ let delete_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespac
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_storage_v1_storage_class ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -229,9 +217,8 @@ let delete_storage_v1_storage_class ~sw client ~name ?pretty ?dry_run ?grace_per
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_storage_class.of_yojson) resp body
 
-let delete_storage_v1_volume_attachment ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -243,16 +230,14 @@ let delete_storage_v1_volume_attachment ~sw client ~name ?pretty ?dry_run ?grace
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let get_storage_v1_api_resources ~sw client () =
+let get_storage_v1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_storage_v1_csi_driver ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -268,9 +253,8 @@ let list_storage_v1_csi_driver ~sw client ?pretty ?allow_watch_bookmarks ?contin
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_driver_list.of_yojson) resp body
 
-let list_storage_v1_csi_node ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -286,9 +270,8 @@ let list_storage_v1_csi_node ~sw client ?pretty ?allow_watch_bookmarks ?continue
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_node_list.of_yojson) resp body
 
-let list_storage_v1_csi_storage_capacity_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_storage_v1_csi_storage_capacity_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csistoragecapacities" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -304,9 +287,8 @@ let list_storage_v1_csi_storage_capacity_for_all_namespaces ~sw client ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_storage_capacity_list.of_yojson) resp body
 
-let list_storage_v1_namespaced_csi_storage_capacity ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -323,9 +305,8 @@ let list_storage_v1_namespaced_csi_storage_capacity ~sw client ~namespace ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_storage_capacity_list.of_yojson) resp body
 
-let list_storage_v1_storage_class ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -341,9 +322,8 @@ let list_storage_v1_storage_class ~sw client ?pretty ?allow_watch_bookmarks ?con
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_storage_class_list.of_yojson) resp body
 
-let list_storage_v1_volume_attachment ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -359,9 +339,8 @@ let list_storage_v1_volume_attachment ~sw client ?pretty ?allow_watch_bookmarks 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment_list.of_yojson) resp body
 
-let patch_storage_v1_csi_driver ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -373,9 +352,8 @@ let patch_storage_v1_csi_driver ~sw client ~name ~body ?pretty ?dry_run ?field_m
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_driver.of_yojson) resp body
 
-let patch_storage_v1_csi_node ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -387,9 +365,8 @@ let patch_storage_v1_csi_node ~sw client ~name ~body ?pretty ?dry_run ?field_man
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_node.of_yojson) resp body
 
-let patch_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -402,9 +379,8 @@ let patch_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_storage_capacity.of_yojson) resp body
 
-let patch_storage_v1_storage_class ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -416,9 +392,8 @@ let patch_storage_v1_storage_class ~sw client ~name ~body ?pretty ?dry_run ?fiel
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_storage_class.of_yojson) resp body
 
-let patch_storage_v1_volume_attachment ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -430,9 +405,8 @@ let patch_storage_v1_volume_attachment ~sw client ~name ~body ?pretty ?dry_run ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let patch_storage_v1_volume_attachment_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_storage_v1_volume_attachment_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -444,27 +418,24 @@ let patch_storage_v1_volume_attachment_status ~sw client ~name ~body ?pretty ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let read_storage_v1_csi_driver ~sw client ~name ?pretty () =
+let read_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_driver.of_yojson) resp body
 
-let read_storage_v1_csi_node ~sw client ~name ?pretty () =
+let read_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_node.of_yojson) resp body
 
-let read_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace ?pretty () =
+let read_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -472,36 +443,32 @@ let read_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_storage_capacity.of_yojson) resp body
 
-let read_storage_v1_storage_class ~sw client ~name ?pretty () =
+let read_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_storage_class.of_yojson) resp body
 
-let read_storage_v1_volume_attachment ~sw client ~name ?pretty () =
+let read_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let read_storage_v1_volume_attachment_status ~sw client ~name ?pretty () =
+let read_storage_v1_volume_attachment_status ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let replace_storage_v1_csi_driver ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csidrivers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -512,9 +479,8 @@ let replace_storage_v1_csi_driver ~sw client ~name ~body ?pretty ?dry_run ?field
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_driver.of_yojson) resp body
 
-let replace_storage_v1_csi_node ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/csinodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -525,9 +491,8 @@ let replace_storage_v1_csi_node ~sw client ~name ~body ?pretty ?dry_run ?field_m
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_node.of_yojson) resp body
 
-let replace_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/namespaces/{namespace}/csistoragecapacities/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -539,9 +504,8 @@ let replace_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_csi_storage_capacity.of_yojson) resp body
 
-let replace_storage_v1_storage_class ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/storageclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -552,9 +516,8 @@ let replace_storage_v1_storage_class ~sw client ~name ~body ?pretty ?dry_run ?fi
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_storage_class.of_yojson) resp body
 
-let replace_storage_v1_volume_attachment ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -565,9 +528,8 @@ let replace_storage_v1_volume_attachment ~sw client ~name ~body ?pretty ?dry_run
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let replace_storage_v1_volume_attachment_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_storage_v1_volume_attachment_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/volumeattachments/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -578,9 +540,8 @@ let replace_storage_v1_volume_attachment_status ~sw client ~name ~body ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_storage_v1_volume_attachment.of_yojson) resp body
 
-let watch_storage_v1_csi_driver ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_csi_driver ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/csidrivers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -597,9 +558,8 @@ let watch_storage_v1_csi_driver ~sw client ~name ?allow_watch_bookmarks ?continu
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_csi_driver_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_csi_driver_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/csidrivers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -615,9 +575,8 @@ let watch_storage_v1_csi_driver_list ~sw client ?allow_watch_bookmarks ?continue
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_csi_node ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_csi_node ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/csinodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -634,9 +593,8 @@ let watch_storage_v1_csi_node ~sw client ~name ?allow_watch_bookmarks ?continue 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_csi_node_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_csi_node_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/csinodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -652,9 +610,8 @@ let watch_storage_v1_csi_node_list ~sw client ?allow_watch_bookmarks ?continue ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_csi_storage_capacity_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_csi_storage_capacity_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/csistoragecapacities" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -670,9 +627,8 @@ let watch_storage_v1_csi_storage_capacity_list_for_all_namespaces ~sw client ?al
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_namespaced_csi_storage_capacity ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/namespaces/{namespace}/csistoragecapacities/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -690,9 +646,8 @@ let watch_storage_v1_namespaced_csi_storage_capacity ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_namespaced_csi_storage_capacity_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_namespaced_csi_storage_capacity_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/namespaces/{namespace}/csistoragecapacities" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -709,9 +664,8 @@ let watch_storage_v1_namespaced_csi_storage_capacity_list ~sw client ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_storage_class ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_storage_class ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/storageclasses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -728,9 +682,8 @@ let watch_storage_v1_storage_class ~sw client ~name ?allow_watch_bookmarks ?cont
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_storage_class_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_storage_class_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/storageclasses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -746,9 +699,8 @@ let watch_storage_v1_storage_class_list ~sw client ?allow_watch_bookmarks ?conti
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_volume_attachment ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_volume_attachment ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/volumeattachments/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -765,9 +717,8 @@ let watch_storage_v1_volume_attachment ~sw client ~name ?allow_watch_bookmarks ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_storage_v1_volume_attachment_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_storage_v1_volume_attachment_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/storage.k8s.io/v1/watch/volumeattachments" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in

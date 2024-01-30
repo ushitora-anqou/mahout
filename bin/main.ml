@@ -138,6 +138,23 @@ module Mahout_v1alpha1_api = struct
       resp body
 end
 
+let create_or_update ~sw client ~read ~create ~patch ~to_yojson ~name ~namespace
+    body =
+  match read ~sw client ?headers:None ~name ~namespace ?pretty:None () with
+  | Error (resp : Cohttp.Response.t) when resp.status = `Not_found ->
+      create ~sw client ?headers:None ~namespace ~body ?pretty:None
+        ?dry_run:None ?field_manager:None ?field_validation:None ()
+      |> Result.map_error (fun resp -> `Response resp)
+  | Error resp -> Error (`Response resp)
+  | Ok scanner -> (
+      match K.Json_response_scanner.scan scanner with
+      | Error (`Msg msg) -> Error (`Msg msg)
+      | Ok _ ->
+          patch ~sw client ?headers:None ~name ~namespace ~body:(to_yojson body)
+            ?pretty:None ?dry_run:None ?field_manager:None
+            ?field_validation:None ?force:None ()
+          |> Result.map_error (fun resp -> `Response resp))
+
 let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let name = Option.get (Option.get mastodon.metadata).name in
   K.Owner_reference.
@@ -153,7 +170,7 @@ let get_running_pod ~sw client =
   let name = Sys.getenv "POD_NAME" in
   let namespace = Sys.getenv "POD_NAMESPACE" in
   K.Core_v1_api.read_core_v1_namespaced_pod ~sw client ~name ~namespace ()
-  |> K.Json_response_scanner.scan |> Result.get_ok
+  |> Result.get_ok |> K.Json_response_scanner.scan |> Result.get_ok
 
 let get_check_env_job_name ~sw:_ _client
     (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
@@ -202,6 +219,14 @@ let create_or_update_check_env_job ~sw client
   let _ =
     K.Batch_v1_api.create_batch_v1_namespaced_job ~sw client ~namespace ~body ()
   in
+  let _ =
+    create_or_update ~sw client
+      ~read:K.Batch_v1_api.read_batch_v1_namespaced_job
+      ~create:K.Batch_v1_api.create_batch_v1_namespaced_job
+      ~patch:K.Batch_v1_api.patch_batch_v1_namespaced_job
+      ~to_yojson:K.Job.to_yojson ~name ~namespace body
+  in
+
   ()
 
 let create_or_update_gateway ~sw client
@@ -373,6 +398,7 @@ let controller () =
   *)
   Mahout_v1alpha1_api.watch_mahout_v1alpha1_namespaced_mastodon ~sw client
     ~namespace:"default" ~watch:true ()
+  |> Result.get_ok
   |> K.Json_response_scanner.iter (reconcile_mastodon ~sw client)
   (*
        (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->

@@ -41,11 +41,8 @@ let write_as_json_body to_json payload = write_json_body (to_json payload)
 
 let handle_response resp on_success_handler =
   match resp.Http.Response.status with
-  | #Cohttp.Code.success_status -> on_success_handler ()
-  | s ->
-      failwith
-        ("Server responded with status "
-        ^ Cohttp.Code.(reason_phrase_of_code (code_of_status s)))
+  | #Cohttp.Code.success_status -> Ok (on_success_handler ())
+  | _ -> Error resp
 
 let handle_unit_response resp = handle_response resp (fun () -> ())
 
@@ -53,23 +50,26 @@ let read_json_body resp body =
   handle_response resp (fun () -> Json_response_scanner.consume body)
 
 let read_json_body_as of_json resp body =
-  read_json_body resp body |> Json_response_scanner.with_conv of_json
+  read_json_body resp body
+  |> Result.map (Json_response_scanner.with_conv of_json)
 
 let read_json_body_as_list resp body =
   read_json_body resp body
-  |> Json_response_scanner.with_conv Yojson.Safe.Util.to_list
+  |> Result.map (Json_response_scanner.with_conv Yojson.Safe.Util.to_list)
 
 let read_json_body_as_list_of of_json resp body =
   read_json_body_as_list resp body
-  |> Json_response_scanner.with_conv (List.map of_json)
+  |> Result.map (Json_response_scanner.with_conv (List.map of_json))
 
 let read_json_body_as_map resp body =
   read_json_body resp body
-  |> Json_response_scanner.with_conv Yojson.Safe.Util.to_assoc
+  |> Result.map (Json_response_scanner.with_conv Yojson.Safe.Util.to_assoc)
 
 let read_json_body_as_map_of of_json resp body =
   read_json_body_as_map resp body
-  |> Json_response_scanner.with_conv (List.map (fun (s, v) -> (s, of_json v)))
+  |> Result.map
+       (Json_response_scanner.with_conv
+          (List.map (fun (s, v) -> (s, of_json v))))
 
 let replace_string_path_param uri param_name param_value =
   let regexp = Str.regexp (Str.quote ("{" ^ param_name ^ "}")) in

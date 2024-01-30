@@ -5,9 +5,10 @@
  *
  *)
 
-let create_internal_apiserver_v1alpha1_storage_version ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -17,9 +18,8 @@ let create_internal_apiserver_v1alpha1_storage_version ~sw client ~body ?pretty 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let delete_internal_apiserver_v1alpha1_collection_storage_version ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_internal_apiserver_v1alpha1_collection_storage_version ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -38,9 +38,8 @@ let delete_internal_apiserver_v1alpha1_collection_storage_version ~sw client ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_internal_apiserver_v1alpha1_storage_version ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -52,16 +51,14 @@ let delete_internal_apiserver_v1alpha1_storage_version ~sw client ~name ?pretty 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let get_internal_apiserver_v1alpha1_api_resources ~sw client () =
+let get_internal_apiserver_v1alpha1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_internal_apiserver_v1alpha1_storage_version ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -77,9 +74,8 @@ let list_internal_apiserver_v1alpha1_storage_version ~sw client ?pretty ?allow_w
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version_list.of_yojson) resp body
 
-let patch_internal_apiserver_v1alpha1_storage_version ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -91,9 +87,8 @@ let patch_internal_apiserver_v1alpha1_storage_version ~sw client ~name ~body ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let patch_internal_apiserver_v1alpha1_storage_version_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_internal_apiserver_v1alpha1_storage_version_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -105,27 +100,24 @@ let patch_internal_apiserver_v1alpha1_storage_version_status ~sw client ~name ~b
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let read_internal_apiserver_v1alpha1_storage_version ~sw client ~name ?pretty () =
+let read_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let read_internal_apiserver_v1alpha1_storage_version_status ~sw client ~name ?pretty () =
+let read_internal_apiserver_v1alpha1_storage_version_status ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let replace_internal_apiserver_v1alpha1_storage_version ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -136,9 +128,8 @@ let replace_internal_apiserver_v1alpha1_storage_version ~sw client ~name ~body ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let replace_internal_apiserver_v1alpha1_storage_version_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_internal_apiserver_v1alpha1_storage_version_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/storageversions/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -149,9 +140,8 @@ let replace_internal_apiserver_v1alpha1_storage_version_status ~sw client ~name 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_apiserverinternal_v1alpha1_storage_version.of_yojson) resp body
 
-let watch_internal_apiserver_v1alpha1_storage_version ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_internal_apiserver_v1alpha1_storage_version ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/watch/storageversions/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -168,9 +158,8 @@ let watch_internal_apiserver_v1alpha1_storage_version ~sw client ~name ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_internal_apiserver_v1alpha1_storage_version_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_internal_apiserver_v1alpha1_storage_version_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/internal.apiserver.k8s.io/v1alpha1/watch/storageversions" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in

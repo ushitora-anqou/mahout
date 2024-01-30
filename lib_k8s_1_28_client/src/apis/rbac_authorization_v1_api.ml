@@ -5,9 +5,10 @@
  *
  *)
 
-let create_rbac_authorization_v1_cluster_role ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+type any = Yojson.Safe.t
+
+let create_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -17,9 +18,8 @@ let create_rbac_authorization_v1_cluster_role ~sw client ~body ?pretty ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role.of_yojson) resp body
 
-let create_rbac_authorization_v1_cluster_role_binding ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -29,9 +29,8 @@ let create_rbac_authorization_v1_cluster_role_binding ~sw client ~body ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role_binding.of_yojson) resp body
 
-let create_rbac_authorization_v1_namespaced_role ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -42,9 +41,8 @@ let create_rbac_authorization_v1_namespaced_role ~sw client ~namespace ~body ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role.of_yojson) resp body
 
-let create_rbac_authorization_v1_namespaced_role_binding ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -55,9 +53,8 @@ let create_rbac_authorization_v1_namespaced_role_binding ~sw client ~namespace ~
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_binding.of_yojson) resp body
 
-let delete_rbac_authorization_v1_cluster_role ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -69,9 +66,8 @@ let delete_rbac_authorization_v1_cluster_role ~sw client ~name ?pretty ?dry_run 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_cluster_role_binding ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -83,9 +79,8 @@ let delete_rbac_authorization_v1_cluster_role_binding ~sw client ~name ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_collection_cluster_role ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_rbac_authorization_v1_collection_cluster_role ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -104,9 +99,8 @@ let delete_rbac_authorization_v1_collection_cluster_role ~sw client ?pretty ?con
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_collection_cluster_role_binding ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_rbac_authorization_v1_collection_cluster_role_binding ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -125,9 +119,8 @@ let delete_rbac_authorization_v1_collection_cluster_role_binding ~sw client ?pre
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_collection_namespaced_role ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_rbac_authorization_v1_collection_namespaced_role ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -147,9 +140,8 @@ let delete_rbac_authorization_v1_collection_namespaced_role ~sw client ~namespac
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_collection_namespaced_role_binding ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_rbac_authorization_v1_collection_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -169,9 +161,8 @@ let delete_rbac_authorization_v1_collection_namespaced_role_binding ~sw client ~
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -184,9 +175,8 @@ let delete_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -199,16 +189,14 @@ let delete_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~names
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let get_rbac_authorization_v1_api_resources ~sw client () =
+let get_rbac_authorization_v1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_rbac_authorization_v1_cluster_role ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -224,9 +212,8 @@ let list_rbac_authorization_v1_cluster_role ~sw client ?pretty ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role_list.of_yojson) resp body
 
-let list_rbac_authorization_v1_cluster_role_binding ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -242,9 +229,8 @@ let list_rbac_authorization_v1_cluster_role_binding ~sw client ?pretty ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role_binding_list.of_yojson) resp body
 
-let list_rbac_authorization_v1_namespaced_role ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -261,9 +247,8 @@ let list_rbac_authorization_v1_namespaced_role ~sw client ~namespace ?pretty ?al
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_list.of_yojson) resp body
 
-let list_rbac_authorization_v1_namespaced_role_binding ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -280,9 +265,8 @@ let list_rbac_authorization_v1_namespaced_role_binding ~sw client ~namespace ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_binding_list.of_yojson) resp body
 
-let list_rbac_authorization_v1_role_binding_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_rbac_authorization_v1_role_binding_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/rolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -298,9 +282,8 @@ let list_rbac_authorization_v1_role_binding_for_all_namespaces ~sw client ?allow
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_binding_list.of_yojson) resp body
 
-let list_rbac_authorization_v1_role_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_rbac_authorization_v1_role_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/roles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -316,9 +299,8 @@ let list_rbac_authorization_v1_role_for_all_namespaces ~sw client ?allow_watch_b
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_list.of_yojson) resp body
 
-let patch_rbac_authorization_v1_cluster_role ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -330,9 +312,8 @@ let patch_rbac_authorization_v1_cluster_role ~sw client ~name ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role.of_yojson) resp body
 
-let patch_rbac_authorization_v1_cluster_role_binding ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -344,9 +325,8 @@ let patch_rbac_authorization_v1_cluster_role_binding ~sw client ~name ~body ?pre
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role_binding.of_yojson) resp body
 
-let patch_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -359,9 +339,8 @@ let patch_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ~bod
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role.of_yojson) resp body
 
-let patch_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -374,27 +353,24 @@ let patch_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_binding.of_yojson) resp body
 
-let read_rbac_authorization_v1_cluster_role ~sw client ~name ?pretty () =
+let read_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role.of_yojson) resp body
 
-let read_rbac_authorization_v1_cluster_role_binding ~sw client ~name ?pretty () =
+let read_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role_binding.of_yojson) resp body
 
-let read_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ?pretty () =
+let read_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -402,9 +378,8 @@ let read_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role.of_yojson) resp body
 
-let read_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namespace ?pretty () =
+let read_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -412,9 +387,8 @@ let read_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_binding.of_yojson) resp body
 
-let replace_rbac_authorization_v1_cluster_role ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterroles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -425,9 +399,8 @@ let replace_rbac_authorization_v1_cluster_role ~sw client ~name ~body ?pretty ?d
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role.of_yojson) resp body
 
-let replace_rbac_authorization_v1_cluster_role_binding ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/clusterrolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -438,9 +411,8 @@ let replace_rbac_authorization_v1_cluster_role_binding ~sw client ~name ~body ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_cluster_role_binding.of_yojson) resp body
 
-let replace_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/roles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -452,9 +424,8 @@ let replace_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ~b
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role.of_yojson) resp body
 
-let replace_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/namespaces/{namespace}/rolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -466,9 +437,8 @@ let replace_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_rbac_v1_role_binding.of_yojson) resp body
 
-let watch_rbac_authorization_v1_cluster_role ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_cluster_role ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/clusterroles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -485,9 +455,8 @@ let watch_rbac_authorization_v1_cluster_role ~sw client ~name ?allow_watch_bookm
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_cluster_role_binding ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_cluster_role_binding ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/clusterrolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -504,9 +473,8 @@ let watch_rbac_authorization_v1_cluster_role_binding ~sw client ~name ?allow_wat
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_cluster_role_binding_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_cluster_role_binding_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/clusterrolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -522,9 +490,8 @@ let watch_rbac_authorization_v1_cluster_role_binding_list ~sw client ?allow_watc
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_cluster_role_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_cluster_role_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/clusterroles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -540,9 +507,8 @@ let watch_rbac_authorization_v1_cluster_role_list ~sw client ?allow_watch_bookma
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_namespaced_role ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/namespaces/{namespace}/roles/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -560,9 +526,8 @@ let watch_rbac_authorization_v1_namespaced_role ~sw client ~name ~namespace ?all
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_namespaced_role_binding ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/namespaces/{namespace}/rolebindings/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -580,9 +545,8 @@ let watch_rbac_authorization_v1_namespaced_role_binding ~sw client ~name ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_namespaced_role_binding_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_namespaced_role_binding_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/namespaces/{namespace}/rolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -599,9 +563,8 @@ let watch_rbac_authorization_v1_namespaced_role_binding_list ~sw client ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_namespaced_role_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_namespaced_role_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/namespaces/{namespace}/roles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -618,9 +581,8 @@ let watch_rbac_authorization_v1_namespaced_role_list ~sw client ~namespace ?allo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_role_binding_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_role_binding_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/rolebindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -636,9 +598,8 @@ let watch_rbac_authorization_v1_role_binding_list_for_all_namespaces ~sw client 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_rbac_authorization_v1_role_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_rbac_authorization_v1_role_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/apis/rbac.authorization.k8s.io/v1/watch/roles" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in

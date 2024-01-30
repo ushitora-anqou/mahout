@@ -5,9 +5,10 @@
  *
  *)
 
-let get_apiextensions_api_group ~sw client () =
+type any = Yojson.Safe.t
+
+let get_apiextensions_api_group ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/apis/apiextensions.k8s.io/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_group.of_yojson) resp body

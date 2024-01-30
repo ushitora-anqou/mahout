@@ -113,35 +113,37 @@ metadata:
   name: mahout-controller-sa
   namespace: default
 ---
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: test-pod
-  namespace: default
+  name: mastodon-operator
 spec:
-  containers:
-    - name: ubuntu
-      image: mahout:dev
-#     image: ubuntu:22.04
-#     command:
-#       - bash
-#       - -c
-#       - |
-#         sleep infinity
-      env:
-        - name: OCAMLRUNPARAM
-          value: b
-        - name: COHTTP_DEBUG
-          value: "1"
-        - name: POD_NAME
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.name
-        - name: POD_NAMESPACE
-          valueFrom:
-            fieldRef:
-              fieldPath: metadata.namespace
-  serviceAccountName: mahout-controller-sa
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mastodon-operator
+  template:
+    metadata:
+      labels:
+        app: mastodon-operator
+    spec:
+      containers:
+        - name: ubuntu
+          image: mahout:dev
+          env:
+            - name: OCAMLRUNPARAM
+              value: b
+            - name: COHTTP_DEBUG
+              value: "1"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      serviceAccountName: mahout-controller-sa
 ---
 apiVersion: v1
 kind: Secret

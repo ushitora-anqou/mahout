@@ -5,9 +5,10 @@
  *
  *)
 
-let connect_core_v1_delete_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+type any = Yojson.Safe.t
+
+let connect_core_v1_delete_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -15,9 +16,8 @@ let connect_core_v1_delete_namespaced_pod_proxy ~sw client ~name ~namespace ?pat
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_delete_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_delete_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -25,9 +25,8 @@ let connect_core_v1_delete_namespaced_pod_proxy_with_path ~sw client ~name ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_delete_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_delete_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -35,9 +34,8 @@ let connect_core_v1_delete_namespaced_service_proxy ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_delete_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_delete_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -45,27 +43,24 @@ let connect_core_v1_delete_namespaced_service_proxy_with_path ~sw client ~name ~
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_delete_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_delete_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_delete_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_delete_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_pod_attach ~sw client ~name ~namespace ?container ?stderr ?stdin ?stdout ?tty () =
+let connect_core_v1_get_namespaced_pod_attach ~sw client ?(headers = Request.default_headers) ~name ~namespace ?container ?stderr ?stdin ?stdout ?tty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/attach" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -77,9 +72,8 @@ let connect_core_v1_get_namespaced_pod_attach ~sw client ~name ~namespace ?conta
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_pod_exec ~sw client ~name ~namespace ?command ?container ?stderr ?stdin ?stdout ?tty () =
+let connect_core_v1_get_namespaced_pod_exec ~sw client ?(headers = Request.default_headers) ~name ~namespace ?command ?container ?stderr ?stdin ?stdout ?tty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/exec" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -92,9 +86,8 @@ let connect_core_v1_get_namespaced_pod_exec ~sw client ~name ~namespace ?command
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_pod_portforward ~sw client ~name ~namespace ?ports () =
+let connect_core_v1_get_namespaced_pod_portforward ~sw client ?(headers = Request.default_headers) ~name ~namespace ?ports () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/portforward" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -102,9 +95,8 @@ let connect_core_v1_get_namespaced_pod_portforward ~sw client ~name ~namespace ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_get_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -112,9 +104,8 @@ let connect_core_v1_get_namespaced_pod_proxy ~sw client ~name ~namespace ?path (
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_get_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -122,9 +113,8 @@ let connect_core_v1_get_namespaced_pod_proxy_with_path ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_get_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -132,9 +122,8 @@ let connect_core_v1_get_namespaced_service_proxy ~sw client ~name ~namespace ?pa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_get_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -142,27 +131,24 @@ let connect_core_v1_get_namespaced_service_proxy_with_path ~sw client ~name ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_get_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_get_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_get_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_head_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_head_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -170,9 +156,8 @@ let connect_core_v1_head_namespaced_pod_proxy ~sw client ~name ~namespace ?path 
     let resp, body = Cohttp_eio.Client.call ~sw client `HEAD uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_head_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_head_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -180,9 +165,8 @@ let connect_core_v1_head_namespaced_pod_proxy_with_path ~sw client ~name ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `HEAD uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_head_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_head_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -190,9 +174,8 @@ let connect_core_v1_head_namespaced_service_proxy ~sw client ~name ~namespace ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `HEAD uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_head_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_head_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -200,27 +183,24 @@ let connect_core_v1_head_namespaced_service_proxy_with_path ~sw client ~name ~na
     let resp, body = Cohttp_eio.Client.call ~sw client `HEAD uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_head_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_head_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `HEAD uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_head_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_head_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `HEAD uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_options_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_options_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -228,9 +208,8 @@ let connect_core_v1_options_namespaced_pod_proxy ~sw client ~name ~namespace ?pa
     let resp, body = Cohttp_eio.Client.call ~sw client `OPTIONS uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_options_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_options_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -238,9 +217,8 @@ let connect_core_v1_options_namespaced_pod_proxy_with_path ~sw client ~name ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `OPTIONS uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_options_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_options_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -248,9 +226,8 @@ let connect_core_v1_options_namespaced_service_proxy ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `OPTIONS uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_options_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_options_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -258,27 +235,24 @@ let connect_core_v1_options_namespaced_service_proxy_with_path ~sw client ~name 
     let resp, body = Cohttp_eio.Client.call ~sw client `OPTIONS uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_options_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_options_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `OPTIONS uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_options_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_options_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `OPTIONS uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_patch_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_patch_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -286,9 +260,8 @@ let connect_core_v1_patch_namespaced_pod_proxy ~sw client ~name ~namespace ?path
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_patch_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_patch_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -296,9 +269,8 @@ let connect_core_v1_patch_namespaced_pod_proxy_with_path ~sw client ~name ~names
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_patch_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_patch_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -306,9 +278,8 @@ let connect_core_v1_patch_namespaced_service_proxy ~sw client ~name ~namespace ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_patch_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_patch_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -316,27 +287,24 @@ let connect_core_v1_patch_namespaced_service_proxy_with_path ~sw client ~name ~n
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_patch_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_patch_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_patch_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_patch_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_pod_attach ~sw client ~name ~namespace ?container ?stderr ?stdin ?stdout ?tty () =
+let connect_core_v1_post_namespaced_pod_attach ~sw client ?(headers = Request.default_headers) ~name ~namespace ?container ?stderr ?stdin ?stdout ?tty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/attach" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -348,9 +316,8 @@ let connect_core_v1_post_namespaced_pod_attach ~sw client ~name ~namespace ?cont
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_pod_exec ~sw client ~name ~namespace ?command ?container ?stderr ?stdin ?stdout ?tty () =
+let connect_core_v1_post_namespaced_pod_exec ~sw client ?(headers = Request.default_headers) ~name ~namespace ?command ?container ?stderr ?stdin ?stdout ?tty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/exec" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -363,9 +330,8 @@ let connect_core_v1_post_namespaced_pod_exec ~sw client ~name ~namespace ?comman
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_pod_portforward ~sw client ~name ~namespace ?ports () =
+let connect_core_v1_post_namespaced_pod_portforward ~sw client ?(headers = Request.default_headers) ~name ~namespace ?ports () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/portforward" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -373,9 +339,8 @@ let connect_core_v1_post_namespaced_pod_portforward ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_post_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -383,9 +348,8 @@ let connect_core_v1_post_namespaced_pod_proxy ~sw client ~name ~namespace ?path 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_post_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -393,9 +357,8 @@ let connect_core_v1_post_namespaced_pod_proxy_with_path ~sw client ~name ~namesp
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_post_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -403,9 +366,8 @@ let connect_core_v1_post_namespaced_service_proxy ~sw client ~name ~namespace ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_post_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -413,27 +375,24 @@ let connect_core_v1_post_namespaced_service_proxy_with_path ~sw client ~name ~na
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_post_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_post_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_post_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_put_namespaced_pod_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_put_namespaced_pod_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -441,9 +400,8 @@ let connect_core_v1_put_namespaced_pod_proxy ~sw client ~name ~namespace ?path (
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_put_namespaced_pod_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_put_namespaced_pod_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -451,9 +409,8 @@ let connect_core_v1_put_namespaced_pod_proxy_with_path ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_put_namespaced_service_proxy ~sw client ~name ~namespace ?path () =
+let connect_core_v1_put_namespaced_service_proxy ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -461,9 +418,8 @@ let connect_core_v1_put_namespaced_service_proxy ~sw client ~name ~namespace ?pa
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_put_namespaced_service_proxy_with_path ~sw client ~name ~namespace ?path () =
+let connect_core_v1_put_namespaced_service_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ~namespace ?path () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -471,27 +427,24 @@ let connect_core_v1_put_namespaced_service_proxy_with_path ~sw client ~name ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_put_node_proxy ~sw client ~name ?path () =
+let connect_core_v1_put_node_proxy ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let connect_core_v1_put_node_proxy_with_path ~sw client ~name ?path () =
+let connect_core_v1_put_node_proxy_with_path ~sw client ?(headers = Request.default_headers) ~name ?path () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/proxy/{path}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "path" (fun x -> x) path in
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let create_core_v1_namespace ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespace ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -501,9 +454,8 @@ let create_core_v1_namespace ~sw client ~body ?pretty ?dry_run ?field_manager ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let create_core_v1_namespaced_binding ~sw client ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_core_v1_namespaced_binding ~sw client ?(headers = Request.default_headers) ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/bindings" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -514,9 +466,8 @@ let create_core_v1_namespaced_binding ~sw client ~namespace ~body ?dry_run ?fiel
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_binding.of_yojson) resp body
 
-let create_core_v1_namespaced_config_map ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -527,9 +478,8 @@ let create_core_v1_namespaced_config_map ~sw client ~namespace ~body ?pretty ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_config_map.of_yojson) resp body
 
-let create_core_v1_namespaced_endpoints ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -540,9 +490,8 @@ let create_core_v1_namespaced_endpoints ~sw client ~namespace ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_endpoints.of_yojson) resp body
 
-let create_core_v1_namespaced_event ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -553,9 +502,8 @@ let create_core_v1_namespaced_event ~sw client ~namespace ~body ?pretty ?dry_run
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_event.of_yojson) resp body
 
-let create_core_v1_namespaced_limit_range ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -566,9 +514,8 @@ let create_core_v1_namespaced_limit_range ~sw client ~namespace ~body ?pretty ?d
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_limit_range.of_yojson) resp body
 
-let create_core_v1_namespaced_persistent_volume_claim ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -579,9 +526,8 @@ let create_core_v1_namespaced_persistent_volume_claim ~sw client ~namespace ~bod
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let create_core_v1_namespaced_pod ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -592,9 +538,8 @@ let create_core_v1_namespaced_pod ~sw client ~namespace ~body ?pretty ?dry_run ?
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let create_core_v1_namespaced_pod_binding ~sw client ~name ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_core_v1_namespaced_pod_binding ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/binding" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -606,9 +551,8 @@ let create_core_v1_namespaced_pod_binding ~sw client ~name ~namespace ~body ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_binding.of_yojson) resp body
 
-let create_core_v1_namespaced_pod_eviction ~sw client ~name ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_core_v1_namespaced_pod_eviction ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/eviction" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -620,9 +564,8 @@ let create_core_v1_namespaced_pod_eviction ~sw client ~name ~namespace ~body ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_policy_v1_eviction.of_yojson) resp body
 
-let create_core_v1_namespaced_pod_template ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -633,9 +576,8 @@ let create_core_v1_namespaced_pod_template ~sw client ~namespace ~body ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template.of_yojson) resp body
 
-let create_core_v1_namespaced_replication_controller ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -646,9 +588,8 @@ let create_core_v1_namespaced_replication_controller ~sw client ~namespace ~body
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let create_core_v1_namespaced_resource_quota ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -659,9 +600,8 @@ let create_core_v1_namespaced_resource_quota ~sw client ~namespace ~body ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let create_core_v1_namespaced_secret ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -672,9 +612,8 @@ let create_core_v1_namespaced_secret ~sw client ~namespace ~body ?pretty ?dry_ru
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_secret.of_yojson) resp body
 
-let create_core_v1_namespaced_service ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -685,9 +624,8 @@ let create_core_v1_namespaced_service ~sw client ~namespace ~body ?pretty ?dry_r
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let create_core_v1_namespaced_service_account ~sw client ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -698,9 +636,8 @@ let create_core_v1_namespaced_service_account ~sw client ~namespace ~body ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account.of_yojson) resp body
 
-let create_core_v1_namespaced_service_account_token ~sw client ~name ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let create_core_v1_namespaced_service_account_token ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts/{name}/token" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -712,9 +649,8 @@ let create_core_v1_namespaced_service_account_token ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_authentication_v1_token_request.of_yojson) resp body
 
-let create_core_v1_node ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_node ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/nodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -724,9 +660,8 @@ let create_core_v1_node ~sw client ~body ?pretty ?dry_run ?field_manager ?field_
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let create_core_v1_persistent_volume ~sw client ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let create_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/persistentvolumes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -736,9 +671,8 @@ let create_core_v1_persistent_volume ~sw client ~body ?pretty ?dry_run ?field_ma
     let resp, body = Cohttp_eio.Client.call ~sw client `POST uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_config_map ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -758,9 +692,8 @@ let delete_core_v1_collection_namespaced_config_map ~sw client ~namespace ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_endpoints ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -780,9 +713,8 @@ let delete_core_v1_collection_namespaced_endpoints ~sw client ~namespace ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_event ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_event ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -802,9 +734,8 @@ let delete_core_v1_collection_namespaced_event ~sw client ~namespace ?pretty ?co
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_limit_range ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -824,9 +755,8 @@ let delete_core_v1_collection_namespaced_limit_range ~sw client ~namespace ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_persistent_volume_claim ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -846,9 +776,8 @@ let delete_core_v1_collection_namespaced_persistent_volume_claim ~sw client ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_pod ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_pod ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -868,9 +797,8 @@ let delete_core_v1_collection_namespaced_pod ~sw client ~namespace ?pretty ?cont
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_pod_template ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -890,9 +818,8 @@ let delete_core_v1_collection_namespaced_pod_template ~sw client ~namespace ?pre
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_replication_controller ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -912,9 +839,8 @@ let delete_core_v1_collection_namespaced_replication_controller ~sw client ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_resource_quota ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -934,9 +860,8 @@ let delete_core_v1_collection_namespaced_resource_quota ~sw client ~namespace ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_secret ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_secret ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -956,9 +881,8 @@ let delete_core_v1_collection_namespaced_secret ~sw client ~namespace ?pretty ?c
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_service ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_service ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -978,9 +902,8 @@ let delete_core_v1_collection_namespaced_service ~sw client ~namespace ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_namespaced_service_account ~sw client ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1000,9 +923,8 @@ let delete_core_v1_collection_namespaced_service_account ~sw client ~namespace ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_node ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_node ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/nodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1021,9 +943,8 @@ let delete_core_v1_collection_node ~sw client ?pretty ?continue ?dry_run ?field_
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_collection_persistent_volume ~sw client ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
+let delete_core_v1_collection_persistent_volume ~sw client ?(headers = Request.default_headers) ?pretty ?continue ?dry_run ?field_selector ?grace_period_seconds ?label_selector ?limit ?orphan_dependents ?propagation_policy ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ~body () =
     let uri = Request.build_uri "/api/v1/persistentvolumes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1042,9 +963,8 @@ let delete_core_v1_collection_persistent_volume ~sw client ?pretty ?continue ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespace ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespace ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1056,9 +976,8 @@ let delete_core_v1_namespace ~sw client ~name ?pretty ?dry_run ?grace_period_sec
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_config_map ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1071,9 +990,8 @@ let delete_core_v1_namespaced_config_map ~sw client ~name ~namespace ?pretty ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_endpoints ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1086,9 +1004,8 @@ let delete_core_v1_namespaced_endpoints ~sw client ~name ~namespace ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_event ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1101,9 +1018,8 @@ let delete_core_v1_namespaced_event ~sw client ~name ~namespace ?pretty ?dry_run
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_limit_range ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1116,9 +1032,8 @@ let delete_core_v1_namespaced_limit_range ~sw client ~name ~namespace ?pretty ?d
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1131,9 +1046,8 @@ let delete_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespac
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let delete_core_v1_namespaced_pod ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1146,9 +1060,8 @@ let delete_core_v1_namespaced_pod ~sw client ~name ~namespace ?pretty ?dry_run ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let delete_core_v1_namespaced_pod_template ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1161,9 +1074,8 @@ let delete_core_v1_namespaced_pod_template ~sw client ~name ~namespace ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template.of_yojson) resp body
 
-let delete_core_v1_namespaced_replication_controller ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1176,9 +1088,8 @@ let delete_core_v1_namespaced_replication_controller ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1191,9 +1102,8 @@ let delete_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let delete_core_v1_namespaced_secret ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1206,9 +1116,8 @@ let delete_core_v1_namespaced_secret ~sw client ~name ~namespace ?pretty ?dry_ru
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_namespaced_service ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1221,9 +1130,8 @@ let delete_core_v1_namespaced_service ~sw client ~name ~namespace ?pretty ?dry_r
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let delete_core_v1_namespaced_service_account ~sw client ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1236,9 +1144,8 @@ let delete_core_v1_namespaced_service_account ~sw client ~name ~namespace ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account.of_yojson) resp body
 
-let delete_core_v1_node ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_node ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/nodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1250,9 +1157,8 @@ let delete_core_v1_node ~sw client ~name ?pretty ?dry_run ?grace_period_seconds 
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_status.of_yojson) resp body
 
-let delete_core_v1_persistent_volume ~sw client ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+let delete_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1264,16 +1170,14 @@ let delete_core_v1_persistent_volume ~sw client ~name ?pretty ?dry_run ?grace_pe
     let resp, body = Cohttp_eio.Client.call ~sw client `DELETE uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let get_core_v1_api_resources ~sw client () =
+let get_core_v1_api_resources ~sw client ?(headers = Request.default_headers) () =
     let uri = Request.build_uri "/api/v1/" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_api_resource_list.of_yojson) resp body
 
-let list_core_v1_component_status ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_component_status ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/componentstatuses" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1289,9 +1193,8 @@ let list_core_v1_component_status ~sw client ?allow_watch_bookmarks ?continue ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_component_status_list.of_yojson) resp body
 
-let list_core_v1_config_map_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_config_map_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/configmaps" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1307,9 +1210,8 @@ let list_core_v1_config_map_for_all_namespaces ~sw client ?allow_watch_bookmarks
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_config_map_list.of_yojson) resp body
 
-let list_core_v1_endpoints_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_endpoints_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/endpoints" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1325,9 +1227,8 @@ let list_core_v1_endpoints_for_all_namespaces ~sw client ?allow_watch_bookmarks 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_endpoints_list.of_yojson) resp body
 
-let list_core_v1_event_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_event_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/events" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1343,9 +1244,8 @@ let list_core_v1_event_for_all_namespaces ~sw client ?allow_watch_bookmarks ?con
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_event_list.of_yojson) resp body
 
-let list_core_v1_limit_range_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_limit_range_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/limitranges" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1361,9 +1261,8 @@ let list_core_v1_limit_range_for_all_namespaces ~sw client ?allow_watch_bookmark
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_limit_range_list.of_yojson) resp body
 
-let list_core_v1_namespace ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespace ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -1379,9 +1278,8 @@ let list_core_v1_namespace ~sw client ?pretty ?allow_watch_bookmarks ?continue ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace_list.of_yojson) resp body
 
-let list_core_v1_namespaced_config_map ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1398,9 +1296,8 @@ let list_core_v1_namespaced_config_map ~sw client ~namespace ?pretty ?allow_watc
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_config_map_list.of_yojson) resp body
 
-let list_core_v1_namespaced_endpoints ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1417,9 +1314,8 @@ let list_core_v1_namespaced_endpoints ~sw client ~namespace ?pretty ?allow_watch
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_endpoints_list.of_yojson) resp body
 
-let list_core_v1_namespaced_event ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1436,9 +1332,8 @@ let list_core_v1_namespaced_event ~sw client ~namespace ?pretty ?allow_watch_boo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_event_list.of_yojson) resp body
 
-let list_core_v1_namespaced_limit_range ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1455,9 +1350,8 @@ let list_core_v1_namespaced_limit_range ~sw client ~namespace ?pretty ?allow_wat
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_limit_range_list.of_yojson) resp body
 
-let list_core_v1_namespaced_persistent_volume_claim ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1474,9 +1368,8 @@ let list_core_v1_namespaced_persistent_volume_claim ~sw client ~namespace ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim_list.of_yojson) resp body
 
-let list_core_v1_namespaced_pod ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1493,9 +1386,8 @@ let list_core_v1_namespaced_pod ~sw client ~namespace ?pretty ?allow_watch_bookm
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_list.of_yojson) resp body
 
-let list_core_v1_namespaced_pod_template ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1512,9 +1404,8 @@ let list_core_v1_namespaced_pod_template ~sw client ~namespace ?pretty ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template_list.of_yojson) resp body
 
-let list_core_v1_namespaced_replication_controller ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1531,9 +1422,8 @@ let list_core_v1_namespaced_replication_controller ~sw client ~namespace ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller_list.of_yojson) resp body
 
-let list_core_v1_namespaced_resource_quota ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1550,9 +1440,8 @@ let list_core_v1_namespaced_resource_quota ~sw client ~namespace ?pretty ?allow_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota_list.of_yojson) resp body
 
-let list_core_v1_namespaced_secret ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1569,9 +1458,8 @@ let list_core_v1_namespaced_secret ~sw client ~namespace ?pretty ?allow_watch_bo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_secret_list.of_yojson) resp body
 
-let list_core_v1_namespaced_service ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1588,9 +1476,8 @@ let list_core_v1_namespaced_service ~sw client ~namespace ?pretty ?allow_watch_b
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_list.of_yojson) resp body
 
-let list_core_v1_namespaced_service_account ~sw client ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~namespace ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1607,9 +1494,8 @@ let list_core_v1_namespaced_service_account ~sw client ~namespace ?pretty ?allow
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account_list.of_yojson) resp body
 
-let list_core_v1_node ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_node ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/nodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -1625,9 +1511,8 @@ let list_core_v1_node ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node_list.of_yojson) resp body
 
-let list_core_v1_persistent_volume ~sw client ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ?pretty ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/persistentvolumes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -1643,9 +1528,8 @@ let list_core_v1_persistent_volume ~sw client ?pretty ?allow_watch_bookmarks ?co
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_list.of_yojson) resp body
 
-let list_core_v1_persistent_volume_claim_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_persistent_volume_claim_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/persistentvolumeclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1661,9 +1545,8 @@ let list_core_v1_persistent_volume_claim_for_all_namespaces ~sw client ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim_list.of_yojson) resp body
 
-let list_core_v1_pod_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_pod_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/pods" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1679,9 +1562,8 @@ let list_core_v1_pod_for_all_namespaces ~sw client ?allow_watch_bookmarks ?conti
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_list.of_yojson) resp body
 
-let list_core_v1_pod_template_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_pod_template_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/podtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1697,9 +1579,8 @@ let list_core_v1_pod_template_for_all_namespaces ~sw client ?allow_watch_bookmar
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template_list.of_yojson) resp body
 
-let list_core_v1_replication_controller_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_replication_controller_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/replicationcontrollers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1715,9 +1596,8 @@ let list_core_v1_replication_controller_for_all_namespaces ~sw client ?allow_wat
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller_list.of_yojson) resp body
 
-let list_core_v1_resource_quota_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_resource_quota_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/resourcequotas" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1733,9 +1613,8 @@ let list_core_v1_resource_quota_for_all_namespaces ~sw client ?allow_watch_bookm
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota_list.of_yojson) resp body
 
-let list_core_v1_secret_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_secret_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/secrets" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1751,9 +1630,8 @@ let list_core_v1_secret_for_all_namespaces ~sw client ?allow_watch_bookmarks ?co
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_secret_list.of_yojson) resp body
 
-let list_core_v1_service_account_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_service_account_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/serviceaccounts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1769,9 +1647,8 @@ let list_core_v1_service_account_for_all_namespaces ~sw client ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account_list.of_yojson) resp body
 
-let list_core_v1_service_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let list_core_v1_service_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/services" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -1787,9 +1664,8 @@ let list_core_v1_service_for_all_namespaces ~sw client ?allow_watch_bookmarks ?c
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_list.of_yojson) resp body
 
-let patch_core_v1_namespace ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespace ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1801,9 +1677,8 @@ let patch_core_v1_namespace ~sw client ~name ~body ?pretty ?dry_run ?field_manag
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let patch_core_v1_namespace_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespace_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -1815,9 +1690,8 @@ let patch_core_v1_namespace_status ~sw client ~name ~body ?pretty ?dry_run ?fiel
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let patch_core_v1_namespaced_config_map ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1830,9 +1704,8 @@ let patch_core_v1_namespaced_config_map ~sw client ~name ~namespace ~body ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_config_map.of_yojson) resp body
 
-let patch_core_v1_namespaced_endpoints ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1845,9 +1718,8 @@ let patch_core_v1_namespaced_endpoints ~sw client ~name ~namespace ~body ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_endpoints.of_yojson) resp body
 
-let patch_core_v1_namespaced_event ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1860,9 +1732,8 @@ let patch_core_v1_namespaced_event ~sw client ~name ~namespace ~body ?pretty ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_event.of_yojson) resp body
 
-let patch_core_v1_namespaced_limit_range ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1875,9 +1746,8 @@ let patch_core_v1_namespaced_limit_range ~sw client ~name ~namespace ~body ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_limit_range.of_yojson) resp body
 
-let patch_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1890,9 +1760,8 @@ let patch_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let patch_core_v1_namespaced_persistent_volume_claim_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_persistent_volume_claim_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1905,9 +1774,8 @@ let patch_core_v1_namespaced_persistent_volume_claim_status ~sw client ~name ~na
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let patch_core_v1_namespaced_pod ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1920,9 +1788,8 @@ let patch_core_v1_namespaced_pod ~sw client ~name ~namespace ~body ?pretty ?dry_
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let patch_core_v1_namespaced_pod_ephemeralcontainers ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_pod_ephemeralcontainers ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/ephemeralcontainers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1935,9 +1802,8 @@ let patch_core_v1_namespaced_pod_ephemeralcontainers ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let patch_core_v1_namespaced_pod_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_pod_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1950,9 +1816,8 @@ let patch_core_v1_namespaced_pod_status ~sw client ~name ~namespace ~body ?prett
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let patch_core_v1_namespaced_pod_template ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1965,9 +1830,8 @@ let patch_core_v1_namespaced_pod_template ~sw client ~name ~namespace ~body ?pre
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template.of_yojson) resp body
 
-let patch_core_v1_namespaced_replication_controller ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1980,9 +1844,8 @@ let patch_core_v1_namespaced_replication_controller ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let patch_core_v1_namespaced_replication_controller_scale ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_replication_controller_scale ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}/scale" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -1995,9 +1858,8 @@ let patch_core_v1_namespaced_replication_controller_scale ~sw client ~name ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_autoscaling_v1_scale.of_yojson) resp body
 
-let patch_core_v1_namespaced_replication_controller_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_replication_controller_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2010,9 +1872,8 @@ let patch_core_v1_namespaced_replication_controller_status ~sw client ~name ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let patch_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2025,9 +1886,8 @@ let patch_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ~body ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let patch_core_v1_namespaced_resource_quota_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_resource_quota_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2040,9 +1900,8 @@ let patch_core_v1_namespaced_resource_quota_status ~sw client ~name ~namespace ~
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let patch_core_v1_namespaced_secret ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2055,9 +1914,8 @@ let patch_core_v1_namespaced_secret ~sw client ~name ~namespace ~body ?pretty ?d
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_secret.of_yojson) resp body
 
-let patch_core_v1_namespaced_service ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2070,9 +1928,8 @@ let patch_core_v1_namespaced_service ~sw client ~name ~namespace ~body ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let patch_core_v1_namespaced_service_account ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2085,9 +1942,8 @@ let patch_core_v1_namespaced_service_account ~sw client ~name ~namespace ~body ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account.of_yojson) resp body
 
-let patch_core_v1_namespaced_service_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_namespaced_service_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2100,9 +1956,8 @@ let patch_core_v1_namespaced_service_status ~sw client ~name ~namespace ~body ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let patch_core_v1_node ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_node ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/nodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2114,9 +1969,8 @@ let patch_core_v1_node ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let patch_core_v1_node_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_node_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2128,9 +1982,8 @@ let patch_core_v1_node_status ~sw client ~name ~body ?pretty ?dry_run ?field_man
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let patch_core_v1_persistent_volume ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2142,9 +1995,8 @@ let patch_core_v1_persistent_volume ~sw client ~name ~body ?pretty ?dry_run ?fie
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let patch_core_v1_persistent_volume_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
+let patch_core_v1_persistent_volume_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation ?force () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2156,36 +2008,32 @@ let patch_core_v1_persistent_volume_status ~sw client ~name ~body ?pretty ?dry_r
     let resp, body = Cohttp_eio.Client.call ~sw client `PATCH uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let read_core_v1_component_status ~sw client ~name ?pretty () =
+let read_core_v1_component_status ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/componentstatuses/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_component_status.of_yojson) resp body
 
-let read_core_v1_namespace ~sw client ~name ?pretty () =
+let read_core_v1_namespace ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let read_core_v1_namespace_status ~sw client ~name ?pretty () =
+let read_core_v1_namespace_status ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let read_core_v1_namespaced_config_map ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2193,9 +2041,8 @@ let read_core_v1_namespaced_config_map ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_config_map.of_yojson) resp body
 
-let read_core_v1_namespaced_endpoints ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2203,9 +2050,8 @@ let read_core_v1_namespaced_endpoints ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_endpoints.of_yojson) resp body
 
-let read_core_v1_namespaced_event ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2213,9 +2059,8 @@ let read_core_v1_namespaced_event ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_event.of_yojson) resp body
 
-let read_core_v1_namespaced_limit_range ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2223,9 +2068,8 @@ let read_core_v1_namespaced_limit_range ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_limit_range.of_yojson) resp body
 
-let read_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2233,9 +2077,8 @@ let read_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let read_core_v1_namespaced_persistent_volume_claim_status ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_persistent_volume_claim_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2243,9 +2086,8 @@ let read_core_v1_namespaced_persistent_volume_claim_status ~sw client ~name ~nam
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let read_core_v1_namespaced_pod ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2253,9 +2095,8 @@ let read_core_v1_namespaced_pod ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let read_core_v1_namespaced_pod_ephemeralcontainers ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_pod_ephemeralcontainers ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/ephemeralcontainers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2263,9 +2104,8 @@ let read_core_v1_namespaced_pod_ephemeralcontainers ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let read_core_v1_namespaced_pod_log ~sw client ~name ~namespace ?container ?follow ?insecure_skip_tls_verify_backend ?limit_bytes ?pretty ?previous ?since_seconds ?tail_lines ?timestamps () =
+let read_core_v1_namespaced_pod_log ~sw client ?(headers = Request.default_headers) ~name ~namespace ?container ?follow ?insecure_skip_tls_verify_backend ?limit_bytes ?pretty ?previous ?since_seconds ?tail_lines ?timestamps () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/log" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2281,9 +2121,8 @@ let read_core_v1_namespaced_pod_log ~sw client ~name ~namespace ?container ?foll
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.to_string) resp body
 
-let read_core_v1_namespaced_pod_status ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_pod_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2291,9 +2130,8 @@ let read_core_v1_namespaced_pod_status ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let read_core_v1_namespaced_pod_template ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2301,9 +2139,8 @@ let read_core_v1_namespaced_pod_template ~sw client ~name ~namespace ?pretty () 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template.of_yojson) resp body
 
-let read_core_v1_namespaced_replication_controller ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2311,9 +2148,8 @@ let read_core_v1_namespaced_replication_controller ~sw client ~name ~namespace ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let read_core_v1_namespaced_replication_controller_scale ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_replication_controller_scale ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}/scale" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2321,9 +2157,8 @@ let read_core_v1_namespaced_replication_controller_scale ~sw client ~name ~names
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_autoscaling_v1_scale.of_yojson) resp body
 
-let read_core_v1_namespaced_replication_controller_status ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_replication_controller_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2331,9 +2166,8 @@ let read_core_v1_namespaced_replication_controller_status ~sw client ~name ~name
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let read_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2341,9 +2175,8 @@ let read_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ?pretty (
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let read_core_v1_namespaced_resource_quota_status ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_resource_quota_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2351,9 +2184,8 @@ let read_core_v1_namespaced_resource_quota_status ~sw client ~name ~namespace ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let read_core_v1_namespaced_secret ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2361,9 +2193,8 @@ let read_core_v1_namespaced_secret ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_secret.of_yojson) resp body
 
-let read_core_v1_namespaced_service ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2371,9 +2202,8 @@ let read_core_v1_namespaced_service ~sw client ~name ~namespace ?pretty () =
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let read_core_v1_namespaced_service_account ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2381,9 +2211,8 @@ let read_core_v1_namespaced_service_account ~sw client ~name ~namespace ?pretty 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account.of_yojson) resp body
 
-let read_core_v1_namespaced_service_status ~sw client ~name ~namespace ?pretty () =
+let read_core_v1_namespaced_service_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2391,45 +2220,40 @@ let read_core_v1_namespaced_service_status ~sw client ~name ~namespace ?pretty (
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let read_core_v1_node ~sw client ~name ?pretty () =
+let read_core_v1_node ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/nodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let read_core_v1_node_status ~sw client ~name ?pretty () =
+let read_core_v1_node_status ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let read_core_v1_persistent_volume ~sw client ~name ?pretty () =
+let read_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let read_core_v1_persistent_volume_status ~sw client ~name ?pretty () =
+let read_core_v1_persistent_volume_status ~sw client ?(headers = Request.default_headers) ~name ?pretty () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let replace_core_v1_namespace ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespace ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2440,9 +2264,8 @@ let replace_core_v1_namespace ~sw client ~name ~body ?pretty ?dry_run ?field_man
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let replace_core_v1_namespace_finalize ~sw client ~name ~body ?dry_run ?field_manager ?field_validation ?pretty () =
+let replace_core_v1_namespace_finalize ~sw client ?(headers = Request.default_headers) ~name ~body ?dry_run ?field_manager ?field_validation ?pretty () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}/finalize" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
@@ -2453,9 +2276,8 @@ let replace_core_v1_namespace_finalize ~sw client ~name ~body ?dry_run ?field_ma
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let replace_core_v1_namespace_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespace_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2466,9 +2288,8 @@ let replace_core_v1_namespace_status ~sw client ~name ~body ?pretty ?dry_run ?fi
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_namespace.of_yojson) resp body
 
-let replace_core_v1_namespaced_config_map ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/configmaps/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2480,9 +2301,8 @@ let replace_core_v1_namespaced_config_map ~sw client ~name ~namespace ~body ?pre
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_config_map.of_yojson) resp body
 
-let replace_core_v1_namespaced_endpoints ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/endpoints/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2494,9 +2314,8 @@ let replace_core_v1_namespaced_endpoints ~sw client ~name ~namespace ~body ?pret
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_endpoints.of_yojson) resp body
 
-let replace_core_v1_namespaced_event ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/events/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2508,9 +2327,8 @@ let replace_core_v1_namespaced_event ~sw client ~name ~namespace ~body ?pretty ?
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_event.of_yojson) resp body
 
-let replace_core_v1_namespaced_limit_range ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/limitranges/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2522,9 +2340,8 @@ let replace_core_v1_namespaced_limit_range ~sw client ~name ~namespace ~body ?pr
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_limit_range.of_yojson) resp body
 
-let replace_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2536,9 +2353,8 @@ let replace_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let replace_core_v1_namespaced_persistent_volume_claim_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_persistent_volume_claim_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/persistentvolumeclaims/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2550,9 +2366,8 @@ let replace_core_v1_namespaced_persistent_volume_claim_status ~sw client ~name ~
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume_claim.of_yojson) resp body
 
-let replace_core_v1_namespaced_pod ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2564,9 +2379,8 @@ let replace_core_v1_namespaced_pod ~sw client ~name ~namespace ~body ?pretty ?dr
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let replace_core_v1_namespaced_pod_ephemeralcontainers ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_pod_ephemeralcontainers ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/ephemeralcontainers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2578,9 +2392,8 @@ let replace_core_v1_namespaced_pod_ephemeralcontainers ~sw client ~name ~namespa
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let replace_core_v1_namespaced_pod_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_pod_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/pods/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2592,9 +2405,8 @@ let replace_core_v1_namespaced_pod_status ~sw client ~name ~namespace ~body ?pre
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod.of_yojson) resp body
 
-let replace_core_v1_namespaced_pod_template ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/podtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2606,9 +2418,8 @@ let replace_core_v1_namespaced_pod_template ~sw client ~name ~namespace ~body ?p
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_pod_template.of_yojson) resp body
 
-let replace_core_v1_namespaced_replication_controller ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2620,9 +2431,8 @@ let replace_core_v1_namespaced_replication_controller ~sw client ~name ~namespac
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let replace_core_v1_namespaced_replication_controller_scale ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_replication_controller_scale ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}/scale" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2634,9 +2444,8 @@ let replace_core_v1_namespaced_replication_controller_scale ~sw client ~name ~na
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_autoscaling_v1_scale.of_yojson) resp body
 
-let replace_core_v1_namespaced_replication_controller_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_replication_controller_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/replicationcontrollers/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2648,9 +2457,8 @@ let replace_core_v1_namespaced_replication_controller_status ~sw client ~name ~n
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_replication_controller.of_yojson) resp body
 
-let replace_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2662,9 +2470,8 @@ let replace_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ~body 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let replace_core_v1_namespaced_resource_quota_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_resource_quota_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/resourcequotas/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2676,9 +2483,8 @@ let replace_core_v1_namespaced_resource_quota_status ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_resource_quota.of_yojson) resp body
 
-let replace_core_v1_namespaced_secret ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/secrets/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2690,9 +2496,8 @@ let replace_core_v1_namespaced_secret ~sw client ~name ~namespace ~body ?pretty 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_secret.of_yojson) resp body
 
-let replace_core_v1_namespaced_service ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2704,9 +2509,8 @@ let replace_core_v1_namespaced_service ~sw client ~name ~namespace ~body ?pretty
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let replace_core_v1_namespaced_service_account ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/serviceaccounts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2718,9 +2522,8 @@ let replace_core_v1_namespaced_service_account ~sw client ~name ~namespace ~body
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service_account.of_yojson) resp body
 
-let replace_core_v1_namespaced_service_status ~sw client ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_namespaced_service_status ~sw client ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/namespaces/{namespace}/services/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2732,9 +2535,8 @@ let replace_core_v1_namespaced_service_status ~sw client ~name ~namespace ~body 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_service.of_yojson) resp body
 
-let replace_core_v1_node ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_node ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/nodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2745,9 +2547,8 @@ let replace_core_v1_node ~sw client ~name ~body ?pretty ?dry_run ?field_manager 
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let replace_core_v1_node_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_node_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/nodes/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2758,9 +2559,8 @@ let replace_core_v1_node_status ~sw client ~name ~body ?pretty ?dry_run ?field_m
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_node.of_yojson) resp body
 
-let replace_core_v1_persistent_volume ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2771,9 +2571,8 @@ let replace_core_v1_persistent_volume ~sw client ~name ~body ?pretty ?dry_run ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let replace_core_v1_persistent_volume_status ~sw client ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
+let replace_core_v1_persistent_volume_status ~sw client ?(headers = Request.default_headers) ~name ~body ?pretty ?dry_run ?field_manager ?field_validation () =
     let uri = Request.build_uri "/api/v1/persistentvolumes/{name}/status" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
@@ -2784,9 +2583,8 @@ let replace_core_v1_persistent_volume_status ~sw client ~name ~body ?pretty ?dry
     let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_api_core_v1_persistent_volume.of_yojson) resp body
 
-let watch_core_v1_config_map_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_config_map_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/configmaps" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -2802,9 +2600,8 @@ let watch_core_v1_config_map_list_for_all_namespaces ~sw client ?allow_watch_boo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_endpoints_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_endpoints_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/endpoints" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -2820,9 +2617,8 @@ let watch_core_v1_endpoints_list_for_all_namespaces ~sw client ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_event_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_event_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/events" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -2838,9 +2634,8 @@ let watch_core_v1_event_list_for_all_namespaces ~sw client ?allow_watch_bookmark
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_limit_range_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_limit_range_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/limitranges" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -2856,9 +2651,8 @@ let watch_core_v1_limit_range_list_for_all_namespaces ~sw client ?allow_watch_bo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespace ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespace ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -2875,9 +2669,8 @@ let watch_core_v1_namespace ~sw client ~name ?allow_watch_bookmarks ?continue ?f
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespace_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespace_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -2893,9 +2686,8 @@ let watch_core_v1_namespace_list ~sw client ?allow_watch_bookmarks ?continue ?fi
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_config_map ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_config_map ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/configmaps/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2913,9 +2705,8 @@ let watch_core_v1_namespaced_config_map ~sw client ~name ~namespace ?allow_watch
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_config_map_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_config_map_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/configmaps" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -2932,9 +2723,8 @@ let watch_core_v1_namespaced_config_map_list ~sw client ~namespace ?allow_watch_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_endpoints ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_endpoints ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/endpoints/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2952,9 +2742,8 @@ let watch_core_v1_namespaced_endpoints ~sw client ~name ~namespace ?allow_watch_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_endpoints_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_endpoints_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/endpoints" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -2971,9 +2760,8 @@ let watch_core_v1_namespaced_endpoints_list ~sw client ~namespace ?allow_watch_b
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_event ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_event ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/events/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -2991,9 +2779,8 @@ let watch_core_v1_namespaced_event ~sw client ~name ~namespace ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_event_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_event_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/events" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3010,9 +2797,8 @@ let watch_core_v1_namespaced_event_list ~sw client ~namespace ?allow_watch_bookm
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_limit_range ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_limit_range ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/limitranges/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3030,9 +2816,8 @@ let watch_core_v1_namespaced_limit_range ~sw client ~name ~namespace ?allow_watc
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_limit_range_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_limit_range_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/limitranges" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3049,9 +2834,8 @@ let watch_core_v1_namespaced_limit_range_list ~sw client ~namespace ?allow_watch
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_persistent_volume_claim ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/persistentvolumeclaims/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3069,9 +2853,8 @@ let watch_core_v1_namespaced_persistent_volume_claim ~sw client ~name ~namespace
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_persistent_volume_claim_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_persistent_volume_claim_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/persistentvolumeclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3088,9 +2871,8 @@ let watch_core_v1_namespaced_persistent_volume_claim_list ~sw client ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_pod ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_pod ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/pods/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3108,9 +2890,8 @@ let watch_core_v1_namespaced_pod ~sw client ~name ~namespace ?allow_watch_bookma
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_pod_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_pod_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/pods" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3127,9 +2908,8 @@ let watch_core_v1_namespaced_pod_list ~sw client ~namespace ?allow_watch_bookmar
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_pod_template ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_pod_template ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/podtemplates/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3147,9 +2927,8 @@ let watch_core_v1_namespaced_pod_template ~sw client ~name ~namespace ?allow_wat
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_pod_template_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_pod_template_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/podtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3166,9 +2945,8 @@ let watch_core_v1_namespaced_pod_template_list ~sw client ~namespace ?allow_watc
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_replication_controller ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_replication_controller ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/replicationcontrollers/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3186,9 +2964,8 @@ let watch_core_v1_namespaced_replication_controller ~sw client ~name ~namespace 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_replication_controller_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_replication_controller_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/replicationcontrollers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3205,9 +2982,8 @@ let watch_core_v1_namespaced_replication_controller_list ~sw client ~namespace ?
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_resource_quota ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/resourcequotas/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3225,9 +3001,8 @@ let watch_core_v1_namespaced_resource_quota ~sw client ~name ~namespace ?allow_w
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_resource_quota_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_resource_quota_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/resourcequotas" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3244,9 +3019,8 @@ let watch_core_v1_namespaced_resource_quota_list ~sw client ~namespace ?allow_wa
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_secret ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_secret ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/secrets/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3264,9 +3038,8 @@ let watch_core_v1_namespaced_secret ~sw client ~name ~namespace ?allow_watch_boo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_secret_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_secret_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/secrets" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3283,9 +3056,8 @@ let watch_core_v1_namespaced_secret_list ~sw client ~namespace ?allow_watch_book
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_service ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_service ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/services/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3303,9 +3075,8 @@ let watch_core_v1_namespaced_service ~sw client ~name ~namespace ?allow_watch_bo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_service_account ~sw client ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_service_account ~sw client ?(headers = Request.default_headers) ~name ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/serviceaccounts/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
@@ -3323,9 +3094,8 @@ let watch_core_v1_namespaced_service_account ~sw client ~name ~namespace ?allow_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_service_account_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_service_account_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/serviceaccounts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3342,9 +3112,8 @@ let watch_core_v1_namespaced_service_account_list ~sw client ~namespace ?allow_w
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_namespaced_service_list ~sw client ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_namespaced_service_list ~sw client ?(headers = Request.default_headers) ~namespace ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/namespaces/{namespace}/services" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3361,9 +3130,8 @@ let watch_core_v1_namespaced_service_list ~sw client ~namespace ?allow_watch_boo
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_node ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_node ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/nodes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3380,9 +3148,8 @@ let watch_core_v1_node ~sw client ~name ?allow_watch_bookmarks ?continue ?field_
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_node_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_node_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/nodes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3398,9 +3165,8 @@ let watch_core_v1_node_list ~sw client ?allow_watch_bookmarks ?continue ?field_s
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_persistent_volume ~sw client ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_persistent_volume ~sw client ?(headers = Request.default_headers) ~name ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/persistentvolumes/{name}" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.replace_path_param uri "name" (fun x -> x) name in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
@@ -3417,9 +3183,8 @@ let watch_core_v1_persistent_volume ~sw client ~name ?allow_watch_bookmarks ?con
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_persistent_volume_claim_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_persistent_volume_claim_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/persistentvolumeclaims" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3435,9 +3200,8 @@ let watch_core_v1_persistent_volume_claim_list_for_all_namespaces ~sw client ?al
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_persistent_volume_list ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_persistent_volume_list ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/persistentvolumes" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3453,9 +3217,8 @@ let watch_core_v1_persistent_volume_list ~sw client ?allow_watch_bookmarks ?cont
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_pod_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_pod_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/pods" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3471,9 +3234,8 @@ let watch_core_v1_pod_list_for_all_namespaces ~sw client ?allow_watch_bookmarks 
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_pod_template_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_pod_template_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/podtemplates" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3489,9 +3251,8 @@ let watch_core_v1_pod_template_list_for_all_namespaces ~sw client ?allow_watch_b
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_replication_controller_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_replication_controller_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/replicationcontrollers" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3507,9 +3268,8 @@ let watch_core_v1_replication_controller_list_for_all_namespaces ~sw client ?all
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_resource_quota_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_resource_quota_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/resourcequotas" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3525,9 +3285,8 @@ let watch_core_v1_resource_quota_list_for_all_namespaces ~sw client ?allow_watch
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_secret_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_secret_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/secrets" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3543,9 +3302,8 @@ let watch_core_v1_secret_list_for_all_namespaces ~sw client ?allow_watch_bookmar
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_service_account_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_service_account_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/serviceaccounts" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
@@ -3561,9 +3319,8 @@ let watch_core_v1_service_account_list_for_all_namespaces ~sw client ?allow_watc
     let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers  in
     Request.read_json_body_as (JsonSupport.unwrap Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson) resp body
 
-let watch_core_v1_service_list_for_all_namespaces ~sw client ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+let watch_core_v1_service_list_for_all_namespaces ~sw client ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue ?field_selector ?label_selector ?limit ?pretty ?resource_version ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
     let uri = Request.build_uri "/api/v1/watch/services" in
-    let headers = Request.default_headers in
     let headers = Cohttp.Header.add headers "authorization" Request.api_key in
     let uri = Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool allow_watch_bookmarks in
     let uri = Request.maybe_add_query_param uri "continue" (fun x -> x) continue in
