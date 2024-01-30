@@ -1,6 +1,8 @@
 module Bare = struct
   open K8s_1_28_client
 
+  exception Not_available
+
   module type S = sig
     type t
     type t_list
@@ -59,9 +61,7 @@ module Bare = struct
       ?propagation_policy:string ->
       body:Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.t ->
       unit ->
-      ( Io_k8s_apimachinery_pkg_apis_meta_v1_status.t Json_response_scanner.t,
-        Cohttp.Response.t )
-      result
+      (unit, Cohttp.Response.t) result
 
     val watch_namespaced :
       sw:Eio.Switch.t ->
@@ -200,30 +200,45 @@ module Bare = struct
     val to_yojson : t -> Yojson.Safe.t
   end
 
-  module Job = struct
-    type t = Io_k8s_api_batch_v1_job.t
-    type t_list = Io_k8s_api_batch_v1_job_list.t
+  module Config_map = struct
+    type t = Io_k8s_api_core_v1_config_map.t
+    type t_list = Io_k8s_api_core_v1_config_map_list.t
 
     let metadata (v : t) = v.metadata
-    let read_namespaced = Batch_v1_api.read_batch_v1_namespaced_job
-    let create_namespaced = Batch_v1_api.create_batch_v1_namespaced_job
-    let patch_namespaced = Batch_v1_api.patch_batch_v1_namespaced_job
-    let delete_namespaced = Batch_v1_api.delete_batch_v1_namespaced_job
-    let watch_namespaced = Batch_v1_api.watch_batch_v1_namespaced_job_list
-    let replace_namespaced = Batch_v1_api.replace_batch_v1_namespaced_job
-    let list_namespaced = Batch_v1_api.list_batch_v1_namespaced_job
+    let read_namespaced = Core_v1_api.read_core_v1_namespaced_config_map
+    let create_namespaced = Core_v1_api.create_core_v1_namespaced_config_map
+    let patch_namespaced = Core_v1_api.patch_core_v1_namespaced_config_map
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Core_v1_api.delete_core_v1_namespaced_config_map ~sw client ?headers ~name
+        ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced = Core_v1_api.watch_core_v1_namespaced_config_map_list
+    let replace_namespaced = Core_v1_api.replace_core_v1_namespaced_config_map
+    let list_namespaced = Core_v1_api.list_core_v1_namespaced_config_map
 
     let watch_for_all_namespaces =
-      Batch_v1_api.watch_batch_v1_job_list_for_all_namespaces
+      Core_v1_api.watch_core_v1_config_map_list_for_all_namespaces
 
     let list_for_all_namespaces =
-      Batch_v1_api.list_batch_v1_job_for_all_namespaces
+      Core_v1_api.list_core_v1_config_map_for_all_namespaces
 
-    let read_status = Batch_v1_api.read_batch_v1_namespaced_job_status
-    let patch_status = Batch_v1_api.patch_batch_v1_namespaced_job
-    let replace_status = Batch_v1_api.replace_batch_v1_namespaced_job_status
-    let of_yojson = Io_k8s_api_batch_v1_job.of_yojson
-    let to_yojson = Io_k8s_api_batch_v1_job.to_yojson
+    let read_status ~sw:_ _ ?headers:_ ~name:_ ~namespace:_ ?pretty:_ _ =
+      raise Not_available
+
+    let patch_status ~sw:_ _ ?headers:_ ~name:_ ~namespace:_ ~body:_ ?pretty:_
+        ?dry_run:_ ?field_manager:_ ?field_validation:_ ?force:_ _ =
+      raise Not_available
+
+    let replace_status ~sw:_ _ ?headers:_ ~name:_ ~namespace:_ ~body:_ ?pretty:_
+        ?dry_run:_ ?field_manager:_ ?field_validation:_ _ =
+      raise Not_available
+
+    let of_yojson = Io_k8s_api_core_v1_config_map.of_yojson
+    let to_yojson = Io_k8s_api_core_v1_config_map.to_yojson
   end
 
   module Deployment = struct
@@ -234,7 +249,14 @@ module Bare = struct
     let read_namespaced = Apps_v1_api.read_apps_v1_namespaced_deployment
     let create_namespaced = Apps_v1_api.create_apps_v1_namespaced_deployment
     let patch_namespaced = Apps_v1_api.patch_apps_v1_namespaced_deployment
-    let delete_namespaced = Apps_v1_api.delete_apps_v1_namespaced_deployment
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Apps_v1_api.delete_apps_v1_namespaced_deployment ~sw client ?headers ~name
+        ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
     let watch_namespaced = Apps_v1_api.watch_apps_v1_namespaced_deployment_list
     let replace_namespaced = Apps_v1_api.replace_apps_v1_namespaced_deployment
     let list_namespaced = Apps_v1_api.list_apps_v1_namespaced_deployment
@@ -253,6 +275,72 @@ module Bare = struct
 
     let of_yojson = Io_k8s_api_apps_v1_deployment.of_yojson
     let to_yojson = Io_k8s_api_apps_v1_deployment.to_yojson
+  end
+
+  module Job = struct
+    type t = Io_k8s_api_batch_v1_job.t
+    type t_list = Io_k8s_api_batch_v1_job_list.t
+
+    let metadata (v : t) = v.metadata
+    let read_namespaced = Batch_v1_api.read_batch_v1_namespaced_job
+    let create_namespaced = Batch_v1_api.create_batch_v1_namespaced_job
+    let patch_namespaced = Batch_v1_api.patch_batch_v1_namespaced_job
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Batch_v1_api.delete_batch_v1_namespaced_job ~sw client ?headers ~name
+        ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced = Batch_v1_api.watch_batch_v1_namespaced_job_list
+    let replace_namespaced = Batch_v1_api.replace_batch_v1_namespaced_job
+    let list_namespaced = Batch_v1_api.list_batch_v1_namespaced_job
+
+    let watch_for_all_namespaces =
+      Batch_v1_api.watch_batch_v1_job_list_for_all_namespaces
+
+    let list_for_all_namespaces =
+      Batch_v1_api.list_batch_v1_job_for_all_namespaces
+
+    let read_status = Batch_v1_api.read_batch_v1_namespaced_job_status
+    let patch_status = Batch_v1_api.patch_batch_v1_namespaced_job
+    let replace_status = Batch_v1_api.replace_batch_v1_namespaced_job_status
+    let of_yojson = Io_k8s_api_batch_v1_job.of_yojson
+    let to_yojson = Io_k8s_api_batch_v1_job.to_yojson
+  end
+
+  module Pod = struct
+    type t = Io_k8s_api_core_v1_pod.t
+    type t_list = Io_k8s_api_core_v1_pod_list.t
+
+    let metadata (v : t) = v.metadata
+    let read_namespaced = Core_v1_api.read_core_v1_namespaced_pod
+    let create_namespaced = Core_v1_api.create_core_v1_namespaced_pod
+    let patch_namespaced = Core_v1_api.patch_core_v1_namespaced_pod
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Core_v1_api.delete_core_v1_namespaced_pod ~sw client ?headers ~name
+        ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced = Core_v1_api.watch_core_v1_namespaced_pod_list
+    let replace_namespaced = Core_v1_api.replace_core_v1_namespaced_pod
+    let list_namespaced = Core_v1_api.list_core_v1_namespaced_pod
+
+    let watch_for_all_namespaces =
+      Core_v1_api.watch_core_v1_pod_list_for_all_namespaces
+
+    let list_for_all_namespaces =
+      Core_v1_api.list_core_v1_pod_for_all_namespaces
+
+    let read_status = Core_v1_api.read_core_v1_namespaced_pod_status
+    let patch_status = Core_v1_api.patch_core_v1_namespaced_pod
+    let replace_status = Core_v1_api.replace_core_v1_namespaced_pod_status
+    let of_yojson = Io_k8s_api_core_v1_pod.of_yojson
+    let to_yojson = Io_k8s_api_core_v1_pod.to_yojson
   end
 end
 
@@ -316,16 +404,28 @@ module Make (B : Bare.S) = struct
     | Ok v -> update_status ~sw client (f (Some v))
 end
 
-module Job = struct
-  include Make (Bare.Job)
+module Config_map = struct
+  include Make (Bare.Config_map)
 
-  let make = Io_k8s_api_batch_v1_job.make
+  let make = Io_k8s_api_core_v1_config_map.make
 end
 
 module Deployment = struct
   include Make (Bare.Deployment)
 
   let make = Io_k8s_api_apps_v1_deployment.make
+end
+
+module Job = struct
+  include Make (Bare.Job)
+
+  let make = Io_k8s_api_batch_v1_job.make
+end
+
+module Pod = struct
+  include Make (Bare.Pod)
+
+  let make = Io_k8s_api_core_v1_pod.make
 end
 
 (* Not implemented *)
@@ -342,7 +442,6 @@ module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
 module Key_to_path = Io_k8s_api_core_v1_key_to_path
 module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
 module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
-module Config_map = Io_k8s_api_core_v1_config_map
 module Job_spec = Io_k8s_api_batch_v1_job_spec
 module Job_template_spec = Io_k8s_api_batch_v1_job_template_spec
 module Env_from_source = Io_k8s_api_core_v1_env_from_source

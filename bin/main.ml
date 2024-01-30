@@ -129,8 +129,7 @@ let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
 let get_running_pod ~sw client =
   let name = Sys.getenv "POD_NAME" in
   let namespace = Sys.getenv "POD_NAMESPACE" in
-  K.Core_v1_api.read_core_v1_namespaced_pod ~sw client ~name ~namespace ()
-  |> Result.get_ok |> K.Json_response_scanner.scan |> Result.get_ok
+  K.Pod.get ~sw client ~name ~namespace () |> Result.get_ok
 
 let get_check_env_job_name ~sw:_ _client
     (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
@@ -175,10 +174,7 @@ let create_check_env_job_if_not_exists ~sw client
            ())
       ()
   in
-
-  K.Batch_v1_api.create_batch_v1_namespaced_job ~sw client ~namespace ~body ()
-  |> ignore;
-
+  K.Job.create ~sw client body |> ignore;
   ()
 
 let create_or_update_gateway ~sw client
@@ -218,8 +214,8 @@ let create_or_update_gateway ~sw client
       ()
   in
   let _ =
-    K.Core_v1_api.create_core_v1_namespaced_config_map ~sw client ~namespace
-      ~body ()
+    K.Config_map.create_or_update ~sw client ~name:nginx_conf_cm_name ~namespace
+    @@ fun _ -> body
   in
 
   let body =
@@ -305,8 +301,7 @@ let create_or_update_gateway ~sw client
       ()
   in
   let _ =
-    K.Apps_v1_api.create_apps_v1_namespaced_deployment ~sw client ~namespace
-      ~body ()
+    K.Deployment.create_or_update ~sw client ~name ~namespace @@ fun _ -> body
   in
   ()
 
