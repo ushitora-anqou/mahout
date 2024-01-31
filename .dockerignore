@@ -9,3 +9,4 @@ Makefile
 README.md
 _build/
 config
+e2e

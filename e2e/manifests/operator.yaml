@@ -1,0 +1,32 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mastodon-operator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mastodon-operator
+  template:
+    metadata:
+      labels:
+        app: mastodon-operator
+    spec:
+      containers:
+        - name: ubuntu
+          image: mahout:dev
+          env:
+            - name: OCAMLRUNPARAM
+              value: b
+            - name: COHTTP_DEBUG
+              value: "1"
+            - name: POD_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.name
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+      serviceAccountName: mahout-controller-sa
