@@ -45,4 +45,4 @@ create-cluster: setup build-image
 
 .PHONY: test
 test:
-	KUBECONFIG=$(HOME)/.kube/config dune exec ./main.exe
+	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config dune exec ./e2e.exe

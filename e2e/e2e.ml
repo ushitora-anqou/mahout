@@ -31,12 +31,13 @@ let run_command command =
 
 let wait_deploy_available name =
   try
-    run_command ({|kubectl wait --for='condition=Available' deploy |} ^ name)
+    run_command
+      ({|kubectl wait --for='condition=Available' --timeout=5s deploy |} ^ name)
     |> ignore
   with Process_status_error (Unix.WEXITED 1) ->
     failwith ("condition Available not met for deployments/" ^ name)
 
-let test_basics () =
+let () =
   eventually (fun () ->
       wait_deploy_available "mastodon-operator";
       wait_deploy_available "mastodon0-gateway-nginx";
@@ -45,7 +46,3 @@ let test_basics () =
       wait_deploy_available "mastodon0-web";
       ());
   ()
-
-let () =
-  let open Alcotest in
-  run "e2e" [ ("cases", [ test_case "basics" `Quick test_basics ]) ]
