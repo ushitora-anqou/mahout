@@ -50,6 +50,11 @@ let create_check_env_job_if_not_exists ~sw client
                          [
                            make ~name:"check-env" ~image ~env_from
                              ~args:[ "check-env"; name; namespace ]
+                             ~env:
+                               [
+                                 K.Env_var.make ~name:"OCAMLRUNPARAM" ~value:"b"
+                                   ();
+                               ]
                              ();
                          ]
                      ())

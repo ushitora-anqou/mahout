@@ -514,6 +514,7 @@ module Container_port = Io_k8s_api_core_v1_container_port
 module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
 module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
 module Env_from_source = Io_k8s_api_core_v1_env_from_source
+module Env_var = Io_k8s_api_core_v1_env_var
 module Job_spec = Io_k8s_api_batch_v1_job_spec
 module Job_template_spec = Io_k8s_api_batch_v1_job_template_spec
 module Key_to_path = Io_k8s_api_core_v1_key_to_path

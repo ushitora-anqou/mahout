@@ -42,5 +42,7 @@ create-cluster: setup build-image
 	$(KUBECTL) apply -f $(WD)/manifests/operator.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/mastodon.yaml
-	sleep 10
-	$(KUBECTL) logs deploy/mastodon-operator -f
+
+.PHONY: test
+test:
+	KUBECONFIG=$(HOME)/.kube/config dune exec ./main.exe
