@@ -6,7 +6,7 @@ map $http_upgrade $connection_upgrade {
 }
 
 upstream backend {
-  server web.{{ namespace }}.svc.cluster.local:3000 fail_timeout=0;
+  server {{ web_svc_name }}.{{ namespace }}.svc.cluster.local:3000 fail_timeout=0;
 }
 
 upstream streaming {
@@ -14,7 +14,7 @@ upstream streaming {
   # to ensure load is distributed evenly.
   least_conn;
 
-  server streaming.{{ namespace }}.svc.cluster.local:4000 fail_timeout=0;
+  server {{ streaming_svc_name }}.{{ namespace }}.svc.cluster.local:4000 fail_timeout=0;
   # Uncomment these lines for load-balancing multiple instances of streaming for scaling,
   # this assumes your running the streaming server on ports 4000, 4001, and 4002:
   # server 127.0.0.1:4001 fail_timeout=0;

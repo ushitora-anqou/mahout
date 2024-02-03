@@ -37,6 +37,11 @@ let wait_deploy_available name =
   with Process_status_error (Unix.WEXITED 1) ->
     failwith ("condition Available not met for deployments/" ^ name)
 
+let http_get uri =
+  run_command
+    (Printf.sprintf {|kubectl exec -it deploy/toolbox -- curl --silent '%s'|}
+       uri)
+
 let () =
   eventually (fun () ->
       wait_deploy_available "mastodon-operator";
@@ -44,5 +49,6 @@ let () =
       wait_deploy_available "mastodon0-sidekiq";
       wait_deploy_available "mastodon0-streaming";
       wait_deploy_available "mastodon0-web";
+      http_get "http://mastodon0-gateway-svc.default.svc/health" |> ignore;
       ());
   ()

@@ -1,0 +1,90 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: postgres
+  labels:
+    app: postgres
+spec:
+  ports:
+    - port: 5432
+      name: postgres
+  clusterIP: None
+  selector:
+    app: postgres
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  selector:
+    matchLabels:
+      app: postgres
+  serviceName: "postgres"
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      terminationGracePeriodSeconds: 10
+      containers:
+        - name: postgres
+          image: postgres
+          ports:
+            - containerPort: 5432
+              name: postgres
+          env:
+            - name: POSTGRES_HOST_AUTH_METHOD
+              value: trust
+          livenessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+          readinessProbe:
+            exec:
+              command:
+                - pg_isready
+                - -U
+                - postgres
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: create-postgres-database
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: postgres
+          image: postgres
+          command:
+            - bash
+            - -c
+            - |
+               echo "CREATE USER mastodon CREATEDB; ALTER ROLE mastodon WITH PASSWORD 'password';" | psql -U postgres -h postgres.default.svc
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: mastodon-db-migration
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+        - name: mastodon-generate-secrets
+          image: ghcr.io/mastodon/mastodon:v4.2.0
+          command:
+            - bash
+            - -c
+            - |
+              bundle exec rake db:create
+              bundle exec rake db:migrate
+          envFrom:
+            - secretRef:
+                name: secret-env

@@ -42,6 +42,10 @@ create-cluster: setup build-image
 	$(KUBECTL) apply -f $(WD)/manifests/operator.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/mastodon.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/postgres.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/redis.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/minio.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
 
 .PHONY: test
 test:

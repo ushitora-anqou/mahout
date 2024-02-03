@@ -1,3 +1,7 @@
+let get_svc_name mastodon_name = function
+  | `Web -> mastodon_name ^ "-web"
+  | `Streaming -> mastodon_name ^ "-streaming"
+
 let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let name = Option.get (Option.get mastodon.metadata).name in
   K.Owner_reference.
@@ -128,7 +132,7 @@ let create_or_update_streaming ~sw client
   let env_from = (Option.get mastodon.spec).env_from in
 
   let deploy_name = name ^ "-streaming" in
-  let svc_name = name ^ "-streaming" in
+  let svc_name = get_svc_name name `Streaming in
   let selector =
     `Assoc
       [
@@ -216,7 +220,7 @@ let create_or_update_web ~sw client
   let env_from = (Option.get mastodon.spec).env_from in
 
   let deploy_name = name ^ "-web" in
-  let svc_name = name ^ "-web" in
+  let svc_name = get_svc_name name `Web in
   let selector =
     `Assoc
       [
@@ -345,6 +349,9 @@ let create_or_update_gateway ~sw client
                 |> Jingoo.Jg_template.from_string
                      ~models:
                        [
+                         ("web_svc_name", Tstr (get_svc_name name `Web));
+                         ( "streaming_svc_name",
+                           Tstr (get_svc_name name `Streaming) );
                          ("server_name", Tstr server_name);
                          ("namespace", Tstr namespace);
                        ]) );
