@@ -10,11 +10,11 @@ IMAGE=mahout:dev
 $(BIN):
 	mkdir -p $(BIN)
 
-$(KIND):
+$(KIND): $(BIN)
 	wget -O $(KIND) https://github.com/kubernetes-sigs/kind/releases/download/v$(KIND_VERSION)/kind-linux-amd64
 	chmod a+x $(KIND)
 
-$(KUBECTL):
+$(KUBECTL): $(BIN)
 	wget -O $(KUBECTL) https://storage.googleapis.com/kubernetes-release/release/v$(KUBERNETES_VERSION)/bin/linux/amd64/kubectl
 	chmod a+x $(KUBECTL)
 
