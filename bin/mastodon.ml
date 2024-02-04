@@ -5,6 +5,7 @@ module Bare = struct
   type t_list = |
 
   let metadata (m : t) = m.metadata
+  let to_list _ = raise Not_implemented
 
   let watch_namespaced ~sw client ?headers:_ ~namespace ?allow_watch_bookmarks:_
       ?continue:_ ?field_selector:_ ?label_selector:_ ?limit:_ ?pretty:_

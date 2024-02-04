@@ -10,6 +10,8 @@ module Bare = struct
     val metadata :
       t -> Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option
 
+    val to_list : t_list -> t list
+
     val read_namespaced :
       sw:Eio.Switch.t ->
       Cohttp_eio.Client.t ->
@@ -205,6 +207,7 @@ module Bare = struct
     type t_list = Io_k8s_api_core_v1_config_map_list.t
 
     let metadata (v : t) = v.metadata
+    let to_list (v : t_list) = v.items
     let read_namespaced = Core_v1_api.read_core_v1_namespaced_config_map
     let create_namespaced = Core_v1_api.create_core_v1_namespaced_config_map
     let patch_namespaced = Core_v1_api.patch_core_v1_namespaced_config_map
@@ -246,6 +249,7 @@ module Bare = struct
     type t_list = Io_k8s_api_apps_v1_deployment_list.t
 
     let metadata (v : t) = v.metadata
+    let to_list (v : t_list) = v.items
     let read_namespaced = Apps_v1_api.read_apps_v1_namespaced_deployment
     let create_namespaced = Apps_v1_api.create_apps_v1_namespaced_deployment
     let patch_namespaced = Apps_v1_api.patch_apps_v1_namespaced_deployment
@@ -282,6 +286,7 @@ module Bare = struct
     type t_list = Io_k8s_api_batch_v1_job_list.t
 
     let metadata (v : t) = v.metadata
+    let to_list (v : t_list) = v.items
     let read_namespaced = Batch_v1_api.read_batch_v1_namespaced_job
     let create_namespaced = Batch_v1_api.create_batch_v1_namespaced_job
     let patch_namespaced = Batch_v1_api.patch_batch_v1_namespaced_job
@@ -315,6 +320,7 @@ module Bare = struct
     type t_list = Io_k8s_api_core_v1_pod_list.t
 
     let metadata (v : t) = v.metadata
+    let to_list (v : t_list) = v.items
     let read_namespaced = Core_v1_api.read_core_v1_namespaced_pod
     let create_namespaced = Core_v1_api.create_core_v1_namespaced_pod
     let patch_namespaced = Core_v1_api.patch_core_v1_namespaced_pod
@@ -348,6 +354,7 @@ module Bare = struct
     type t_list = Io_k8s_api_core_v1_service_list.t
 
     let metadata (v : t) = v.metadata
+    let to_list (v : t_list) = v.items
     let read_namespaced = Core_v1_api.read_core_v1_namespaced_service
     let create_namespaced = Core_v1_api.create_core_v1_namespaced_service
     let patch_namespaced = Core_v1_api.patch_core_v1_namespaced_service
@@ -475,6 +482,10 @@ module Make (B : Bare.S) = struct
     | Error `Not_found -> create ~sw client (f None)
     | Error _ as e -> e
     | Ok v -> update_status ~sw client (f (Some v))
+
+  let list ~sw client ~namespace ?label_selector () =
+    B.list_namespaced ~sw client ~namespace ?label_selector ()
+    |> expect_one |> Result.map B.to_list
 end
 
 module Config_map = struct

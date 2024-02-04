@@ -38,7 +38,12 @@ let controller () =
   *)
   Mastodon.watch ~sw client ~namespace:"default" ()
   |> Result.get_ok
-  |> K.Json_response_scanner.iter (Mastodon_reconciler.reconcile ~sw client)
+  |> K.Json_response_scanner.iter (fun ev ->
+         match Mastodon_reconciler.reconcile ~sw client ev with
+         | Ok () -> ()
+         | Error e ->
+             Logs.err (fun m ->
+                 m "mastodon reconciler failed: %s" (K.show_error e)))
   (*
        (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
          Logs.info (fun m ->

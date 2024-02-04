@@ -1,6 +1,54 @@
+module Label = struct
+  let prefix = "mahout.anqou.net/"
+  let mastodon_key = prefix ^ "mastodon"
+  let deploy_image_key = prefix ^ "deploy-image"
+
+  let encode_deploy_image image =
+    Base64.encode_string ~alphabet:Base64.uri_safe_alphabet ~pad:false image
+
+  let deploy_pod_labels ~name ~image =
+    `Assoc
+      [
+        (mastodon_key, `String name);
+        (deploy_image_key, `String (encode_deploy_image image));
+      ]
+end
+
+module Label_selector = struct
+  type single =
+    | Eq of string * string
+    | NotEq of string * string
+    | Exist of string
+    | NotExist of string
+    | In of string * string list
+    | NotIn of string * string list
+
+  let string_of_single = function
+    | Eq (k, v) -> k ^ "=" ^ v
+    | NotEq (k, v) -> k ^ "!=" ^ v
+    | Exist k -> k
+    | NotExist k -> "!" ^ k
+    | In (k, vs) -> k ^ " in (" ^ (vs |> String.concat ", ") ^ ")"
+    | NotIn (k, vs) -> k ^ " notin (" ^ (vs |> String.concat ", ") ^ ")"
+
+  type t = single list
+
+  let to_string (l : t) = l |> List.map string_of_single |> String.concat ", "
+end
+
+let get_deploy_name mastodon_name = function
+  | `Web -> mastodon_name ^ "-web"
+  | `Sidekiq -> mastodon_name ^ "-sidekiq"
+  | `Streaming -> mastodon_name ^ "-streaming"
+  | `Nginx -> mastodon_name ^ "-gateway-nginx"
+
 let get_svc_name mastodon_name = function
   | `Web -> mastodon_name ^ "-web"
   | `Streaming -> mastodon_name ^ "-streaming"
+  | `Nginx -> mastodon_name ^ "-gateway-svc"
+
+let get_job_name mastodon_name = function
+  | `Migration -> mastodon_name ^ "-migration"
 
 let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let name = Option.get (Option.get mastodon.metadata).name in
@@ -66,26 +114,27 @@ let create_check_env_job_if_not_exists ~sw client
            ())
       ()
   in
-  K.Job.create ~sw client body |> ignore;
-  ()
+  K.Job.create ~sw client body
 
 let create_or_update_sidekiq ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
   let ( let* ) = Result.bind in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let mastodon_image = (Option.get mastodon.spec).image in
   let env_from = (Option.get mastodon.spec).env_from in
 
-  let deploy_name = name ^ "-sidekiq" in
+  let deploy_name = get_deploy_name name `Sidekiq in
   let selector =
     `Assoc
-      [
-        ("app.kubernetes.io/name", `String "sidekiq");
-        ("app.kubernetes.io/component", `String "sidekiq");
-        ("app.kubernetes.io/part-of", `String "mastodon");
-      ]
+      Label.
+        [
+          ("app.kubernetes.io/name", `String "sidekiq");
+          ("app.kubernetes.io/component", `String "sidekiq");
+          ("app.kubernetes.io/part-of", `String "mastodon");
+          (mastodon_key, `String name);
+          (deploy_image_key, `String (encode_deploy_image image));
+        ]
   in
   let owner_references = get_owner_references mastodon in
 
@@ -106,7 +155,7 @@ let create_or_update_sidekiq ~sw client
                        ~containers:
                          K.Container.
                            [
-                             make ~name:"sidekiq" ~image:mastodon_image
+                             make ~name:"sidekiq" ~image
                                ~command:[ "bash"; "-c"; "bundle exec sidekiq" ]
                                ~env_from ();
                            ]
@@ -123,23 +172,25 @@ let create_or_update_sidekiq ~sw client
   Ok ()
 
 let create_or_update_streaming ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
   let ( let* ) = Result.bind in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let mastodon_image = (Option.get mastodon.spec).image in
   let env_from = (Option.get mastodon.spec).env_from in
 
-  let deploy_name = name ^ "-streaming" in
+  let deploy_name = get_deploy_name name `Streaming in
   let svc_name = get_svc_name name `Streaming in
   let selector =
     `Assoc
-      [
-        ("app.kubernetes.io/name", `String "node");
-        ("app.kubernetes.io/component", `String "streaming");
-        ("app.kubernetes.io/part-of", `String "mastodon");
-      ]
+      Label.
+        [
+          ("app.kubernetes.io/name", `String "node");
+          ("app.kubernetes.io/component", `String "streaming");
+          ("app.kubernetes.io/part-of", `String "mastodon");
+          (mastodon_key, `String name);
+          (deploy_image_key, `String (encode_deploy_image image));
+        ]
   in
   let owner_references = get_owner_references mastodon in
 
@@ -160,7 +211,7 @@ let create_or_update_streaming ~sw client
                        ~containers:
                          K.Container.
                            [
-                             make ~name:"streaming" ~image:mastodon_image
+                             make ~name:"streaming" ~image
                                ~command:[ "bash"; "-c"; "node ./streaming" ]
                                ~env_from
                                ~ports:
@@ -211,23 +262,25 @@ let create_or_update_streaming ~sw client
   Ok ()
 
 let create_or_update_web ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
   let ( let* ) = Result.bind in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let mastodon_image = (Option.get mastodon.spec).image in
   let env_from = (Option.get mastodon.spec).env_from in
 
-  let deploy_name = name ^ "-web" in
+  let deploy_name = get_deploy_name name `Web in
   let svc_name = get_svc_name name `Web in
   let selector =
     `Assoc
-      [
-        ("app.kubernetes.io/name", `String "puma");
-        ("app.kubernetes.io/component", `String "web");
-        ("app.kubernetes.io/part-of", `String "mastodon");
-      ]
+      Label.
+        [
+          ("app.kubernetes.io/name", `String "puma");
+          ("app.kubernetes.io/component", `String "web");
+          ("app.kubernetes.io/part-of", `String "mastodon");
+          (mastodon_key, `String name);
+          (deploy_image_key, `String (encode_deploy_image image));
+        ]
   in
   let owner_references = get_owner_references mastodon in
 
@@ -248,7 +301,7 @@ let create_or_update_web ~sw client
                        ~containers:
                          K.Container.
                            [
-                             make ~name:"web" ~image:mastodon_image
+                             make ~name:"web" ~image
                                ~command:
                                  [
                                    "bash";
@@ -309,26 +362,28 @@ let create_or_update_web ~sw client
   Ok ()
 
 let create_or_update_gateway ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
   let ( let* ) = Result.bind in
 
   let nginx_image = "nginx:1.25.3" in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let mastodon_image = (Option.get mastodon.spec).image in
 
   let nginx_conf_cm_name = name ^ "-gateway-nginx-conf" in
   let nginx_conf_cm_key = "mastodon-nginx.conf" in
-  let nginx_deploy_name = name ^ "-gateway-nginx" in
-  let svc_name = name ^ "-gateway-svc" in
+  let nginx_deploy_name = get_deploy_name name `Nginx in
+  let svc_name = get_svc_name name `Nginx in
   let selector =
     `Assoc
-      [
-        ("app.kubernetes.io/name", `String "nginx");
-        ("app.kubernetes.io/component", `String "gateway");
-        ("app.kubernetes.io/part-of", `String "mastodon");
-      ]
+      Label.
+        [
+          ("app.kubernetes.io/name", `String "nginx");
+          ("app.kubernetes.io/component", `String "gateway");
+          ("app.kubernetes.io/part-of", `String "mastodon");
+          (mastodon_key, `String name);
+          (deploy_image_key, `String (encode_deploy_image image));
+        ]
   in
 
   let server_name = Option.get (Option.get mastodon.status).server_name in
@@ -381,7 +436,7 @@ let create_or_update_gateway ~sw client
                        ~init_containers:
                          K.Container.
                            [
-                             make ~name:"copy-assets" ~image:mastodon_image
+                             make ~name:"copy-assets" ~image
                                ~command:
                                  [
                                    "bash";
@@ -459,34 +514,227 @@ let create_or_update_gateway ~sw client
 
   Ok ()
 
+let update_mastodon_status ~sw client ~name ~namespace f =
+  let ( let* ) = Result.bind in
+  let* mastodon = Mastodon.get_status ~sw client ~name ~namespace () in
+  let status =
+    match mastodon.status with
+    | None -> Net_anqou_mahout.V1alpha1.Mastodon.Status.make ()
+    | Some status -> status
+  in
+  let status = f status in
+  Mastodon.update_status ~sw client { mastodon with status = Some status }
+
+let create_or_update_deployments ~sw client ~mastodon ~image =
+  let ( let* ) = Result.bind in
+  let* _ = create_or_update_gateway ~sw client ~mastodon ~image in
+  let* _ = create_or_update_web ~sw client ~mastodon ~image in
+  let* _ = create_or_update_sidekiq ~sw client ~mastodon ~image in
+  let* _ = create_or_update_streaming ~sw client ~mastodon ~image in
+  Ok ()
+
+let image_of_deployment (deploy : K.Deployment.t) =
+  let pod_spec = Option.get (Option.get deploy.spec).template.spec in
+  let containers =
+    match pod_spec.init_containers with
+    | [] -> pod_spec.containers
+    | _ -> pod_spec.init_containers
+  in
+  Option.get (List.hd containers).image
+
+let fetch_deployments_image ~sw client ~name ~namespace =
+  let fetch_deploy_image kind =
+    K.Deployment.get ~sw client ~namespace ~name:(get_deploy_name name kind) ()
+    |> Result.map image_of_deployment
+    |> Result.map_error (fun (e : K.error) -> `K e)
+  in
+
+  let ( let* ) = Result.bind in
+  let* image0 = fetch_deploy_image `Nginx in
+  let* image1 = fetch_deploy_image `Web in
+  let* image2 = fetch_deploy_image `Sidekiq in
+  let* image3 = fetch_deploy_image `Streaming in
+
+  if image0 = image1 && image1 = image2 && image2 = image3 then Ok image0
+  else Error `NotCommon
+
+let get_deployments_pod_statuses ~sw client ~name ~namespace ~image =
+  let ( let* ) = Result.bind in
+
+  let image_label_value = Label.encode_deploy_image image in
+
+  let* all_pods =
+    K.Pod.list ~sw client ~namespace
+      ~label_selector:
+        Label_selector.(
+          to_string
+            [ Eq (Label.mastodon_key, name); Exist Label.deploy_image_key ])
+      ()
+  in
+
+  let* live_pods =
+    K.Pod.list ~sw client ~namespace
+      ~label_selector:
+        Label_selector.(
+          to_string
+            [
+              Eq (Label.mastodon_key, name);
+              Eq (Label.deploy_image_key, image_label_value);
+            ])
+      ()
+  in
+  let live_pods =
+    live_pods
+    |> List.filter (fun (p : K.Pod.t) ->
+           (Option.get p.status).phase = Some "Running")
+  in
+
+  Ok
+    (if List.length all_pods = List.length live_pods then `Ready image
+     else `NotReady)
+
+let get_deployments_status ~sw client ~name ~namespace =
+  match fetch_deployments_image ~sw client ~name ~namespace with
+  | Error (`K `Not_found) -> Ok `NotFound
+  | Error (`K e) -> Error e
+  | Error `NotCommon -> Ok `NotReady
+  | Ok image -> get_deployments_pod_statuses ~sw client ~name ~namespace ~image
+
+let get_migration_job_status ~sw client ~name ~namespace =
+  match
+    K.Job.get ~sw client ~name:(get_job_name name `Migration) ~namespace ()
+  with
+  | Error `Not_found -> Ok `NotFound
+  | Error e -> Error e
+  | Ok j when (Option.get j.status).succeeded = Some 1l -> Ok `Completed
+  | Ok _ -> Ok `NotCompleted
+
+let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image =
+  let name = Option.get (Option.get mastodon.metadata).name in
+  let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let env_from = (Option.get mastodon.spec).env_from in
+  let owner_references = get_owner_references mastodon in
+  let job_name = get_job_name name `Migration in
+
+  let body =
+    K.Job.make
+      ~metadata:
+        (K.Object_meta.make ~name:job_name ~namespace ~owner_references ())
+      ~spec:
+        (K.Job_spec.make
+           ~template:
+             (K.Pod_template_spec.make
+                ~spec:
+                  (K.Pod_spec.make ~restart_policy:"OnFailure"
+                     ~containers:
+                       K.Container.
+                         [
+                           make ~name:"migration" ~image ~env_from
+                             ~command:
+                               [
+                                 "bash";
+                                 "-c";
+                                 "bundle exec rake db:create;\n\
+                                  bundle exec rake db:migrate";
+                               ]
+                             ();
+                         ]
+                     ())
+                ())
+           ())
+      ()
+  in
+  K.Job.create ~sw client body
+
 let reconcile ~sw client (ev : Mastodon.watch_event) =
+  let ( let* ) = Result.bind in
   Logs.info (fun m -> m "reconcile: %s" (Mastodon.string_of_watch_event ev));
 
   let mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t =
     match ev with `Added v | `Modified v | `Deleted v -> v
   in
+  let metadata = Option.get mastodon.metadata in
+  let name = Option.get metadata.name in
+  let namespace = Option.get metadata.namespace in
+  let spec = Option.get mastodon.spec in
+  let spec_image = spec.image in
+  let server_name =
+    match mastodon.status with
+    | None -> None
+    | Some status -> status.server_name
+  in
+  let migrating_image =
+    match mastodon.status with
+    | None -> None
+    | Some status -> status.migrating_image
+  in
+  let* deployments_status =
+    get_deployments_status ~sw client ~name ~namespace
+  in
+  let live_image =
+    match deployments_status with
+    | `Ready live_image -> Some live_image
+    | _ -> None
+  in
+  let* migraion_job_status =
+    get_migration_job_status ~sw client ~name ~namespace
+  in
 
-  match Option.bind mastodon.status (fun x -> Some x.server_name) with
-  | None -> create_check_env_job_if_not_exists ~sw client ~mastodon
-  | Some _ ->
-      (match create_or_update_gateway ~sw client ~mastodon with
-      | Ok () -> ()
-      | Error e ->
-          Logs.err (fun m ->
-              m "create_or_update_gateway failed: %s" (K.show_error e)));
-      (match create_or_update_web ~sw client ~mastodon with
-      | Ok () -> ()
-      | Error e ->
-          Logs.err (fun m ->
-              m "create_or_update_web failed: %s" (K.show_error e)));
-      (match create_or_update_sidekiq ~sw client ~mastodon with
-      | Ok () -> ()
-      | Error e ->
-          Logs.err (fun m ->
-              m "create_or_update_sidekiq failed: %s" (K.show_error e)));
-      (match create_or_update_streaming ~sw client ~mastodon with
-      | Ok () -> ()
-      | Error e ->
-          Logs.err (fun m ->
-              m "create_or_update_streaming failed: %s" (K.show_error e)));
-      ()
+  let current_state =
+    if server_name = None then `NoServerName
+    else if deployments_status = `NotFound then `NoDeployments
+    else if
+      Option.is_none migrating_image
+      && migraion_job_status = `NotFound
+      && Option.is_some live_image
+      && Option.get live_image <> spec_image
+    then `StartPreMigration
+    else if
+      Option.is_some migrating_image
+      && migraion_job_status = `NotFound
+      && live_image <> migrating_image
+    then `StartPreMigration
+    else if
+      Option.is_some migrating_image
+      && migraion_job_status = `Completed
+      && live_image <> migrating_image
+    then `RolloutDeployments
+    else if
+      Option.is_some migrating_image
+      && migraion_job_status = `NotFound
+      && deployments_status = `Ready (Option.get migrating_image)
+    then `StartPostMigration
+    else if
+      Option.is_some migrating_image
+      && migraion_job_status = `Completed
+      && deployments_status = `Ready (Option.get migrating_image)
+    then `PostMigraionCompleted
+    else if Option.is_some migrating_image then `Migrating
+    else `Normal
+  in
+
+  match current_state with
+  | `NoServerName ->
+      Logs.info (fun m -> m "current state: no server name");
+      let* _ = create_check_env_job_if_not_exists ~sw client ~mastodon in
+      Ok ()
+  | `NoDeployments ->
+      Logs.info (fun m -> m "current state: no deployments");
+      let* _ =
+        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+            { status with migrating_image = Some spec_image })
+      in
+      let* _ = create_migration_job ~sw client ~mastodon ~image:spec_image in
+      let* _ =
+        create_or_update_deployments ~sw client ~mastodon ~image:spec_image
+      in
+      Ok ()
+  | `StartPreMigration | `RolloutDeployments | `StartPostMigration ->
+      assert false
+  | `PostMigraionCompleted -> assert false
+  | `Migrating ->
+      Logs.info (fun m -> m "current state: migrating");
+      Ok ()
+  | `Normal ->
+      Logs.info (fun m -> m "current state: normal");
+      create_or_update_deployments ~sw client ~mastodon ~image:spec_image

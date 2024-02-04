@@ -2,6 +2,7 @@
  (public_name mahout)
  (name main)
  (libraries
+  base64
   cmdliner
   cohttp-eio
   eio.unix

@@ -67,24 +67,24 @@ spec:
             - -c
             - |
                echo "CREATE USER mastodon CREATEDB; ALTER ROLE mastodon WITH PASSWORD 'password';" | psql -U postgres -h postgres.default.svc
----
-apiVersion: batch/v1
-kind: Job
-metadata:
-  name: mastodon-db-migration
-spec:
-  template:
-    spec:
-      restartPolicy: Never
-      containers:
-        - name: mastodon-generate-secrets
-          image: ghcr.io/mastodon/mastodon:v4.2.0
-          command:
-            - bash
-            - -c
-            - |
-              bundle exec rake db:create
-              bundle exec rake db:migrate
-          envFrom:
-            - secretRef:
-                name: secret-env
+#---
+#apiVersion: batch/v1
+#kind: Job
+#metadata:
+#  name: mastodon-db-migration
+#spec:
+#  template:
+#    spec:
+#      restartPolicy: Never
+#      containers:
+#        - name: mastodon-generate-secrets
+#          image: ghcr.io/mastodon/mastodon:v4.2.0
+#          command:
+#            - bash
+#            - -c
+#            - |
+#              bundle exec rake db:create
+#              bundle exec rake db:migrate
+#          envFrom:
+#            - secretRef:
+#                name: secret-env

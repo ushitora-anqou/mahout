@@ -34,8 +34,16 @@ module V1alpha1 = struct
     module Status = struct
       type t = {
         message : string option; [@yojson.default None] [@yojson.key "message"]
+        conditions : Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list;
+            [@yojson.key "conditions"]
         server_name : string option;
             [@yojson.default None] [@yojson.key "serverName"]
+        running_image : string option;
+            [@yojson.default None] [@yojson.key "runningImage"]
+        migrating : bool option;
+            [@yojson.default None] [@yojson.key "migrating"]
+        migrating_image : string option;
+            [@yojson.default None] [@yojson.key "migratingImage"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
