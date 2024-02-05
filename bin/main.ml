@@ -23,53 +23,38 @@ let controller () =
       (Eio.Stdenv.net env)
   in
 
-  (*
-  K.Core_v1_api.watch_core_v1_namespaced_pod_list ~sw client
-    ~namespace:"mastodon0" ~watch:true ()
-  |> K.Json_response_scanner.iter
-       (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
-         let item =
-           K.Io_k8s_api_core_v1_pod.of_yojson result._object |> Result.get_ok
-         in
-         Logs.info (fun m ->
-             m ">>> %s %s / %s" result._type
-               (Option.get (Option.get item.metadata).name)
-               (Option.get (Option.get item.metadata).namespace)));
-  *)
-  Mastodon.watch ~sw client ~namespace:"default" ()
-  |> Result.get_ok
-  |> K.Json_response_scanner.iter (fun ev ->
-         match Mastodon_reconciler.reconcile ~sw client ev with
-         | Ok () -> ()
-         | Error e ->
-             Logs.err (fun m ->
-                 m "mastodon reconciler failed: %s" (K.show_error e)))
-  (*
-       (fun (result : K.Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
-         Logs.info (fun m ->
-             m "%s %s" result._type (Yojson.Safe.to_string result._object));
-         match result._type with
-         | "ADDED" ->
-             let item =
-               Net_anqou_mahout.V1alpha1.Mastodon.of_yojson result._object
-               |> Result.get_ok
-             in
-             let body =
-               Net_anqou_mahout.V1alpha1.Mastodon.(
-                 { item with status = Some Status.{ message = Some "Hello" } }
-                 |> to_yojson)
-             in
-             let _ =
-               Mahout_v1alpha1_api.patch_mahout_v1alpha1_namespaced_mastodon ~sw
-                 client
-                 ~name:(Option.get (Option.get item.metadata).name)
-                 ~namespace:"default" ~body ()
-             in
-             Logs.info (fun m -> m "patched");
-             ()
-         | _ -> ()) *);
+  let mailbox = Eio.Stream.create 0 in
 
-  ()
+  Eio.Fiber.fork ~sw (fun () ->
+      Mastodon.watch ~sw client ~namespace:"default" ()
+      |> Result.get_ok
+      |> K.Json_response_scanner.iter (fun ev -> Eio.Stream.add mailbox ev));
+
+  Eio.Fiber.fork ~sw (fun () ->
+      K.Job.watch ~sw client ~namespace:"default" ()
+      |> Result.get_ok
+      |> K.Json_response_scanner.iter (fun (ty, (job : K.Job.t)) ->
+             let is_owned =
+               (Option.get job.metadata).owner_references
+               |> List.find_opt (fun (r : K.Owner_reference.t) ->
+                      r.api_version = "mahout.anqou.net/v1alpha1"
+                      && r.kind = "Mastodon" && r.controller = Some true)
+               |> Option.is_some
+             in
+             if is_owned then
+               Mastodon_reconciler.find_mastodon_from_job ~sw client job
+               |> Option.iter (fun mastodon ->
+                      Eio.Stream.add mailbox (ty, mastodon))));
+
+  let rec loop () =
+    let ev = Eio.Stream.take mailbox in
+    (match Mastodon_reconciler.reconcile ~sw client ev with
+    | Ok () -> ()
+    | Error e ->
+        Logs.err (fun m -> m "mastodon reconciler failed: %s" (K.show_error e)));
+    loop ()
+  in
+  loop ()
 
 let check_env name namespace =
   let server_name = Sys.getenv "LOCAL_DOMAIN" in

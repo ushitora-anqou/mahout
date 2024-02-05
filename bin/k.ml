@@ -418,12 +418,12 @@ module Make (B : Bare.S) = struct
   let of_yojson = B.of_yojson
   let to_yojson = B.to_yojson
 
-  type watch_event = [ `Added of t | `Modified of t | `Deleted of t ]
+  type watch_event = [ `Added | `Modified | `Deleted ] * t
 
   let string_of_watch_event : watch_event -> string = function
-    | `Added v -> "ADDED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
-    | `Modified v -> "MODIFIED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
-    | `Deleted v -> "DELETED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Added, v -> "ADDED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Modified, v -> "MODIFIED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Deleted, v -> "DELETED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
 
   let get ~sw client ~name ~namespace () =
     B.read_namespaced ~sw client ~name ~namespace () |> expect_one
@@ -449,7 +449,8 @@ module Make (B : Bare.S) = struct
     | Some (_, namespace) ->
         B.create_namespaced ~sw client ~namespace ~body () |> expect_one
 
-  let watch ~sw client ~namespace () =
+  let watch ~sw client ~namespace () :
+      (watch_event Json_response_scanner.t, Http.Response.t) result =
     B.watch_namespaced ~sw client ~namespace ~watch:true ()
     |> Result.map (fun scanner ->
            scanner
@@ -458,11 +459,11 @@ module Make (B : Bare.S) = struct
                   (ev : Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
                   match ev._type with
                   | "ADDED" ->
-                      `Added (ev._object |> B.of_yojson |> Result.get_ok)
+                      (`Added, ev._object |> B.of_yojson |> Result.get_ok)
                   | "MODIFIED" ->
-                      `Modified (ev._object |> B.of_yojson |> Result.get_ok)
+                      (`Modified, ev._object |> B.of_yojson |> Result.get_ok)
                   | "DELETED" ->
-                      `Deleted (ev._object |> B.of_yojson |> Result.get_ok)
+                      (`Deleted, ev._object |> B.of_yojson |> Result.get_ok)
                   | _ -> failwith "invalid watch event"))
 
   let create_or_update ~sw client ~name ~namespace f =

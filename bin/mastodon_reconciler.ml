@@ -49,6 +49,7 @@ let get_svc_name mastodon_name = function
 
 let get_job_name mastodon_name = function
   | `Migration -> mastodon_name ^ "-migration"
+  | `CheckEnv -> mastodon_name ^ "-check-env"
 
 let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let name = Option.get (Option.get mastodon.metadata).name in
@@ -66,18 +67,13 @@ let get_running_pod ~sw client =
   let namespace = Sys.getenv "POD_NAMESPACE" in
   K.Pod.get ~sw client ~name ~namespace () |> Result.get_ok
 
-let get_check_env_job_name ~sw:_ _client
-    (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
-  let name = Option.get (Option.get mastodon.metadata).name in
-  name ^ "-check-env"
-
-let create_check_env_job_if_not_exists ~sw client
+let create_check_env_job ~sw client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let env_from = (Option.get mastodon.spec).env_from in
   let owner_references = get_owner_references mastodon in
-  let job_name = get_check_env_job_name ~sw client mastodon in
+  let job_name = get_job_name name `CheckEnv in
 
   let p = get_running_pod ~sw client in
   let c = List.hd (Option.get p.spec).containers in
@@ -650,9 +646,7 @@ let reconcile ~sw client (ev : Mastodon.watch_event) =
   let ( let* ) = Result.bind in
   Logs.info (fun m -> m "reconcile: %s" (Mastodon.string_of_watch_event ev));
 
-  let mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t =
-    match ev with `Added v | `Modified v | `Deleted v -> v
-  in
+  let mastodon = snd ev in
   let metadata = Option.get mastodon.metadata in
   let name = Option.get metadata.name in
   let namespace = Option.get metadata.namespace in
@@ -716,7 +710,7 @@ let reconcile ~sw client (ev : Mastodon.watch_event) =
   match current_state with
   | `NoServerName ->
       Logs.info (fun m -> m "current state: no server name");
-      let* _ = create_check_env_job_if_not_exists ~sw client ~mastodon in
+      let* _ = create_check_env_job ~sw client ~mastodon in
       Ok ()
   | `NoDeployments ->
       Logs.info (fun m -> m "current state: no deployments");
@@ -731,10 +725,25 @@ let reconcile ~sw client (ev : Mastodon.watch_event) =
       Ok ()
   | `StartPreMigration | `RolloutDeployments | `StartPostMigration ->
       assert false
-  | `PostMigraionCompleted -> assert false
+  | `PostMigraionCompleted ->
+      Logs.info (fun m -> m "current state: post migration completed");
+      Ok ()
   | `Migrating ->
       Logs.info (fun m -> m "current state: migrating");
       Ok ()
   | `Normal ->
       Logs.info (fun m -> m "current state: normal");
       create_or_update_deployments ~sw client ~mastodon ~image:spec_image
+
+let find_mastodon_from_job ~sw client (job : K.Job.t) =
+  let ( let* ) = Option.bind in
+  let* metadata = job.metadata in
+  let* owner_reference =
+    (Option.get job.metadata).owner_references
+    |> List.find_opt (fun (r : K.Owner_reference.t) ->
+           r.api_version = "mahout.anqou.net/v1alpha1"
+           && r.kind = "Mastodon" && r.controller = Some true)
+  in
+  let name = owner_reference.name in
+  let* namespace = metadata.namespace in
+  Mastodon.get ~sw client ~name ~namespace () |> Result.to_option
