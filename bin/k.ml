@@ -395,12 +395,17 @@ type error =
 
 module Make (B : Bare.S) = struct
   open struct
-    let expect_one : _ -> (_, error) result = function
+    let expect : _ -> (_, error) result = function
+      | Ok x -> Ok x
       | Error (resp : Cohttp.Response.t) when resp.status = `Not_found ->
           Error `Not_found
       | Error resp ->
           Error
             (`Connection_failure (Format.asprintf "%a" Http.Response.pp resp))
+
+    let expect_one x : (_, error) result =
+      match expect x with
+      | Error e -> Error e
       | Ok scanner -> (
           match Json_response_scanner.scan scanner with
           | Error (`Msg msg) -> Error (`Scan_failure msg)
@@ -487,6 +492,16 @@ module Make (B : Bare.S) = struct
   let list ~sw client ~namespace ?label_selector () =
     B.list_namespaced ~sw client ~namespace ?label_selector ()
     |> expect_one |> Result.map B.to_list
+
+  let delete ~sw client ?uid ~namespace ~name () =
+    B.delete_namespaced ~sw client ~name ~namespace
+      ~body:
+        (Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.make
+           ~preconditions:
+             (Io_k8s_apimachinery_pkg_apis_meta_v1_preconditions.make ?uid ())
+           ())
+      ()
+    |> expect
 end
 
 module Config_map = struct

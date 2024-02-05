@@ -605,6 +605,14 @@ let get_migration_job_status ~sw client ~name ~namespace =
   | Ok j when (Option.get j.status).succeeded = Some 1l -> Ok `Completed
   | Ok _ -> Ok `NotCompleted
 
+let delete_migration_job ~sw client ~(mastodon : Mastodon.t) =
+  let ( let* ) = Result.bind in
+  let name = Option.get (Option.get mastodon.metadata).name in
+  let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let job_name = get_job_name name `Migration in
+  let* _ = K.Job.delete ~sw client ~name:job_name ~namespace () in
+  Ok ()
+
 let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image =
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
@@ -727,6 +735,11 @@ let reconcile ~sw client (ev : Mastodon.watch_event) =
       assert false
   | `PostMigraionCompleted ->
       Logs.info (fun m -> m "current state: post migration completed");
+      let* _ = delete_migration_job ~sw client ~mastodon in
+      let* _ =
+        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+            { status with migrating_image = None })
+      in
       Ok ()
   | `Migrating ->
       Logs.info (fun m -> m "current state: migrating");
