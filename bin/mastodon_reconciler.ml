@@ -613,12 +613,20 @@ let delete_migration_job ~sw client ~(mastodon : Mastodon.t) =
   let* _ = K.Job.delete ~sw client ~name:job_name ~namespace () in
   Ok ()
 
-let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image =
+let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let env_from = (Option.get mastodon.spec).env_from in
   let owner_references = get_owner_references mastodon in
   let job_name = get_job_name name `Migration in
+
+  let env =
+    match kind with
+    | `Post -> []
+    | `Pre ->
+        K.Env_var.
+          [ make ~name:"SKIP_POST_DEPLOYMENT_MIGRATIONS" ~value:"true" () ]
+  in
 
   let body =
     K.Job.make
@@ -633,7 +641,7 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image =
                      ~containers:
                        K.Container.
                          [
-                           make ~name:"migration" ~image ~env_from
+                           make ~name:"migration" ~image ~env_from ~env
                              ~command:
                                [
                                  "bash";
@@ -650,11 +658,22 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image =
   in
   K.Job.create ~sw client body
 
-let reconcile ~sw client (ev : Mastodon.watch_event) =
-  let ( let* ) = Result.bind in
-  Logs.info (fun m -> m "reconcile: %s" (Mastodon.string_of_watch_event ev));
+type current_state =
+  | NoServerName
+  | NoDeployments
+  | StartPreMigration
+  | RolloutDeployments
+  | StartPostMigration
+  | PostMigrationCompleted
+  | Migrating
+  | Normal
+[@@deriving show]
 
-  let mastodon = snd ev in
+let reconcile ~sw client (mastodon : Mastodon.t) =
+  let ( let* ) = Result.bind in
+  Logs.info (fun m ->
+      m "reconcile: %s" (mastodon |> Mastodon.to_yojson |> Yojson.Safe.to_string));
+
   let metadata = Option.get mastodon.metadata in
   let name = Option.get metadata.name in
   let namespace = Option.get metadata.namespace in
@@ -683,69 +702,92 @@ let reconcile ~sw client (ev : Mastodon.watch_event) =
   in
 
   let current_state =
-    if server_name = None then `NoServerName
-    else if deployments_status = `NotFound then `NoDeployments
+    if server_name = None then NoServerName
+    else if deployments_status = `NotFound then NoDeployments
     else if
       Option.is_none migrating_image
       && migraion_job_status = `NotFound
       && Option.is_some live_image
       && Option.get live_image <> spec_image
-    then `StartPreMigration
+    then StartPreMigration
     else if
       Option.is_some migrating_image
       && migraion_job_status = `NotFound
       && live_image <> migrating_image
-    then `StartPreMigration
+    then StartPreMigration
     else if
       Option.is_some migrating_image
       && migraion_job_status = `Completed
       && live_image <> migrating_image
-    then `RolloutDeployments
+    then RolloutDeployments
     else if
       Option.is_some migrating_image
       && migraion_job_status = `NotFound
       && deployments_status = `Ready (Option.get migrating_image)
-    then `StartPostMigration
+    then StartPostMigration
     else if
       Option.is_some migrating_image
       && migraion_job_status = `Completed
       && deployments_status = `Ready (Option.get migrating_image)
-    then `PostMigraionCompleted
-    else if Option.is_some migrating_image then `Migrating
-    else `Normal
+    then PostMigrationCompleted
+    else if Option.is_some migrating_image then Migrating
+    else Normal
   in
 
+  Logs.info (fun m -> m "current state: %s" (show_current_state current_state));
+
   match current_state with
-  | `NoServerName ->
-      Logs.info (fun m -> m "current state: no server name");
+  | NoServerName ->
       let* _ = create_check_env_job ~sw client ~mastodon in
       Ok ()
-  | `NoDeployments ->
-      Logs.info (fun m -> m "current state: no deployments");
+  | NoDeployments ->
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
             { status with migrating_image = Some spec_image })
       in
-      let* _ = create_migration_job ~sw client ~mastodon ~image:spec_image in
+      let* _ =
+        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+      in
       let* _ =
         create_or_update_deployments ~sw client ~mastodon ~image:spec_image
       in
       Ok ()
-  | `StartPreMigration | `RolloutDeployments | `StartPostMigration ->
-      assert false
-  | `PostMigraionCompleted ->
-      Logs.info (fun m -> m "current state: post migration completed");
+  | StartPreMigration ->
+      let* _ =
+        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+            {
+              status with
+              migrating_image =
+                (match migrating_image with
+                | Some x -> Some x
+                | None -> Some spec_image);
+            })
+      in
+      let* _ =
+        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Pre
+      in
+      Ok ()
+  | RolloutDeployments ->
+      let* _ = delete_migration_job ~sw client ~mastodon in
+      let* _ =
+        create_or_update_deployments ~sw client ~mastodon
+          ~image:(Option.get migrating_image)
+      in
+      Ok ()
+  | StartPostMigration ->
+      let* _ =
+        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+      in
+      Ok ()
+  | PostMigrationCompleted ->
       let* _ = delete_migration_job ~sw client ~mastodon in
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
             { status with migrating_image = None })
       in
       Ok ()
-  | `Migrating ->
-      Logs.info (fun m -> m "current state: migrating");
-      Ok ()
-  | `Normal ->
-      Logs.info (fun m -> m "current state: normal");
+  | Migrating -> Ok ()
+  | Normal ->
       create_or_update_deployments ~sw client ~mastodon ~image:spec_image
 
 let find_mastodon_from_job ~sw client (job : K.Job.t) =

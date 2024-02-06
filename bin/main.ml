@@ -28,12 +28,13 @@ let controller () =
   Eio.Fiber.fork ~sw (fun () ->
       Mastodon.watch ~sw client ~namespace:"default" ()
       |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun ev -> Eio.Stream.add mailbox ev));
+      |> K.Json_response_scanner.iter (fun ev ->
+             Eio.Stream.add mailbox (snd ev)));
 
   Eio.Fiber.fork ~sw (fun () ->
       K.Job.watch ~sw client ~namespace:"default" ()
       |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun (ty, (job : K.Job.t)) ->
+      |> K.Json_response_scanner.iter (fun (_ty, (job : K.Job.t)) ->
              let is_owned =
                (Option.get job.metadata).owner_references
                |> List.find_opt (fun (r : K.Owner_reference.t) ->
@@ -43,12 +44,11 @@ let controller () =
              in
              if is_owned then
                Mastodon_reconciler.find_mastodon_from_job ~sw client job
-               |> Option.iter (fun mastodon ->
-                      Eio.Stream.add mailbox (ty, mastodon))));
+               |> Option.iter (fun mastodon -> Eio.Stream.add mailbox mastodon)));
 
   let rec loop () =
-    let ev = Eio.Stream.take mailbox in
-    (match Mastodon_reconciler.reconcile ~sw client ev with
+    let mastodon = Eio.Stream.take mailbox in
+    (match Mastodon_reconciler.reconcile ~sw client mastodon with
     | Ok () -> ()
     | Error e ->
         Logs.err (fun m -> m "mastodon reconciler failed: %s" (K.show_error e)));

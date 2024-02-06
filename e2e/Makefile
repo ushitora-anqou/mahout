@@ -1,5 +1,5 @@
 KIND_VERSION:=0.20.0
-KUBERNETES_VERSION:=1.27.3
+KUBERNETES_VERSION:=1.28.0
 WD:=$(dir $(lastword $(MAKEFILE_LIST)))
 BIN:=$(WD)/_bin
 KIND:=$(BIN)/kind-$(KIND_VERSION)
@@ -41,10 +41,8 @@ create-cluster: setup build-image
 	$(KUBECTL) apply -f $(WD)/manifests/clusterrolebinding.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/operator.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/mastodon.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/postgres.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/redis.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/minio.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
 
 .PHONY: test
