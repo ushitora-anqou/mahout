@@ -112,6 +112,58 @@ let create_check_env_job ~sw client
   in
   K.Job.create ~sw client body
 
+let create_or_update_deployment ~sw client ~name ~namespace body =
+  K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
+  | None -> body
+  | Some body0 ->
+      {
+        body0 with
+        spec =
+          Some
+            {
+              (Option.get body0.spec) with
+              template =
+                {
+                  (Option.get body0.spec).template with
+                  (*
+                  metadata =
+                    Some
+                      {
+                        (Option.get (Option.get body0.spec).template.metadata) with
+                        labels =
+                          (Option.get (Option.get body.spec).template.metadata)
+                            .labels;
+                      };
+                      *)
+                  spec =
+                    Some
+                      {
+                        (Option.get (Option.get body0.spec).template.spec) with
+                        init_containers =
+                          List.combine
+                            (Option.get (Option.get body0.spec).template.spec)
+                              .init_containers
+                            (Option.get (Option.get body.spec).template.spec)
+                              .init_containers
+                          |> List.map
+                               (fun
+                                 ((c : K.Container.t), (c' : K.Container.t)) ->
+                                 { c with image = c'.image });
+                        containers =
+                          List.combine
+                            (Option.get (Option.get body0.spec).template.spec)
+                              .containers
+                            (Option.get (Option.get body.spec).template.spec)
+                              .containers
+                          |> List.map
+                               (fun
+                                 ((c : K.Container.t), (c' : K.Container.t)) ->
+                                 { c with image = c'.image });
+                      };
+                };
+            };
+      }
+
 let create_or_update_sidekiq ~sw client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
   let ( let* ) = Result.bind in
@@ -161,8 +213,7 @@ let create_or_update_sidekiq ~sw client
       ()
   in
   let* _ =
-    K.Deployment.create_or_update ~sw client ~name:deploy_name ~namespace
-    @@ fun _ -> body
+    create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
   in
 
   Ok ()
@@ -236,8 +287,7 @@ let create_or_update_streaming ~sw client
       ()
   in
   let* _ =
-    K.Deployment.create_or_update ~sw client ~name:deploy_name ~namespace
-    @@ fun _ -> body
+    create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
   in
 
   let body =
@@ -336,8 +386,7 @@ let create_or_update_web ~sw client
       ()
   in
   let* _ =
-    K.Deployment.create_or_update ~sw client ~name:deploy_name ~namespace
-    @@ fun _ -> body
+    create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
   in
 
   let body =
@@ -489,8 +538,8 @@ let create_or_update_gateway ~sw client
       ()
   in
   let* _ =
-    K.Deployment.create_or_update ~sw client ~name:nginx_deploy_name ~namespace
-    @@ fun _ -> body
+    create_or_update_deployment ~sw client ~name:nginx_deploy_name ~namespace
+      body
   in
 
   let body =
@@ -587,13 +636,13 @@ let get_deployments_pod_statuses ~sw client ~name ~namespace ~image =
 
   Ok
     (if List.length all_pods = List.length live_pods then `Ready image
-     else `NotReady)
+     else `NotReady image)
 
 let get_deployments_status ~sw client ~name ~namespace =
   match fetch_deployments_image ~sw client ~name ~namespace with
   | Error (`K `Not_found) -> Ok `NotFound
   | Error (`K e) -> Error e
-  | Error `NotCommon -> Ok `NotReady
+  | Error `NotCommon -> Ok `NotCommon
   | Ok image -> get_deployments_pod_statuses ~sw client ~name ~namespace ~image
 
 let get_migration_job_status ~sw client ~name ~namespace =
@@ -669,14 +718,17 @@ type current_state =
   | Normal
 [@@deriving show]
 
-let reconcile ~sw client (mastodon : Mastodon.t) =
+let reconcile ~sw client ~name ~namespace =
   let ( let* ) = Result.bind in
-  Logs.info (fun m ->
-      m "reconcile: %s" (mastodon |> Mastodon.to_yojson |> Yojson.Safe.to_string));
+  Logs.info (fun m -> m "reconcile: %s %s" namespace name);
 
-  let metadata = Option.get mastodon.metadata in
-  let name = Option.get metadata.name in
-  let namespace = Option.get metadata.namespace in
+  let* mastodon = Mastodon.get_status ~sw client ~name ~namespace () in
+  let* _ =
+    match (Option.get mastodon.metadata).deletion_timestamp with
+    | None -> Ok ()
+    | Some _ -> Error `Not_found
+  in
+
   let spec = Option.get mastodon.spec in
   let spec_image = spec.image in
   let server_name =
@@ -692,42 +744,62 @@ let reconcile ~sw client (mastodon : Mastodon.t) =
   let* deployments_status =
     get_deployments_status ~sw client ~name ~namespace
   in
-  let live_image =
-    match deployments_status with
-    | `Ready live_image -> Some live_image
-    | _ -> None
-  in
-  let* migraion_job_status =
+  let* migration_job_status =
     get_migration_job_status ~sw client ~name ~namespace
   in
+
+  Logs.info (fun m ->
+      m
+        "spec_image = \"%s\", migrating_image = \"%s\", deployments_status = \
+         \"%s\", migration_job_status = \"%s\""
+        spec_image
+        (migrating_image |> Option.value ~default:"")
+        (match deployments_status with
+        | `NotFound -> "NotFound"
+        | `NotCommon -> "NotCommon"
+        | `NotReady s -> "NotReady " ^ s
+        | `Ready s -> "Ready " ^ s)
+        (match migration_job_status with
+        | `NotFound -> "NotFound"
+        | `Completed -> "Completed"
+        | `NotCompleted -> "NotCompleted"));
 
   let current_state =
     if server_name = None then NoServerName
     else if deployments_status = `NotFound then NoDeployments
     else if
       Option.is_none migrating_image
-      && migraion_job_status = `NotFound
-      && Option.is_some live_image
-      && Option.get live_image <> spec_image
+      && migration_job_status = `NotFound
+      &&
+      match deployments_status with
+      | `Ready image when image <> spec_image -> true
+      | _ -> false
     then StartPreMigration
     else if
       Option.is_some migrating_image
-      && migraion_job_status = `NotFound
-      && live_image <> migrating_image
+      && migration_job_status = `NotFound
+      &&
+      match deployments_status with
+      | `Ready image when image <> Option.get migrating_image -> true
+      | _ -> false
     then StartPreMigration
     else if
       Option.is_some migrating_image
-      && migraion_job_status = `Completed
-      && live_image <> migrating_image
+      && migration_job_status = `Completed
+      &&
+      match deployments_status with
+      | `NotCommon -> (* Case when the previous deployment was cancelled *) true
+      | `Ready image when image <> Option.get migrating_image -> true
+      | _ -> false
     then RolloutDeployments
     else if
       Option.is_some migrating_image
-      && migraion_job_status = `NotFound
+      && migration_job_status = `NotFound
       && deployments_status = `Ready (Option.get migrating_image)
     then StartPostMigration
     else if
       Option.is_some migrating_image
-      && migraion_job_status = `Completed
+      && migration_job_status = `Completed
       && deployments_status = `Ready (Option.get migrating_image)
     then PostMigrationCompleted
     else if Option.is_some migrating_image then Migrating
@@ -790,15 +862,23 @@ let reconcile ~sw client (mastodon : Mastodon.t) =
   | Normal ->
       create_or_update_deployments ~sw client ~mastodon ~image:spec_image
 
-let find_mastodon_from_job ~sw client (job : K.Job.t) =
+let find_mastodon_from_job ~sw:_ _client (job : K.Job.t) =
   let ( let* ) = Option.bind in
   let* metadata = job.metadata in
   let* owner_reference =
-    (Option.get job.metadata).owner_references
+    metadata.owner_references
     |> List.find_opt (fun (r : K.Owner_reference.t) ->
            r.api_version = "mahout.anqou.net/v1alpha1"
            && r.kind = "Mastodon" && r.controller = Some true)
   in
   let name = owner_reference.name in
   let* namespace = metadata.namespace in
-  Mastodon.get ~sw client ~name ~namespace () |> Result.to_option
+  Some (name, namespace)
+
+let find_mastodon_from_pod ~sw:_ _client (pod : K.Pod.t) =
+  let ( let* ) = Option.bind in
+  let* metadata = pod.metadata in
+  let* labels = match metadata.labels with `Assoc l -> Some l | _ -> None in
+  match labels |> List.assoc_opt Label.mastodon_key with
+  | Some (`String name) -> Some (name, Option.get metadata.namespace)
+  | _ -> None

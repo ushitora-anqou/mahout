@@ -28,8 +28,11 @@ let controller () =
   Eio.Fiber.fork ~sw (fun () ->
       Mastodon.watch ~sw client ~namespace:"default" ()
       |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun ev ->
-             Eio.Stream.add mailbox (snd ev)));
+      |> K.Json_response_scanner.iter (fun (_, (mastodon : Mastodon.t)) ->
+             let metadata = Option.get mastodon.metadata in
+             let name = Option.get metadata.name in
+             let namespace = Option.get metadata.namespace in
+             Eio.Stream.add mailbox (name, namespace)));
 
   Eio.Fiber.fork ~sw (fun () ->
       K.Job.watch ~sw client ~namespace:"default" ()
@@ -44,11 +47,20 @@ let controller () =
              in
              if is_owned then
                Mastodon_reconciler.find_mastodon_from_job ~sw client job
-               |> Option.iter (fun mastodon -> Eio.Stream.add mailbox mastodon)));
+               |> Option.iter (fun (name, namespace) ->
+                      Eio.Stream.add mailbox (name, namespace))));
+
+  Eio.Fiber.fork ~sw (fun () ->
+      K.Pod.watch ~sw client ~namespace:"default" ()
+      |> Result.get_ok
+      |> K.Json_response_scanner.iter (fun (_ty, (pod : K.Pod.t)) ->
+             Mastodon_reconciler.find_mastodon_from_pod ~sw client pod
+             |> Option.iter (fun (name, namespace) ->
+                    Eio.Stream.add mailbox (name, namespace))));
 
   let rec loop () =
-    let mastodon = Eio.Stream.take mailbox in
-    (match Mastodon_reconciler.reconcile ~sw client mastodon with
+    let name, namespace = Eio.Stream.take mailbox in
+    (match Mastodon_reconciler.reconcile ~sw client ~name ~namespace with
     | Ok () -> ()
     | Error e ->
         Logs.err (fun m -> m "mastodon reconciler failed: %s" (K.show_error e)));
