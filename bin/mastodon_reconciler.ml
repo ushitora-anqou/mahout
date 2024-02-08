@@ -116,53 +116,74 @@ let create_or_update_deployment ~sw client ~name ~namespace body =
   K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
   | None -> body
   | Some body0 ->
-      {
-        body0 with
-        spec =
-          Some
-            {
-              (Option.get body0.spec) with
-              template =
-                {
-                  (Option.get body0.spec).template with
-                  (*
-                  metadata =
-                    Some
-                      {
-                        (Option.get (Option.get body0.spec).template.metadata) with
-                        labels =
-                          (Option.get (Option.get body.spec).template.metadata)
-                            .labels;
-                      };
-                      *)
-                  spec =
-                    Some
-                      {
-                        (Option.get (Option.get body0.spec).template.spec) with
-                        init_containers =
-                          List.combine
-                            (Option.get (Option.get body0.spec).template.spec)
-                              .init_containers
-                            (Option.get (Option.get body.spec).template.spec)
-                              .init_containers
-                          |> List.map
-                               (fun
-                                 ((c : K.Container.t), (c' : K.Container.t)) ->
-                                 { c with image = c'.image });
-                        containers =
-                          List.combine
-                            (Option.get (Option.get body0.spec).template.spec)
-                              .containers
-                            (Option.get (Option.get body.spec).template.spec)
-                              .containers
-                          |> List.map
-                               (fun
-                                 ((c : K.Container.t), (c' : K.Container.t)) ->
-                                 { c with image = c'.image });
-                      };
-                };
-            };
-      }
+      let body =
+        {
+          body0 with
+          spec =
+            Some
+              {
+                (Option.get body0.spec) with
+                template =
+                  {
+                    metadata =
+                      Some
+                        {
+                          (Option.get (Option.get body0.spec).template.metadata) with
+                          labels =
+                            (Option.get (Option.get body.spec).template.metadata)
+                              .labels;
+                        };
+                    spec =
+                      Some
+                        {
+                          (Option.get (Option.get body0.spec).template.spec) with
+                          init_containers =
+                            List.combine
+                              (Option.get (Option.get body0.spec).template.spec)
+                                .init_containers
+                              (Option.get (Option.get body.spec).template.spec)
+                                .init_containers
+                            |> List.map
+                                 (fun
+                                   ((c : K.Container.t), (c' : K.Container.t))
+                                 -> { c with image = c'.image });
+                          containers =
+                            List.combine
+                              (Option.get (Option.get body0.spec).template.spec)
+                                .containers
+                              (Option.get (Option.get body.spec).template.spec)
+                                .containers
+                            |> List.map
+                                 (fun
+                                   ((c : K.Container.t), (c' : K.Container.t))
+                                 -> { c with image = c'.image });
+                        };
+                  };
+              };
+        }
+      in
+      Logs.warn (fun m ->
+          m ">>\n%s\n%s"
+            (body0 |> K.Deployment.to_yojson |> Yojson.Safe.to_string)
+            (body |> K.Deployment.to_yojson |> Yojson.Safe.to_string));
+      body
+
+let get_deployment_labels ~name ~component ~part_of ~mastodon_name ~deploy_image
+    =
+  let selector =
+    [
+      ("app.kubernetes.io/name", `String name);
+      ("app.kubernetes.io/component", `String component);
+      ("app.kubernetes.io/part-of", `String part_of);
+    ]
+  in
+  let labels =
+    Label.(
+      (mastodon_key, `String mastodon_name)
+      :: (deploy_image_key, `String (encode_deploy_image deploy_image))
+      :: selector)
+  in
+  (selector, labels)
 
 let create_or_update_sidekiq ~sw client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
@@ -173,16 +194,9 @@ let create_or_update_sidekiq ~sw client
   let env_from = (Option.get mastodon.spec).env_from in
 
   let deploy_name = get_deploy_name name `Sidekiq in
-  let selector =
-    `Assoc
-      Label.
-        [
-          ("app.kubernetes.io/name", `String "sidekiq");
-          ("app.kubernetes.io/component", `String "sidekiq");
-          ("app.kubernetes.io/part-of", `String "mastodon");
-          (mastodon_key, `String name);
-          (deploy_image_key, `String (encode_deploy_image image));
-        ]
+  let selector, labels =
+    get_deployment_labels ~name:"sidekiq" ~component:"sidekiq"
+      ~part_of:"mastodon" ~mastodon_name:name ~deploy_image:image
   in
   let owner_references = get_owner_references mastodon in
 
@@ -193,10 +207,10 @@ let create_or_update_sidekiq ~sw client
       ~spec:
         K.Deployment_spec.(
           make ~replicas:1l
-            ~selector:(K.Label_selector.make ~match_labels:selector ())
+            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:selector ())
+                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
                  ~spec:
                    K.Pod_spec.(
                      make
@@ -228,16 +242,9 @@ let create_or_update_streaming ~sw client
 
   let deploy_name = get_deploy_name name `Streaming in
   let svc_name = get_svc_name name `Streaming in
-  let selector =
-    `Assoc
-      Label.
-        [
-          ("app.kubernetes.io/name", `String "node");
-          ("app.kubernetes.io/component", `String "streaming");
-          ("app.kubernetes.io/part-of", `String "mastodon");
-          (mastodon_key, `String name);
-          (deploy_image_key, `String (encode_deploy_image image));
-        ]
+  let selector, labels =
+    get_deployment_labels ~name:"node" ~component:"streaming"
+      ~part_of:"mastodon" ~mastodon_name:name ~deploy_image:image
   in
   let owner_references = get_owner_references mastodon in
 
@@ -248,10 +255,10 @@ let create_or_update_streaming ~sw client
       ~spec:
         K.Deployment_spec.(
           make ~replicas:1l
-            ~selector:(K.Label_selector.make ~match_labels:selector ())
+            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:selector ())
+                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
                  ~spec:
                    K.Pod_spec.(
                      make
@@ -295,7 +302,7 @@ let create_or_update_streaming ~sw client
       ~metadata:
         (K.Object_meta.make ~name:svc_name ~namespace ~owner_references ())
       ~spec:
-        (K.Service_spec.make ~selector
+        (K.Service_spec.make ~selector:(`Assoc selector)
            ~ports:[ K.Service_port.make ~port:4000l () ]
            ())
       ()
@@ -317,16 +324,9 @@ let create_or_update_web ~sw client
 
   let deploy_name = get_deploy_name name `Web in
   let svc_name = get_svc_name name `Web in
-  let selector =
-    `Assoc
-      Label.
-        [
-          ("app.kubernetes.io/name", `String "puma");
-          ("app.kubernetes.io/component", `String "web");
-          ("app.kubernetes.io/part-of", `String "mastodon");
-          (mastodon_key, `String name);
-          (deploy_image_key, `String (encode_deploy_image image));
-        ]
+  let selector, labels =
+    get_deployment_labels ~name:"puma" ~component:"web" ~part_of:"mastodon"
+      ~mastodon_name:name ~deploy_image:image
   in
   let owner_references = get_owner_references mastodon in
 
@@ -337,10 +337,10 @@ let create_or_update_web ~sw client
       ~spec:
         K.Deployment_spec.(
           make ~replicas:1l
-            ~selector:(K.Label_selector.make ~match_labels:selector ())
+            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:selector ())
+                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
                  ~spec:
                    K.Pod_spec.(
                      make
@@ -394,7 +394,7 @@ let create_or_update_web ~sw client
       ~metadata:
         (K.Object_meta.make ~name:svc_name ~namespace ~owner_references ())
       ~spec:
-        (K.Service_spec.make ~selector
+        (K.Service_spec.make ~selector:(`Assoc selector)
            ~ports:[ K.Service_port.make ~port:3000l () ]
            ())
       ()
@@ -419,16 +419,9 @@ let create_or_update_gateway ~sw client
   let nginx_conf_cm_key = "mastodon-nginx.conf" in
   let nginx_deploy_name = get_deploy_name name `Nginx in
   let svc_name = get_svc_name name `Nginx in
-  let selector =
-    `Assoc
-      Label.
-        [
-          ("app.kubernetes.io/name", `String "nginx");
-          ("app.kubernetes.io/component", `String "gateway");
-          ("app.kubernetes.io/part-of", `String "mastodon");
-          (mastodon_key, `String name);
-          (deploy_image_key, `String (encode_deploy_image image));
-        ]
+  let selector, labels =
+    get_deployment_labels ~name:"nginx" ~component:"gateway" ~part_of:"mastodon"
+      ~mastodon_name:name ~deploy_image:image
   in
 
   let server_name = Option.get (Option.get mastodon.status).server_name in
@@ -471,10 +464,10 @@ let create_or_update_gateway ~sw client
       ~spec:
         K.Deployment_spec.(
           make ~replicas:1l
-            ~selector:(K.Label_selector.make ~match_labels:selector ())
+            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:selector ())
+                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
                  ~spec:
                    K.Pod_spec.(
                      make
@@ -547,7 +540,7 @@ let create_or_update_gateway ~sw client
       ~metadata:
         (K.Object_meta.make ~name:svc_name ~namespace ~owner_references ())
       ~spec:
-        (K.Service_spec.make ~selector
+        (K.Service_spec.make ~selector:(`Assoc selector)
            ~ports:[ K.Service_port.make ~port:80l () ]
            ())
       ()
