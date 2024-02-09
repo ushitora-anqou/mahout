@@ -39,12 +39,9 @@ create-cluster: setup build-image
 	$(KUBECTL) apply -f $(WD)/manifests/serviceaccount.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/clusterrole.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/clusterrolebinding.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/operator.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/postgres.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/redis.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
 
 .PHONY: test
 test:
-	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config dune exec ./e2e.exe
+	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe

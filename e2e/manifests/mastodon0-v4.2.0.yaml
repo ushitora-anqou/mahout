@@ -1,0 +1,10 @@
+---
+apiVersion: mahout.anqou.net/v1alpha1
+kind: Mastodon
+metadata:
+  name: mastodon0
+spec:
+  image: "ghcr.io/mastodon/mastodon:v4.2.0"
+  envFrom:
+    - secretRef:
+        name: secret-env
