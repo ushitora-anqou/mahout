@@ -75,6 +75,17 @@ let wait_not_found kind name =
     (Printf.sprintf {|get %s %s 2>&1 | grep "\"%s\" not found"|} kind name name)
   |> ignore
 
+let check_schema_migrations_count ~expected =
+  let src =
+    kubectl
+      {|exec postgres-0 -- psql -U mastodon mastodon_production -c 'SELECT COUNT(version) FROM schema_migrations;'|}
+    |> fst |> String.split_on_char '\n'
+  in
+  let count = List.nth src 2 |> String.trim |> int_of_string in
+  if count <> expected then
+    failwithf "check_schema_migrations_count: got %d, expected %d" count
+      expected
+
 let setup () =
   or_true (fun () -> kubectl {|delete deploy mastodon-operator|} |> ignore);
   or_true (fun () -> kubectl {|delete mastodon mastodon0|} |> ignore);
@@ -102,9 +113,14 @@ let () =
       http_get "http://mastodon0-gateway-svc.default.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
         ~endpoint:"http://mastodon0-gateway-svc.default.svc" ~expected:"4.1.9";
+      check_schema_migrations_count ~expected:395;
       ());
 
   apply_manifest "mastodon0-v4.2.0.yaml";
+
+  eventually (fun () ->
+      check_schema_migrations_count ~expected:417;
+      ());
 
   eventually (fun () ->
       wait_deploy_available "mastodon0-gateway-nginx";
@@ -114,6 +130,7 @@ let () =
       http_get "http://mastodon0-gateway-svc.default.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
         ~endpoint:"http://mastodon0-gateway-svc.default.svc" ~expected:"4.2.0";
+      check_schema_migrations_count ~expected:422;
       ());
 
   delete_manifest "mastodon0-v4.2.0.yaml";
