@@ -20,5 +20,4 @@ jobs:
         with:
           ocaml-compiler: "5.0.0"
       - run: opam install . --deps-only --with-test
-      - run: sleep 300
-      - run: cd e2e && opam exec -- dune exec ./e2e.exe
+      - run: make -C e2e test
