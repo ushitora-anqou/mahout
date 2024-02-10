@@ -42,6 +42,10 @@ create-cluster: setup build-image
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
 
+.PHONY: reload-image
+reload-image: build-image
+	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
+
 .PHONY: test
-test:
-	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe
+test: reload-image
+	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq

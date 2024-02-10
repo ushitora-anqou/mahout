@@ -1,3 +1,5 @@
+module Logg = Mahout.Logg
+
 exception Process_status_error of Unix.process_status * string * string
 
 let or_true f = try f () with Process_status_error _ -> ()
@@ -8,7 +10,8 @@ let eventually ?(count = 60) ?(interval = 5) f =
     try f () with
     | e when i = 0 -> raise e
     | e ->
-        Logs.err (fun m -> m "eventually: failed: %s" (Printexc.to_string e));
+        Logg.err (fun m ->
+            m "eventually: failed" [ ("exc", `String (Printexc.to_string e)) ]);
         Unix.sleep interval;
         loop (i - 1)
   in
@@ -27,9 +30,13 @@ let run_command command =
   in
   let stdout = In_channel.input_all stdout_ch in
   let stderr = In_channel.input_all stderr_ch in
-  Logs.info (fun m ->
-      m "RUN: %s\nstdout: %s\nstderr: %s" (String.trim command)
-        (String.trim stdout) (String.trim stderr));
+  Logg.info (fun m ->
+      m "run"
+        [
+          ("command", `String (String.trim command));
+          ("stdout", `String (String.trim stdout));
+          ("stderr", `String (String.trim stderr));
+        ]);
   match Unix.close_process_full (stdout_ch, stdin_ch, stderr_ch) with
   | WEXITED 0 -> (stdout, stderr)
   | status -> raise (Process_status_error (status, stdout, stderr))

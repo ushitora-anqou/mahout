@@ -63,7 +63,9 @@ let controller () =
     (match Mastodon_reconciler.reconcile ~sw client ~name ~namespace with
     | Ok () -> ()
     | Error e ->
-        Logs.err (fun m -> m "mastodon reconciler failed: %s" (K.show_error e)));
+        Logg.err (fun m ->
+            m "mastodon reconciler failed"
+              [ ("error", `String (K.show_error e)) ]));
     loop ()
   in
   loop ()
@@ -99,8 +101,9 @@ let check_env name namespace =
   with
   | Ok () -> ()
   | Error e ->
-      Logs.err (fun m -> m "result error: %s" (K.show_error e));
+      Logg.err (fun m ->
+          m "result error" [ ("error", `String (K.show_error e)) ]);
       exit 1
   | exception e ->
-      Logs.err (fun m -> m "exc: %s" (Printexc.to_string e));
+      Logg.err (fun m -> m "exc" [ ("error", `String (Printexc.to_string e)) ]);
       exit 1

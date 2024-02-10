@@ -78,57 +78,50 @@ let create_or_update_deployment ~sw client ~name ~namespace body =
   K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
   | None -> body
   | Some body0 ->
-      let body =
-        {
-          body0 with
-          spec =
-            Some
-              {
-                (Option.get body0.spec) with
-                template =
-                  {
-                    metadata =
-                      Some
-                        {
-                          (Option.get (Option.get body0.spec).template.metadata) with
-                          labels =
-                            (Option.get (Option.get body.spec).template.metadata)
-                              .labels;
-                        };
-                    spec =
-                      Some
-                        {
-                          (Option.get (Option.get body0.spec).template.spec) with
-                          init_containers =
-                            List.combine
-                              (Option.get (Option.get body0.spec).template.spec)
-                                .init_containers
-                              (Option.get (Option.get body.spec).template.spec)
-                                .init_containers
-                            |> List.map
-                                 (fun
-                                   ((c : K.Container.t), (c' : K.Container.t))
-                                 -> { c with image = c'.image });
-                          containers =
-                            List.combine
-                              (Option.get (Option.get body0.spec).template.spec)
-                                .containers
-                              (Option.get (Option.get body.spec).template.spec)
-                                .containers
-                            |> List.map
-                                 (fun
-                                   ((c : K.Container.t), (c' : K.Container.t))
-                                 -> { c with image = c'.image });
-                        };
-                  };
-              };
-        }
-      in
-      Logs.warn (fun m ->
-          m ">>\n%s\n%s"
-            (body0 |> K.Deployment.to_yojson |> Yojson.Safe.to_string)
-            (body |> K.Deployment.to_yojson |> Yojson.Safe.to_string));
-      body
+      {
+        body0 with
+        spec =
+          Some
+            {
+              (Option.get body0.spec) with
+              template =
+                {
+                  metadata =
+                    Some
+                      {
+                        (Option.get (Option.get body0.spec).template.metadata) with
+                        labels =
+                          (Option.get (Option.get body.spec).template.metadata)
+                            .labels;
+                      };
+                  spec =
+                    Some
+                      {
+                        (Option.get (Option.get body0.spec).template.spec) with
+                        init_containers =
+                          List.combine
+                            (Option.get (Option.get body0.spec).template.spec)
+                              .init_containers
+                            (Option.get (Option.get body.spec).template.spec)
+                              .init_containers
+                          |> List.map
+                               (fun
+                                 ((c : K.Container.t), (c' : K.Container.t)) ->
+                                 { c with image = c'.image });
+                        containers =
+                          List.combine
+                            (Option.get (Option.get body0.spec).template.spec)
+                              .containers
+                            (Option.get (Option.get body.spec).template.spec)
+                              .containers
+                          |> List.map
+                               (fun
+                                 ((c : K.Container.t), (c' : K.Container.t)) ->
+                                 { c with image = c'.image });
+                      };
+                };
+            };
+      }
 
 let get_deployment_labels ~name ~component ~part_of ~mastodon_name ~deploy_image
     =
@@ -675,7 +668,8 @@ type current_state =
 
 let reconcile ~sw client ~name ~namespace =
   let ( let* ) = Result.bind in
-  Logs.info (fun m -> m "reconcile: %s %s" namespace name);
+  Logg.info (fun m ->
+      m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
 
   let* mastodon = Mastodon.get_status ~sw client ~name ~namespace () in
   let* _ =
@@ -702,22 +696,6 @@ let reconcile ~sw client ~name ~namespace =
   let* migration_job_status =
     get_migration_job_status ~sw client ~name ~namespace
   in
-
-  Logs.info (fun m ->
-      m
-        "spec_image = \"%s\", migrating_image = \"%s\", deployments_status = \
-         \"%s\", migration_job_status = \"%s\""
-        spec_image
-        (migrating_image |> Option.value ~default:"")
-        (match deployments_status with
-        | `NotFound -> "NotFound"
-        | `NotCommon -> "NotCommon"
-        | `NotReady s -> "NotReady " ^ s
-        | `Ready s -> "Ready " ^ s)
-        (match migration_job_status with
-        | `NotFound -> "NotFound"
-        | `Completed -> "Completed"
-        | `NotCompleted -> "NotCompleted"));
 
   let current_state =
     if server_name = None then NoServerName
@@ -761,7 +739,27 @@ let reconcile ~sw client ~name ~namespace =
     else Normal
   in
 
-  Logs.info (fun m -> m "current state: %s" (show_current_state current_state));
+  Logg.info (fun m ->
+      m "reconcile"
+        [
+          ("spec_image", `String spec_image);
+          ( "migration_image",
+            `String (migrating_image |> Option.value ~default:"") );
+          ( "deployments_status",
+            `String
+              (match deployments_status with
+              | `NotFound -> "NotFound"
+              | `NotCommon -> "NotCommon"
+              | `NotReady s -> "NotReady " ^ s
+              | `Ready s -> "Ready " ^ s) );
+          ( "migration_job_status",
+            `String
+              (match migration_job_status with
+              | `NotFound -> "NotFound"
+              | `Completed -> "Completed"
+              | `NotCompleted -> "NotCompleted") );
+          ("current_state", `String (show_current_state current_state));
+        ]);
 
   match current_state with
   | NoServerName ->

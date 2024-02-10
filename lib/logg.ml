@@ -1,6 +1,3 @@
-let log_structured formatter args =
-  `Assoc args |> Yojson.Safe.to_string |> Format.fprintf formatter "%s@."
-
 let now () = Ptime.to_float_s (Ptime.v (Pclock.now_d_ps ()))
 
 let to_rfc3339 unix_time =
@@ -11,22 +8,32 @@ let to_rfc3339 unix_time =
   Printf.sprintf "%04d-%02d-%02dT%02d:%02d:%02d.%03.0fZ" y m d hh mm ss
     clamped_fraction
 
+let string_of_level = function
+  | Logs.App -> ""
+  | Logs.Error -> "ERROR"
+  | Logs.Warning -> "WARN"
+  | Logs.Info -> "INFO"
+  | Logs.Debug -> "DEBUG"
+
+let log_json ~formatter level f =
+  match level with
+  | _ ->
+      f (fun msg args ->
+          `Assoc
+            (("time", `String (now () |> to_rfc3339))
+            :: ("level", `String (string_of_level level))
+            :: ("msg", `String msg)
+            :: args)
+          |> Yojson.Safe.to_string
+          |> Format.fprintf formatter "%s@.");
+      ()
+
 let json_reporter ~formatter =
   (* Thanks to: https://github.com/aantron/dream/blob/8140a600e4f9401e28f77fee3e4328abdc8246ef/src/server/log.ml#L110 *)
-  let report src level ~over k user's_callback =
-    let level =
-      match level with
-      | Logs.App -> ""
-      | Logs.Error -> "ERROR"
-      | Logs.Warning -> "WARN"
-      | Logs.Info -> "INFO"
-      | Logs.Debug -> "DEBUG"
-    in
+  let report _src level ~over k user's_callback =
     user's_callback @@ fun ?header ?tags format_and_arguments ->
     ignore header;
     ignore tags;
-    let time = now () |> to_rfc3339 in
-    let source = Logs.Src.name src in
 
     let buffer = Buffer.create 512 in
     let f = Fmt.with_buffer ~like:Fmt.stderr buffer in
@@ -34,13 +41,7 @@ let json_reporter ~formatter =
       (fun _ ->
         let msg = Buffer.contents buffer in
         Buffer.reset buffer;
-        log_structured formatter
-          [
-            ("t", `String time);
-            ("s", `String source);
-            ("l", `String level);
-            ("m", `String msg);
-          ];
+        log_json ~formatter level (fun m -> m msg []);
 
         over ();
         k ())
@@ -48,6 +49,7 @@ let json_reporter ~formatter =
   in
   { Logs.report }
 
+(*
 let pretty_reporter ~formatter ?(src_width = 5) () =
   (* Thanks to: https://github.com/aantron/dream/blob/8140a600e4f9401e28f77fee3e4328abdc8246ef/src/server/log.ml#L110 *)
   let report src level ~over k user's_callback =
@@ -94,13 +96,17 @@ let pretty_reporter ~formatter ?(src_width = 5) () =
       level
   in
   { Logs.report }
+*)
+
+let formatter = Fmt.stdout
 
 let setup () =
-  let formatter = Fmt.stdout in
   Fmt.set_style_renderer formatter `Ansi_tty;
-  Logs.set_reporter (pretty_reporter ~formatter ());
-  (*
   Logs.set_reporter (json_reporter ~formatter);
-  *)
   Logs.set_level (Some Logs.Info);
   ()
+
+let info = log_json ~formatter Logs.Info
+let err = log_json ~formatter Logs.Error
+let warn = log_json ~formatter Logs.Warning
+let debug = log_json ~formatter Logs.Debug

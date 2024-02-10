@@ -473,15 +473,9 @@ module Make (B : Bare.S) = struct
 
   let create_or_update ~sw client ~name ~namespace f =
     match get ~sw client ~name ~namespace () with
-    | Error `Not_found ->
-        Logs.info (fun m -> m "not found %s %s" name namespace);
-        create ~sw client (f None)
+    | Error `Not_found -> create ~sw client (f None)
     | Error _ as e -> e
-    | Ok v ->
-        Logs.info (fun m ->
-            m "found %s %s %s" name namespace
-              (Yojson.Safe.to_string (B.to_yojson v)));
-        update ~sw client (f (Some v))
+    | Ok v -> update ~sw client (f (Some v))
 
   let create_or_update_status ~sw client ~name ~namespace f =
     match get_status ~sw client ~name ~namespace () with
