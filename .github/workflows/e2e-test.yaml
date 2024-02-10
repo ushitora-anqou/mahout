@@ -20,4 +20,4 @@ jobs:
         with:
           ocaml-compiler: "5.0.0"
       - run: opam install . --deps-only --with-test
-      - run: make -C e2e test
+      - run: opam exec -- make -C e2e test
