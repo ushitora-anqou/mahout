@@ -1,19 +1,4 @@
 (executable
  (public_name mahout)
  (name main)
- (libraries
-  base64
-  cmdliner
-  cohttp-eio
-  eio.unix
-  eio_main
-  jingoo
-  k8s_1_28_client
-  mahout
-  mirage-crypto-rng-eio
-  ppx_deriving_yojson.runtime
-  tls
-  tls-eio
-  yojson)
- (preprocess
-  (pps ppx_deriving_yojson ppx_deriving.std)))
+ (libraries cmdliner mahout))

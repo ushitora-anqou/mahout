@@ -4,17 +4,24 @@
   (pps ppx_deriving.show ppx_deriving.make ppx_deriving_yojson))
  (libraries
   base64
+  cmdliner
   cohttp-eio
   containers
   containers-data
   cstruct
   eio.unix
+  eio_main
   fmt
+  jingoo
+  k8s_1_28_client
   logs
   mirage-clock-unix
   mirage-crypto-rng
   mirage-crypto-rng-eio
+  ppx_deriving_yojson.runtime
   ptime
   safepass
+  tls
+  tls-eio
   uuidm
   yojson))
