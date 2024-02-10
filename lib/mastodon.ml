@@ -11,8 +11,8 @@ module Bare = struct
       ?continue:_ ?field_selector:_ ?label_selector:_ ?limit:_ ?pretty:_
       ?resource_version:_ ?resource_version_match:_ ?send_initial_events:_
       ?timeout_seconds:_ ?watch () =
-    Mahout_v1alpha1_api.watch_mahout_v1alpha1_namespaced_mastodon ~sw client
-      ?watch () ~namespace
+    Mahout_v1alpha1_api.watch_mahout_v1alpha1_namespaced_mastodon_list ~sw
+      client ?watch () ~namespace
 
   let patch_status ~sw client ?headers:_ ~name ~namespace ~body ?pretty:_
       ?dry_run:_ ?field_manager:_ ?field_validation:_ ?force:_ () =
@@ -38,11 +38,12 @@ module Bare = struct
       ?pretty:_ ?dry_run:_ ?field_manager:_ ?field_validation:_ ?force:_ () =
     raise Not_implemented
 
-  let watch_for_all_namespaces ~sw:_ _client ?headers:_ ?allow_watch_bookmarks:_
+  let watch_for_all_namespaces ~sw client ?headers:_ ?allow_watch_bookmarks:_
       ?continue:_ ?field_selector:_ ?label_selector:_ ?limit:_ ?pretty:_
       ?resource_version:_ ?resource_version_match:_ ?send_initial_events:_
-      ?timeout_seconds:_ ?watch:_ () =
-    raise Not_implemented
+      ?timeout_seconds:_ ?watch () =
+    Mahout_v1alpha1_api.watch_mahout_v1alpha1_mastodon_list_for_all_namespaces
+      ~sw client ?watch ()
 
   let list_namespaced ~sw:_ _client ?headers:_ ~namespace:_ ?pretty:_
       ?allow_watch_bookmarks:_ ?continue:_ ?field_selector:_ ?label_selector:_

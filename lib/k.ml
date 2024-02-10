@@ -394,6 +394,56 @@ type error =
 [@@deriving show]
 
 module Make (B : Bare.S) = struct
+  module Cache = struct
+    type 'a t = {
+      mtx : Eio.Mutex.t;
+      name_ns : (string * string, 'a) Hashtbl.t;
+      ns_name : (string, (string, 'a) Hashtbl.t) Hashtbl.t;
+    }
+
+    let make () =
+      {
+        mtx = Eio.Mutex.create ();
+        name_ns = Hashtbl.create 0;
+        ns_name = Hashtbl.create 0;
+      }
+
+    let update ~name ~namespace data t =
+      Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
+      Hashtbl.replace t.name_ns (name, namespace) data;
+
+      let h =
+        match Hashtbl.find_opt t.ns_name namespace with
+        | Some h -> h
+        | None -> Hashtbl.create 1
+      in
+      Hashtbl.replace h name data;
+      Hashtbl.replace t.ns_name namespace h
+
+    let get ~name ~namespace t =
+      Eio.Mutex.use_ro t.mtx @@ fun () ->
+      Hashtbl.find_opt t.name_ns (name, namespace)
+
+    let list ~namespace ?label_selector t =
+      Eio.Mutex.use_ro t.mtx @@ fun () ->
+      Hashtbl.find_opt t.ns_name namespace
+      |> Option.map @@ fun h ->
+         h |> Hashtbl.to_seq_values
+         |> Seq.filter (fun resource ->
+                match label_selector with
+                | None -> true
+                | Some label_selector ->
+                    let metadata = B.metadata resource |> Option.get in
+                    let labels = Yojson.Safe.Util.to_assoc metadata.labels in
+                    Label_selector.check label_selector labels)
+
+    let delete ~name ~namespace t =
+      Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
+      Hashtbl.remove t.name_ns (name, namespace);
+      Hashtbl.find_opt t.ns_name namespace
+      |> Option.iter (fun h -> Hashtbl.remove h name)
+  end
+
   open struct
     let expect : _ -> (_, error) result = function
       | Ok x -> Ok x
@@ -430,8 +480,57 @@ module Make (B : Bare.S) = struct
     | `Modified, v -> "MODIFIED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
     | `Deleted, v -> "DELETED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
 
+  let parse_watch_event
+      (ev : Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) =
+    match ev._type with
+    | "ADDED" -> (`Added, ev._object |> B.of_yojson |> Result.get_ok)
+    | "MODIFIED" -> (`Modified, ev._object |> B.of_yojson |> Result.get_ok)
+    | "DELETED" -> (`Deleted, ev._object |> B.of_yojson |> Result.get_ok)
+    | _ -> failwith "invalid watch event"
+
+  let watch ~sw client ~namespace () :
+      (watch_event Json_response_scanner.t, Http.Response.t) result =
+    B.watch_namespaced ~sw client ~namespace ~watch:true ()
+    |> Result.map (fun scanner ->
+           scanner |> Json_response_scanner.with_conv parse_watch_event)
+
+  let watch_all ~sw client () :
+      (watch_event Json_response_scanner.t, Http.Response.t) result =
+    B.watch_for_all_namespaces ~sw client ~watch:true ()
+    |> Result.map (fun scanner ->
+           scanner |> Json_response_scanner.with_conv parse_watch_event)
+
+  let cache = ref None
+
+  let enable_cache env ~sw client =
+    cache := Some (Cache.make ());
+    Eio.Fiber.fork ~sw (fun () ->
+        let rec loop () =
+          (try
+             watch_all ~sw client () |> Result.get_ok
+             |> Json_response_scanner.iter (fun ((ty, data) : watch_event) ->
+                    let name, namespace = get_name_and_ns data |> Option.get in
+                    let cache = Option.get !cache in
+                    match ty with
+                    | `Added | `Modified ->
+                        cache |> Cache.update ~name ~namespace data
+                    | `Deleted -> cache |> Cache.delete ~name ~namespace);
+             assert false
+           with e ->
+             Logg.err (fun m ->
+                 m "cache loop failed"
+                   [ ("error", `String (Printexc.to_string e)) ]));
+          Eio.Time.sleep (Eio.Stdenv.clock env) 1.0;
+          loop ()
+        in
+        loop ());
+    ()
+
   let get ~sw client ~name ~namespace () =
-    B.read_namespaced ~sw client ~name ~namespace () |> expect_one
+    match !cache with
+    | None -> B.read_namespaced ~sw client ~name ~namespace () |> expect_one
+    | Some cache ->
+        cache |> Cache.get ~name ~namespace |> Option.to_result ~none:`Not_found
 
   let get_status ~sw client ~name ~namespace () =
     B.read_status ~sw client ~name ~namespace () |> expect_one
@@ -454,23 +553,6 @@ module Make (B : Bare.S) = struct
     | Some (_, namespace) ->
         B.create_namespaced ~sw client ~namespace ~body () |> expect_one
 
-  let watch ~sw client ~namespace () :
-      (watch_event Json_response_scanner.t, Http.Response.t) result =
-    B.watch_namespaced ~sw client ~namespace ~watch:true ()
-    |> Result.map (fun scanner ->
-           scanner
-           |> Json_response_scanner.with_conv
-                (fun
-                  (ev : Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) ->
-                  match ev._type with
-                  | "ADDED" ->
-                      (`Added, ev._object |> B.of_yojson |> Result.get_ok)
-                  | "MODIFIED" ->
-                      (`Modified, ev._object |> B.of_yojson |> Result.get_ok)
-                  | "DELETED" ->
-                      (`Deleted, ev._object |> B.of_yojson |> Result.get_ok)
-                  | _ -> failwith "invalid watch event"))
-
   let create_or_update ~sw client ~name ~namespace f =
     match get ~sw client ~name ~namespace () with
     | Error `Not_found -> create ~sw client (f None)
@@ -484,8 +566,18 @@ module Make (B : Bare.S) = struct
     | Ok v -> update_status ~sw client (f (Some v))
 
   let list ~sw client ~namespace ?label_selector () =
-    B.list_namespaced ~sw client ~namespace ?label_selector ()
-    |> expect_one |> Result.map B.to_list
+    match !cache with
+    | Some cache ->
+        cache
+        |> Cache.list ~namespace ?label_selector
+        |> Option.map List.of_seq
+        |> Option.to_result ~none:`Not_found
+    | _ ->
+        let label_selector =
+          label_selector |> Option.map Label_selector.to_string
+        in
+        B.list_namespaced ~sw client ~namespace ?label_selector ()
+        |> expect_one |> Result.map B.to_list
 
   let delete ~sw client ?uid ~namespace ~name () =
     B.delete_namespaced ~sw client ~name ~namespace

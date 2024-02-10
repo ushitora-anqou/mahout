@@ -30,7 +30,8 @@ let read_mahout_v1alpha1_namespaced_mastodon_status ~sw client
     (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.of_yojson)
     resp body
 
-let watch_mahout_v1alpha1_namespaced_mastodon ~sw client ~namespace ?watch () =
+let watch_mahout_v1alpha1_namespaced_mastodon_list ~sw client ~namespace ?watch
+    () =
   let uri =
     Request.build_uri
       "/apis/mahout.anqou.net/v1alpha1/watch/namespaces/{namespace}/mastodons"
@@ -38,6 +39,20 @@ let watch_mahout_v1alpha1_namespaced_mastodon ~sw client ~namespace ?watch () =
   let headers = Request.default_headers in
   let headers = Cohttp.Header.add headers "authorization" Request.api_key in
   let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
+  let uri = Request.maybe_add_query_param uri "watch" string_of_bool watch in
+  let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers in
+  Request.read_json_body_as
+    (JsonSupport.unwrap
+       Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.of_yojson)
+    resp body
+
+let watch_mahout_v1alpha1_mastodon_list_for_all_namespaces ~sw client ?watch ()
+    =
+  let uri =
+    Request.build_uri "/apis/mahout.anqou.net/v1alpha1/watch/mastodons"
+  in
+  let headers = Request.default_headers in
+  let headers = Cohttp.Header.add headers "authorization" Request.api_key in
   let uri = Request.maybe_add_query_param uri "watch" string_of_bool watch in
   let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers in
   Request.read_json_body_as

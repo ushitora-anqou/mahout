@@ -23,6 +23,14 @@ let controller () =
       (Eio.Stdenv.net env)
   in
 
+  K.Job.enable_cache env ~sw client;
+
+  Mastodon.enable_cache env ~sw client;
+  K.Pod.enable_cache env ~sw client;
+  K.Deployment.enable_cache env ~sw client;
+  K.Service.enable_cache env ~sw client;
+  K.Config_map.enable_cache env ~sw client;
+
   let mailbox = Eio.Stream.create 0 in
 
   Eio.Fiber.fork ~sw (fun () ->

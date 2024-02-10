@@ -559,21 +559,19 @@ let get_deployments_pod_statuses ~sw client ~name ~namespace ~image =
   let* all_pods =
     K.Pod.list ~sw client ~namespace
       ~label_selector:
-        Label_selector.(
-          to_string
-            [ Eq (Label.mastodon_key, name); Exist Label.deploy_image_key ])
+        Label_selector.
+          [ Eq (Label.mastodon_key, name); Exist Label.deploy_image_key ]
       ()
   in
 
   let* live_pods =
     K.Pod.list ~sw client ~namespace
       ~label_selector:
-        Label_selector.(
-          to_string
-            [
-              Eq (Label.mastodon_key, name);
-              Eq (Label.deploy_image_key, image_label_value);
-            ])
+        Label_selector.
+          [
+            Eq (Label.mastodon_key, name);
+            Eq (Label.deploy_image_key, image_label_value);
+          ]
       ()
   in
   let live_pods =
