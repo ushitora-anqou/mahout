@@ -45,7 +45,7 @@ let get_deploy_name mastodon_name = function
 let get_svc_name mastodon_name = function
   | `Web -> mastodon_name ^ "-web"
   | `Streaming -> mastodon_name ^ "-streaming"
-  | `Nginx -> mastodon_name ^ "-gateway-svc"
+  | `Nginx -> mastodon_name ^ "-gateway"
 
 let get_job_name mastodon_name = function
   | `Migration -> mastodon_name ^ "-migration"

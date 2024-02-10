@@ -110,9 +110,9 @@ let () =
       wait_deploy_available "mastodon0-sidekiq";
       wait_deploy_available "mastodon0-streaming";
       wait_deploy_available "mastodon0-web";
-      http_get "http://mastodon0-gateway-svc.default.svc/health" |> ignore;
+      http_get "http://mastodon0-gateway.default.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
-        ~endpoint:"http://mastodon0-gateway-svc.default.svc" ~expected:"4.1.9";
+        ~endpoint:"http://mastodon0-gateway.default.svc" ~expected:"4.1.9";
       check_schema_migrations_count ~expected:395;
       ());
 
@@ -127,9 +127,9 @@ let () =
       wait_deploy_available "mastodon0-sidekiq";
       wait_deploy_available "mastodon0-streaming";
       wait_deploy_available "mastodon0-web";
-      http_get "http://mastodon0-gateway-svc.default.svc/health" |> ignore;
+      http_get "http://mastodon0-gateway.default.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
-        ~endpoint:"http://mastodon0-gateway-svc.default.svc" ~expected:"4.2.0";
+        ~endpoint:"http://mastodon0-gateway.default.svc" ~expected:"4.2.0";
       check_schema_migrations_count ~expected:422;
       ());
 
