@@ -29,11 +29,8 @@ build-image:
 clean-cluster:
 	$(KIND) delete cluster -n $(KIND_CLUSTER_NAME)
 
-.PHONY: create-cluster
-create-cluster: setup build-image
-	$(MAKE) clean-cluster
-	$(KIND) create cluster -n $(KIND_CLUSTER_NAME) --image kindest/node:v$(KUBERNETES_VERSION)
-	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
+.PHONY: apply-basic-manifests
+apply-basic-manifests:
 	$(KUBECTL) apply -f $(WD)/manifests/mahout.anqou.net_mastodons.yaml
 	$(KUBECTL) wait --for condition="established" crd mastodons.mahout.anqou.net
 	$(KUBECTL) apply -f $(WD)/manifests/serviceaccount.yaml
@@ -41,11 +38,19 @@ create-cluster: setup build-image
 	$(KUBECTL) apply -f $(WD)/manifests/clusterrolebinding.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/gateway-nginx-conf-template.yaml
 
 .PHONY: reload-image
 reload-image: build-image
 	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
 
+.PHONY: create-cluster
+create-cluster: setup build-image
+	$(MAKE) clean-cluster
+	$(KIND) create cluster -n $(KIND_CLUSTER_NAME) --image kindest/node:v$(KUBERNETES_VERSION)
+	$(MAKE) reload-image
+	$(MAKE) apply-basic-manifests
+
 .PHONY: test
-test: reload-image
+test: reload-image apply-basic-manifests
 	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq

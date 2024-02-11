@@ -68,6 +68,13 @@ spec:
                       x-kubernetes-map-type: atomic
                   type: object
                 type: array
+              gateway:
+                properties:
+                  nginxConfTemplateConfigMap:
+                    type: string
+                  replicas:
+                    type: integer
+                type: object
               image:
                 type: string
               sidekiq:

@@ -2,16 +2,40 @@ let get_deploy_name mastodon_name = function
   | `Web -> mastodon_name ^ "-web"
   | `Sidekiq -> mastodon_name ^ "-sidekiq"
   | `Streaming -> mastodon_name ^ "-streaming"
-  | `Nginx -> mastodon_name ^ "-gateway-nginx"
+  | `Gateway -> mastodon_name ^ "-gateway-nginx"
 
 let get_svc_name mastodon_name = function
   | `Web -> mastodon_name ^ "-web"
   | `Streaming -> mastodon_name ^ "-streaming"
-  | `Nginx -> mastodon_name ^ "-gateway"
+  | `Gateway -> mastodon_name ^ "-gateway"
 
 let get_job_name mastodon_name = function
   | `Migration -> mastodon_name ^ "-migration"
   | `CheckEnv -> mastodon_name ^ "-check-env"
+
+let get_deployment_selector ~kind =
+  let name, component =
+    match kind with
+    | `Sidekiq -> ("sidekiq", "sidekiq")
+    | `Web -> ("puma", "web")
+    | `Streaming -> ("node", "streaming")
+    | `Gateway -> ("nginx", "gateway")
+  in
+  [
+    ("app.kubernetes.io/name", `String name);
+    ("app.kubernetes.io/component", `String component);
+    ("app.kubernetes.io/part-of", `String "mastodon");
+  ]
+
+let get_deployment_labels ~mastodon_name ~deploy_image ~kind =
+  let selector = get_deployment_selector ~kind in
+  let labels =
+    Label.(
+      (mastodon_key, `String mastodon_name)
+      :: (deploy_image_key, `String (encode_deploy_image deploy_image))
+      :: selector)
+  in
+  (selector, labels)
 
 let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
   let name = Option.get (Option.get mastodon.metadata).name in
@@ -123,170 +147,104 @@ let create_or_update_deployment ~sw client ~name ~namespace body =
             };
       }
 
-let get_deployment_labels ~name ~component ~part_of ~mastodon_name ~deploy_image
-    =
-  let selector =
-    [
-      ("app.kubernetes.io/name", `String name);
-      ("app.kubernetes.io/component", `String component);
-      ("app.kubernetes.io/part-of", `String part_of);
-    ]
-  in
-  let labels =
-    Label.(
-      (mastodon_key, `String mastodon_name)
-      :: (deploy_image_key, `String (encode_deploy_image deploy_image))
-      :: selector)
-  in
-  (selector, labels)
-
-let create_or_update_sidekiq ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
+let create_or_update_mastodon_service ~sw client
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~kind =
   let ( let* ) = Result.bind in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let env_from = (Option.get mastodon.spec).env_from in
-
-  let deploy_name = get_deploy_name name `Sidekiq in
-  let selector, labels =
-    get_deployment_labels ~name:"sidekiq" ~component:"sidekiq"
-      ~part_of:"mastodon" ~mastodon_name:name ~deploy_image:image
-  in
+  let svc_name = get_svc_name name kind in
   let owner_references = get_owner_references mastodon in
+  let selector = get_deployment_selector ~kind in
 
-  let body =
-    K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
-      ~metadata:
-        (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references ())
-      ~spec:
-        K.Deployment_spec.(
-          make ~replicas:1l
-            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
-            ~template:
-              (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
-                 ~spec:
-                   K.Pod_spec.(
-                     make
-                       ~containers:
-                         K.Container.
-                           [
-                             make ~name:"sidekiq" ~image
-                               ~command:[ "bash"; "-c"; "bundle exec sidekiq" ]
-                               ~env_from ();
-                           ]
-                       ())
-                 ())
-            ())
-      ()
-  in
-  let* _ =
-    create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
-  in
-
-  Ok ()
-
-let create_or_update_streaming ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
-  let ( let* ) = Result.bind in
-
-  let name = Option.get (Option.get mastodon.metadata).name in
-  let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let env_from = (Option.get mastodon.spec).env_from in
-
-  let deploy_name = get_deploy_name name `Streaming in
-  let svc_name = get_svc_name name `Streaming in
-  let selector, labels =
-    get_deployment_labels ~name:"node" ~component:"streaming"
-      ~part_of:"mastodon" ~mastodon_name:name ~deploy_image:image
-  in
-  let owner_references = get_owner_references mastodon in
-
-  let body =
-    K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
-      ~metadata:
-        (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references ())
-      ~spec:
-        K.Deployment_spec.(
-          make ~replicas:1l
-            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
-            ~template:
-              (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
-                 ~spec:
-                   K.Pod_spec.(
-                     make
-                       ~containers:
-                         K.Container.
-                           [
-                             make ~name:"streaming" ~image
-                               ~command:[ "bash"; "-c"; "node ./streaming" ]
-                               ~env_from
-                               ~ports:
-                                 K.Container_port.
-                                   [
-                                     make ~name:"streaming"
-                                       ~container_port:4000l ~protocol:"TCP" ();
-                                   ]
-                               ~liveness_probe:
-                                 (K.Probe.make
-                                    ~http_get:
-                                      (K.Http_get_action.make ~port:"streaming"
-                                         ~path:"/api/v1/streaming/health" ())
-                                    ())
-                               ~readiness_probe:
-                                 (K.Probe.make
-                                    ~http_get:
-                                      (K.Http_get_action.make ~port:"streaming"
-                                         ~path:"/api/v1/streaming/health" ())
-                                    ())
-                               ();
-                           ]
-                       ())
-                 ())
-            ())
-      ()
-  in
-  let* _ =
-    create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
-  in
-
+  let port = match kind with `Web -> 3000l | `Streaming -> 4000l in
   let body =
     K.Service.make
       ~metadata:
         (K.Object_meta.make ~name:svc_name ~namespace ~owner_references ())
       ~spec:
         (K.Service_spec.make ~selector:(`Assoc selector)
-           ~ports:[ K.Service_port.make ~port:4000l () ]
+           ~ports:[ K.Service_port.make ~port () ]
            ())
       ()
   in
   let* _ =
-    K.Service.create_or_update ~sw client ~name:svc_name ~namespace @@ fun _ ->
-    body
+    K.Service.create_or_update ~sw client ~name:svc_name ~namespace (fun _ ->
+        body)
+    |> Result.map_error K.show_error
   in
 
   Ok ()
 
-let create_or_update_web ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
+let create_or_update_mastodon_deployment ~sw client
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image ~kind =
   let ( let* ) = Result.bind in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let env_from = (Option.get mastodon.spec).env_from in
 
-  let deploy_name = get_deploy_name name `Web in
-  let svc_name = get_svc_name name `Web in
+  let deploy_name = get_deploy_name name kind in
   let selector, labels =
-    get_deployment_labels ~name:"puma" ~component:"web" ~part_of:"mastodon"
-      ~mastodon_name:name ~deploy_image:image
+    get_deployment_labels ~mastodon_name:name ~deploy_image:image ~kind
   in
   let owner_references = get_owner_references mastodon in
 
+  let container =
+    let open K.Container in
+    match kind with
+    | `Sidekiq ->
+        make ~name:"sidekiq" ~image
+          ~command:[ "bash"; "-c"; "bundle exec sidekiq" ]
+          ~env_from ()
+    | `Streaming ->
+        make ~name:"streaming" ~image
+          ~command:[ "bash"; "-c"; "node ./streaming" ]
+          ~env_from
+          ~ports:
+            K.Container_port.
+              [
+                make ~name:"streaming" ~container_port:4000l ~protocol:"TCP" ();
+              ]
+          ~liveness_probe:
+            (K.Probe.make
+               ~http_get:
+                 (K.Http_get_action.make ~port:"streaming"
+                    ~path:"/api/v1/streaming/health" ())
+               ())
+          ~readiness_probe:
+            (K.Probe.make
+               ~http_get:
+                 (K.Http_get_action.make ~port:"streaming"
+                    ~path:"/api/v1/streaming/health" ())
+               ())
+          ()
+    | `Web ->
+        make ~name:"web" ~image
+          ~command:[ "bash"; "-c"; "bundle exec puma -C config/puma.rb" ]
+          ~env_from
+          ~ports:
+            K.Container_port.
+              [ make ~name:"http" ~container_port:3000l ~protocol:"TCP" () ]
+          ~liveness_probe:
+            (K.Probe.make
+               ~tcp_socket:(K.Tcp_socket_action.make ~port:"http" ())
+               ())
+          ~readiness_probe:
+            (K.Probe.make
+               ~http_get:
+                 (K.Http_get_action.make ~path:"/health" ~port:"http" ())
+               ())
+          ~startup_probe:
+            (K.Probe.make
+               ~http_get:
+                 (K.Http_get_action.make ~path:"/health" ~port:"http" ())
+               ~failure_threshold:30l ~period_seconds:5l ())
+          ()
+  in
+
   let body =
-    K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
+    K.Deployment.make
       ~metadata:
         (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references ())
       ~spec:
@@ -296,67 +254,15 @@ let create_or_update_web ~sw client
             ~template:
               (K.Pod_template_spec.make
                  ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
-                 ~spec:
-                   K.Pod_spec.(
-                     make
-                       ~containers:
-                         K.Container.
-                           [
-                             make ~name:"web" ~image
-                               ~command:
-                                 [
-                                   "bash";
-                                   "-c";
-                                   "bundle exec puma -C config/puma.rb";
-                                 ]
-                               ~env_from
-                               ~ports:
-                                 K.Container_port.
-                                   [
-                                     make ~name:"http" ~container_port:3000l
-                                       ~protocol:"TCP" ();
-                                   ]
-                               ~liveness_probe:
-                                 (K.Probe.make
-                                    ~tcp_socket:
-                                      (K.Tcp_socket_action.make ~port:"http" ())
-                                    ())
-                               ~readiness_probe:
-                                 (K.Probe.make
-                                    ~http_get:
-                                      (K.Http_get_action.make ~path:"/health"
-                                         ~port:"http" ())
-                                    ())
-                               ~startup_probe:
-                                 (K.Probe.make
-                                    ~http_get:
-                                      (K.Http_get_action.make ~path:"/health"
-                                         ~port:"http" ())
-                                    ~failure_threshold:30l ~period_seconds:5l ())
-                               ();
-                           ]
-                       ())
+                 ~spec:(K.Pod_spec.make ~containers:[ container ] ())
                  ())
             ())
       ()
   in
+
   let* _ =
     create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
-  in
-
-  let body =
-    K.Service.make
-      ~metadata:
-        (K.Object_meta.make ~name:svc_name ~namespace ~owner_references ())
-      ~spec:
-        (K.Service_spec.make ~selector:(`Assoc selector)
-           ~ports:[ K.Service_port.make ~port:3000l () ]
-           ())
-      ()
-  in
-  let* _ =
-    K.Service.create_or_update ~sw client ~name:svc_name ~namespace @@ fun _ ->
-    body
+    |> Result.map_error K.show_error
   in
 
   Ok ()
@@ -369,19 +275,39 @@ let create_or_update_gateway ~sw client
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let* gateway =
+    (Option.get mastodon.spec).gateway
+    |> Option.to_result ~none:"gateway is not found"
+  in
+  let nginx_conf_template_cm_name = gateway.nginx_conf_template_config_map in
+  let nginx_conf_template_cm_key = "nginx.conf" in
 
   let nginx_conf_cm_name = name ^ "-gateway-nginx-conf" in
   let nginx_conf_cm_key = "mastodon-nginx.conf" in
-  let nginx_deploy_name = get_deploy_name name `Nginx in
-  let svc_name = get_svc_name name `Nginx in
+  let nginx_deploy_name = get_deploy_name name `Gateway in
+  let svc_name = get_svc_name name `Gateway in
   let selector, labels =
-    get_deployment_labels ~name:"nginx" ~component:"gateway" ~part_of:"mastodon"
-      ~mastodon_name:name ~deploy_image:image
+    get_deployment_labels ~kind:`Gateway ~mastodon_name:name ~deploy_image:image
   in
 
   let server_name = Option.get (Option.get mastodon.status).server_name in
 
   let owner_references = get_owner_references mastodon in
+
+  let* nginx_conf_template_cm =
+    K.Config_map.get ~sw client ~name:nginx_conf_template_cm_name ~namespace ()
+    |> Result.map_error K.show_error
+  in
+  let* nginx_conf_template =
+    try
+      nginx_conf_template_cm.data |> Yojson.Safe.Util.to_assoc
+      |> List.assoc nginx_conf_template_cm_key
+      |> Yojson.Safe.Util.to_string |> Result.ok
+    with _ ->
+      Error
+        (Printf.sprintf "nginxConfTemplateConfigMap doesn't have correct %s"
+           nginx_conf_template_cm_key)
+  in
 
   let body =
     K.Config_map.make
@@ -393,7 +319,7 @@ let create_or_update_gateway ~sw client
           [
             ( nginx_conf_cm_key,
               `String
-                (Gateway_nginx_conf.s
+                (nginx_conf_template
                 |> Jingoo.Jg_template.from_string
                      ~models:
                        [
@@ -408,9 +334,57 @@ let create_or_update_gateway ~sw client
   in
   let* _ =
     K.Config_map.create_or_update ~sw client ~name:nginx_conf_cm_name ~namespace
-    @@ fun _ -> body
+      (fun _ -> body)
+    |> Result.map_error K.show_error
   in
 
+  let pod_spec =
+    let open K.Pod_spec in
+    make
+      ~init_containers:
+        K.Container.
+          [
+            make ~name:"copy-assets" ~image
+              ~command:
+                [ "bash"; "-c"; "cp -ra /opt/mastodon/public/* /mnt/public/" ]
+              ~volume_mounts:
+                K.Volume_mount.
+                  [ make ~mount_path:"/mnt/public" ~name:"mnt-public" () ]
+              ();
+          ]
+      ~containers:
+        K.Container.
+          [
+            make ~name:"gateway" ~image:nginx_image
+              ~ports:K.Container_port.[ make ~container_port:80l () ]
+              ~volume_mounts:
+                K.Volume_mount.
+                  [
+                    make ~mount_path:"/mnt/public" ~name:"mnt-public"
+                      ~read_only:true ();
+                    make ~mount_path:"/etc/nginx/conf.d" ~name:"nginx-conf"
+                      ~read_only:true ();
+                  ]
+              ();
+          ]
+      ~volumes:
+        K.Volume.
+          [
+            make ~name:"mnt-public"
+              ~empty_dir:(K.Empty_dir_volume_source.make ())
+              ();
+            make ~name:"nginx-conf"
+              ~config_map:
+                K.Config_map_volume_source.(
+                  make ~name:nginx_conf_cm_name
+                    ~items:
+                      K.Key_to_path.
+                        [ make ~key:nginx_conf_cm_key ~path:"mastodon.conf" () ]
+                    ())
+              ();
+          ]
+      ()
+  in
   let body =
     K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
       ~metadata:
@@ -423,71 +397,14 @@ let create_or_update_gateway ~sw client
             ~template:
               (K.Pod_template_spec.make
                  ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
-                 ~spec:
-                   K.Pod_spec.(
-                     make
-                       ~init_containers:
-                         K.Container.
-                           [
-                             make ~name:"copy-assets" ~image
-                               ~command:
-                                 [
-                                   "bash";
-                                   "-c";
-                                   "cp -ra /opt/mastodon/public/* /mnt/public/";
-                                 ]
-                               ~volume_mounts:
-                                 K.Volume_mount.
-                                   [
-                                     make ~mount_path:"/mnt/public"
-                                       ~name:"mnt-public" ();
-                                   ]
-                               ();
-                           ]
-                       ~containers:
-                         K.Container.
-                           [
-                             make ~name:"gateway" ~image:nginx_image
-                               ~ports:
-                                 K.Container_port.
-                                   [ make ~container_port:80l () ]
-                               ~volume_mounts:
-                                 K.Volume_mount.
-                                   [
-                                     make ~mount_path:"/mnt/public"
-                                       ~name:"mnt-public" ~read_only:true ();
-                                     make ~mount_path:"/etc/nginx/conf.d"
-                                       ~name:"nginx-conf" ~read_only:true ();
-                                   ]
-                               ();
-                           ]
-                       ~volumes:
-                         K.Volume.
-                           [
-                             make ~name:"mnt-public"
-                               ~empty_dir:(K.Empty_dir_volume_source.make ())
-                               ();
-                             make ~name:"nginx-conf"
-                               ~config_map:
-                                 K.Config_map_volume_source.(
-                                   make ~name:nginx_conf_cm_name
-                                     ~items:
-                                       K.Key_to_path.
-                                         [
-                                           make ~key:nginx_conf_cm_key
-                                             ~path:"mastodon.conf" ();
-                                         ]
-                                     ())
-                               ();
-                           ]
-                       ())
-                 ())
+                 ~spec:pod_spec ())
             ())
       ()
   in
   let* _ =
     create_or_update_deployment ~sw client ~name:nginx_deploy_name ~namespace
       body
+    |> Result.map_error K.show_error
   in
 
   let body =
@@ -501,8 +418,9 @@ let create_or_update_gateway ~sw client
       ()
   in
   let* _ =
-    K.Service.create_or_update ~sw client ~name:svc_name ~namespace @@ fun _ ->
-    body
+    K.Service.create_or_update ~sw client ~name:svc_name ~namespace (fun _ ->
+        body)
+    |> Result.map_error K.show_error
   in
 
   Ok ()
@@ -520,10 +438,16 @@ let update_mastodon_status ~sw client ~name ~namespace f =
 
 let create_or_update_deployments ~sw client ~mastodon ~image =
   let ( let* ) = Result.bind in
+  let deploy =
+    create_or_update_mastodon_deployment ~sw client ~mastodon ~image
+  in
+  let svc = create_or_update_mastodon_service ~sw client ~mastodon in
   let* _ = create_or_update_gateway ~sw client ~mastodon ~image in
-  let* _ = create_or_update_web ~sw client ~mastodon ~image in
-  let* _ = create_or_update_sidekiq ~sw client ~mastodon ~image in
-  let* _ = create_or_update_streaming ~sw client ~mastodon ~image in
+  let* _ = deploy ~kind:`Web in
+  let* _ = deploy ~kind:`Sidekiq in
+  let* _ = deploy ~kind:`Streaming in
+  let* _ = svc ~kind:`Web in
+  let* _ = svc ~kind:`Streaming in
   Ok ()
 
 let image_of_deployment (deploy : K.Deployment.t) =
@@ -543,7 +467,7 @@ let fetch_deployments_image ~sw client ~name ~namespace =
   in
 
   let ( let* ) = Result.bind in
-  let* image0 = fetch_deploy_image `Nginx in
+  let* image0 = fetch_deploy_image `Gateway in
   let* image1 = fetch_deploy_image `Web in
   let* image2 = fetch_deploy_image `Sidekiq in
   let* image3 = fetch_deploy_image `Streaming in
@@ -669,11 +593,14 @@ let reconcile ~sw client ~name ~namespace =
   Logg.info (fun m ->
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
 
-  let* mastodon = Mastodon.get_status ~sw client ~name ~namespace () in
+  let* mastodon =
+    Mastodon.get_status ~sw client ~name ~namespace ()
+    |> Result.map_error K.show_error
+  in
   let* _ =
     match (Option.get mastodon.metadata).deletion_timestamp with
     | None -> Ok ()
-    | Some _ -> Error `Not_found
+    | Some _ -> Error "Mastodon resource already deleted"
   in
 
   let spec = Option.get mastodon.spec in
@@ -690,9 +617,11 @@ let reconcile ~sw client ~name ~namespace =
   in
   let* deployments_status =
     get_deployments_status ~sw client ~name ~namespace
+    |> Result.map_error K.show_error
   in
   let* migration_job_status =
     get_migration_job_status ~sw client ~name ~namespace
+    |> Result.map_error K.show_error
   in
 
   let current_state =
@@ -761,15 +690,20 @@ let reconcile ~sw client ~name ~namespace =
 
   match current_state with
   | NoServerName ->
-      let* _ = create_check_env_job ~sw client ~mastodon in
+      let* _ =
+        create_check_env_job ~sw client ~mastodon
+        |> Result.map_error K.show_error
+      in
       Ok ()
   | NoDeployments ->
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
             { status with migrating_image = Some spec_image })
+        |> Result.map_error K.show_error
       in
       let* _ =
         create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+        |> Result.map_error K.show_error
       in
       let* _ =
         create_or_update_deployments ~sw client ~mastodon ~image:spec_image
@@ -785,13 +719,18 @@ let reconcile ~sw client ~name ~namespace =
                 | Some x -> Some x
                 | None -> Some spec_image);
             })
+        |> Result.map_error K.show_error
       in
       let* _ =
         create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Pre
+        |> Result.map_error K.show_error
       in
       Ok ()
   | RolloutDeployments ->
-      let* _ = delete_migration_job ~sw client ~mastodon in
+      let* _ =
+        delete_migration_job ~sw client ~mastodon
+        |> Result.map_error K.show_error
+      in
       let* _ =
         create_or_update_deployments ~sw client ~mastodon
           ~image:(Option.get migrating_image)
@@ -800,13 +739,18 @@ let reconcile ~sw client ~name ~namespace =
   | StartPostMigration ->
       let* _ =
         create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+        |> Result.map_error K.show_error
       in
       Ok ()
   | PostMigrationCompleted ->
-      let* _ = delete_migration_job ~sw client ~mastodon in
+      let* _ =
+        delete_migration_job ~sw client ~mastodon
+        |> Result.map_error K.show_error
+      in
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
             { status with migrating_image = None })
+        |> Result.map_error K.show_error
       in
       Ok ()
   | Migrating -> Ok ()

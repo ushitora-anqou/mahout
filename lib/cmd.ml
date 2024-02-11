@@ -72,8 +72,7 @@ let controller () =
     | Ok () -> ()
     | Error e ->
         Logg.err (fun m ->
-            m "mastodon reconciler failed"
-              [ ("error", `String (K.show_error e)) ]));
+            m "mastodon reconciler failed" [ ("error", `String e) ]));
     loop ()
   in
   loop ()
