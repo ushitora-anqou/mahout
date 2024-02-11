@@ -1,16 +1,20 @@
 let bearer_token =
   let token_file = "/var/run/secrets/kubernetes.io/serviceaccount/token" in
-  let ic = open_in_bin token_file in
-  Fun.protect
-    ~finally:(fun () -> close_in ic)
-    (fun () -> In_channel.input_all ic)
+  try
+    let ic = open_in_bin token_file in
+    Fun.protect
+      ~finally:(fun () -> close_in ic)
+      (fun () -> In_channel.input_all ic)
+  with _ -> ""
 
 let api_key = "Bearer " ^ bearer_token
 
 let base_url =
-  let host = Sys.getenv "KUBERNETES_SERVICE_HOST" in
-  let port = Sys.getenv "KUBERNETES_SERVICE_PORT" in
-  "https://" ^ host ^ ":" ^ port
+  try
+    let host = Sys.getenv "KUBERNETES_SERVICE_HOST" in
+    let port = Sys.getenv "KUBERNETES_SERVICE_PORT" in
+    "https://" ^ host ^ ":" ^ port
+  with _ -> ""
 
 let default_headers = Cohttp.Header.init_with "Content-Type" "application/json"
 let option_fold f default o = match o with Some v -> f v | None -> default
