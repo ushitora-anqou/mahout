@@ -2,16 +2,16 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: mastodon-operator
+  name: mahout
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: mastodon-operator
+      app: mahout
   template:
     metadata:
       labels:
-        app: mastodon-operator
+        app: mahout
     spec:
       containers:
         - name: ubuntu
