@@ -1,0 +1,21 @@
+name: Run unit tests
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  e2e-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v4
+      - name: Set-up OCaml 5.0.0
+        uses: ocaml/setup-ocaml@v2
+        with:
+          ocaml-compiler: "5.0.0"
+      - run: opam install . --deps-only --with-test
+      - run: opam exec -- make test
