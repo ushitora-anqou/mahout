@@ -15,34 +15,56 @@ let string_of_level = function
   | Logs.Info -> "INFO"
   | Logs.Debug -> "DEBUG"
 
-let log_json ~formatter level f =
-  match level with
-  | _ ->
-      f (fun msg args ->
-          `Assoc
-            (("time", `String (now () |> to_rfc3339))
-            :: ("level", `String (string_of_level level))
-            :: ("msg", `String msg)
-            :: args)
-          |> Yojson.Safe.to_string
-          |> Format.fprintf formatter "%s@.");
-      ()
+type _ Effect.t += Trace : string Effect.t
+
+let setup_trace ~enable f =
+  Effect.(
+    Deep.(
+      try_with f ()
+        {
+          effc =
+            (fun (type a) (e : a t) ->
+              match e with
+              | Trace ->
+                  Some
+                    (fun (k : (a, _) continuation) ->
+                      let bt =
+                        if enable then
+                          Printexc.raw_backtrace_to_string (get_callstack k 100)
+                        else "not enabled"
+                      in
+                      continue k bt)
+              | _ -> None);
+        }))
+
+let log_json ?(print_trace = false) ~formatter level f : unit =
+  f (fun msg args ->
+      let args =
+        ("time", `String (now () |> to_rfc3339))
+        :: ("level", `String (string_of_level level))
+        :: ("msg", `String msg)
+        :: args
+      in
+      let args =
+        if print_trace then ("trace", `String (Effect.perform Trace)) :: args
+        else args
+      in
+      `Assoc args |> Yojson.Safe.to_string |> Format.fprintf formatter "%s@.")
 
 let json_reporter ~formatter =
   (* Thanks to: https://github.com/aantron/dream/blob/8140a600e4f9401e28f77fee3e4328abdc8246ef/src/server/log.ml#L110 *)
-  let report _src level ~over k user's_callback =
-    user's_callback @@ fun ?header ?tags format_and_arguments ->
-    ignore header;
-    ignore tags;
-
+  let report src level ~over k user's_callback =
+    user's_callback @@ fun ?header:_ ?tags:_ format_and_arguments ->
     let buffer = Buffer.create 512 in
     let f = Fmt.with_buffer ~like:Fmt.stderr buffer in
     Format.kfprintf
       (fun _ ->
+        Format.pp_print_flush f ();
         let msg = Buffer.contents buffer in
+        let name = Logs.Src.name src in
         Buffer.reset buffer;
-        log_json ~formatter level (fun m -> m msg []);
-
+        log_json ~formatter level (fun m ->
+            m msg [ ("src.name", `String name) ]);
         over ();
         k ())
       f format_and_arguments
@@ -100,13 +122,13 @@ let pretty_reporter ~formatter ?(src_width = 5) () =
 
 let formatter = Fmt.stdout
 
-let setup () =
+let setup ?(enable_trace = true) f =
   Fmt.set_style_renderer formatter `Ansi_tty;
   Logs.set_reporter (json_reporter ~formatter);
   Logs.set_level (Some Logs.Info);
-  ()
+  setup_trace ~enable:enable_trace f
 
-let info = log_json ~formatter Logs.Info
-let err = log_json ~formatter Logs.Error
-let warn = log_json ~formatter Logs.Warning
-let debug = log_json ~formatter Logs.Debug
+let info ?print_trace = log_json ?print_trace ~formatter Logs.Info
+let err ?print_trace = log_json ?print_trace ~formatter Logs.Error
+let warn ?print_trace = log_json ?print_trace ~formatter Logs.Warning
+let debug ?print_trace = log_json ?print_trace ~formatter Logs.Debug

@@ -34,7 +34,7 @@ let controller () =
   let mailbox = Eio.Stream.create 0 in
 
   Eio.Fiber.fork ~sw (fun () ->
-      Mastodon.watch ~sw client ~namespace:"default" ()
+      Mastodon.watch_all ~sw client ()
       |> Result.get_ok
       |> K.Json_response_scanner.iter (fun (_, (mastodon : Mastodon.t)) ->
              let metadata = Option.get mastodon.metadata in
@@ -43,7 +43,7 @@ let controller () =
              Eio.Stream.add mailbox (name, namespace)));
 
   Eio.Fiber.fork ~sw (fun () ->
-      K.Job.watch ~sw client ~namespace:"default" ()
+      K.Job.watch_all ~sw client ()
       |> Result.get_ok
       |> K.Json_response_scanner.iter (fun (_ty, (job : K.Job.t)) ->
              let is_owned =
@@ -59,7 +59,7 @@ let controller () =
                       Eio.Stream.add mailbox (name, namespace))));
 
   Eio.Fiber.fork ~sw (fun () ->
-      K.Pod.watch ~sw client ~namespace:"default" ()
+      K.Pod.watch_all ~sw client ()
       |> Result.get_ok
       |> K.Json_response_scanner.iter (fun (_ty, (pod : K.Pod.t)) ->
              Mastodon_reconciler.find_mastodon_from_pod ~sw client pod

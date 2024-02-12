@@ -3,6 +3,7 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
   name: mahout-controller-rolebinding
+  namespace: e2e
 roleRef:
   apiGroup: rbac.authorization.k8s.io
   kind: ClusterRole
@@ -10,4 +11,4 @@ roleRef:
 subjects:
 - kind: ServiceAccount
   name: mahout-controller-sa
-  namespace: default
+  namespace: e2e

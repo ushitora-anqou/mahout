@@ -48,8 +48,8 @@ let kubectl args =
 let wait_available kind condition name =
   try
     kubectl
-      (Printf.sprintf {|wait --for='condition=%s' --timeout=1s %s %s|} condition
-         kind name)
+      (Printf.sprintf {|wait -n e2e --for='condition=%s' --timeout=1s %s %s|}
+         condition kind name)
     |> ignore
   with Process_status_error (Unix.WEXITED 1, _, _) ->
     failwith ("condition Available not met for " ^ kind ^ "/" ^ name)
@@ -85,7 +85,7 @@ let wait_not_found kind name =
 let check_schema_migrations_count ~expected =
   let src =
     kubectl
-      {|exec postgres-0 -- psql -U mastodon mastodon_production -c 'SELECT COUNT(version) FROM schema_migrations;'|}
+      {|exec -n e2e postgres-0 -- psql -U mastodon mastodon_production -c 'SELECT COUNT(version) FROM schema_migrations;'|}
     |> fst |> String.split_on_char '\n'
   in
   let count = List.nth src 2 |> String.trim |> int_of_string in
@@ -94,8 +94,8 @@ let check_schema_migrations_count ~expected =
       expected
 
 let setup () =
-  or_true (fun () -> kubectl {|delete deploy mahout|} |> ignore);
-  or_true (fun () -> kubectl {|delete mastodon mastodon0|} |> ignore);
+  or_true (fun () -> kubectl {|delete -n e2e deploy mahout|} |> ignore);
+  or_true (fun () -> kubectl {|delete -n e2e mastodon mastodon0|} |> ignore);
   or_true (fun () -> delete_manifest "postgres.yaml" |> ignore);
   or_true (fun () -> delete_manifest "redis.yaml" |> ignore);
   or_true (fun () -> apply_manifest "postgres.yaml");
@@ -107,7 +107,7 @@ let setup () =
   ()
 
 let () =
-  Mahout.Logg.setup ();
+  Mahout.Logg.setup ~enable_trace:false @@ fun () ->
   setup ();
 
   apply_manifest "mastodon0-v4.1.9.yaml";
@@ -117,9 +117,9 @@ let () =
       wait_deploy_available "mastodon0-sidekiq";
       wait_deploy_available "mastodon0-streaming";
       wait_deploy_available "mastodon0-web";
-      http_get "http://mastodon0-gateway.default.svc/health" |> ignore;
+      http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
-        ~endpoint:"http://mastodon0-gateway.default.svc" ~expected:"4.1.9";
+        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.1.9";
       check_schema_migrations_count ~expected:395;
       ());
 
@@ -134,9 +134,9 @@ let () =
       wait_deploy_available "mastodon0-sidekiq";
       wait_deploy_available "mastodon0-streaming";
       wait_deploy_available "mastodon0-web";
-      http_get "http://mastodon0-gateway.default.svc/health" |> ignore;
+      http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
-        ~endpoint:"http://mastodon0-gateway.default.svc" ~expected:"4.2.0";
+        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.2.0";
       check_schema_migrations_count ~expected:422;
       ());
 

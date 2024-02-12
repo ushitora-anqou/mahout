@@ -33,6 +33,7 @@ clean-cluster:
 apply-basic-manifests:
 	$(KUBECTL) apply -f $(WD)/manifests/mahout.anqou.net_mastodons.yaml
 	$(KUBECTL) wait --for condition="established" crd mastodons.mahout.anqou.net
+	$(KUBECTL) apply -f $(WD)/manifests/namespace.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/serviceaccount.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/clusterrole.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/clusterrolebinding.yaml

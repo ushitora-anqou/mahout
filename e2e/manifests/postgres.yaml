@@ -3,6 +3,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: postgres
+  namespace: e2e
   labels:
     app: postgres
 spec:
@@ -17,6 +18,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: postgres
+  namespace: e2e
 spec:
   selector:
     matchLabels:
@@ -55,6 +57,7 @@ apiVersion: batch/v1
 kind: Job
 metadata:
   name: create-postgres-database
+  namespace: e2e
 spec:
   template:
     spec:
@@ -66,4 +69,7 @@ spec:
             - bash
             - -c
             - |
-               echo "CREATE USER mastodon CREATEDB; ALTER ROLE mastodon WITH PASSWORD 'password';" | psql -U postgres -h postgres.default.svc
+              cat <<EOS | psql -U postgres -h postgres.e2e.svc
+                CREATE USER mastodon CREATEDB;
+                ALTER ROLE mastodon WITH PASSWORD 'password';
+              EOS
