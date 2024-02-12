@@ -1,0 +1,27 @@
+#---
+#apiVersion: rbac.authorization.k8s.io/v1
+#kind: RoleBinding
+#metadata:
+#  name: {{ include "mahout.fullname" . }}
+#  namespace: {{ .Release.Namespace }}
+#subjects:
+#- kind: ServiceAccount
+#  namespace: {{ .Release.Namespace }}
+#  name: {{ include "mahout.serviceAccountName" . }}
+#roleRef:
+#  apiGroup: rbac.authorization.k8s.io
+#  kind: Role
+#  name: {{ include "mahout.fullname" . }}
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ include "mahout.fullname" . }}
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ include "mahout.fullname" . }}
+subjects:
+- kind: ServiceAccount
+  name: {{ include "mahout.serviceAccountName" . }}
+  namespace: {{ .Release.Namespace }}

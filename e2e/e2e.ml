@@ -94,13 +94,11 @@ let check_schema_migrations_count ~expected =
       expected
 
 let setup () =
-  or_true (fun () -> kubectl {|delete -n e2e deploy mahout|} |> ignore);
   or_true (fun () -> kubectl {|delete -n e2e mastodon mastodon0|} |> ignore);
   or_true (fun () -> delete_manifest "postgres.yaml" |> ignore);
   or_true (fun () -> delete_manifest "redis.yaml" |> ignore);
   or_true (fun () -> apply_manifest "postgres.yaml");
   or_true (fun () -> apply_manifest "redis.yaml");
-  or_true (fun () -> apply_manifest "operator.yaml");
   eventually (fun () -> wait_pod_available "postgres-0");
   eventually (fun () -> wait_pod_available "redis-0");
   eventually (fun () -> wait_deploy_available "mahout");

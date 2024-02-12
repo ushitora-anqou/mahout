@@ -1,10 +1,12 @@
 KIND_VERSION:=0.20.0
 KUBERNETES_VERSION:=1.28.0
+HELM_VERSION:=3.14.0
 WD:=$(dir $(lastword $(MAKEFILE_LIST)))
 BIN:=$(WD)/_bin
 KIND:=$(BIN)/kind-$(KIND_VERSION)
 KIND_CLUSTER_NAME=mahout-test-cluster
 KUBECTL:=$(BIN)/kubectl-$(KUBERNETES_VERSION)
+HELM:=$(BIN)/helm-$(HELM_VERSION)
 IMAGE=mahout:dev
 
 $(BIN):
@@ -18,8 +20,13 @@ $(KUBECTL): | $(BIN)
 	wget -O $(KUBECTL) https://storage.googleapis.com/kubernetes-release/release/v$(KUBERNETES_VERSION)/bin/linux/amd64/kubectl
 	chmod a+x $(KUBECTL)
 
+$(HELM): | $(BIN)
+	curl -sSLf https://get.helm.sh/helm-v$(HELM_VERSION)-linux-amd64.tar.gz \
+		| tar xvz -C $(BIN) --strip-components 1 linux-amd64/helm
+	mv $(BIN)/helm $@
+
 .PHONY: setup
-setup: $(KIND) $(KUBECTL)
+setup: $(KIND) $(KUBECTL) $(HELM)
 
 .PHONY: build-image
 build-image:
@@ -29,29 +36,19 @@ build-image:
 clean-cluster:
 	$(KIND) delete cluster -n $(KIND_CLUSTER_NAME)
 
-.PHONY: apply-basic-manifests
-apply-basic-manifests:
-	$(KUBECTL) apply -f $(WD)/manifests/mahout.anqou.net_mastodons.yaml
-	$(KUBECTL) wait --for condition="established" crd mastodons.mahout.anqou.net
-	$(KUBECTL) apply -f $(WD)/manifests/namespace.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/serviceaccount.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/clusterrole.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/clusterrolebinding.yaml
+.PHONY: create-cluster
+create-cluster:
+	$(MAKE) setup
+	$(MAKE) build-image
+	$(MAKE) clean-cluster
+	$(KIND) create cluster -n $(KIND_CLUSTER_NAME) --image kindest/node:v$(KUBERNETES_VERSION)
+	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
+	$(HELM) install --namespace e2e --create-namespace mahout ../charts/mahout/ -f values.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/gateway-nginx-conf-template.yaml
 
-.PHONY: reload-image
-reload-image: build-image
-	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
-
-.PHONY: create-cluster
-create-cluster: setup build-image
-	$(MAKE) clean-cluster
-	$(KIND) create cluster -n $(KIND_CLUSTER_NAME) --image kindest/node:v$(KUBERNETES_VERSION)
-	$(MAKE) reload-image
-	$(MAKE) apply-basic-manifests
-
 .PHONY: test
-test: reload-image apply-basic-manifests
+test:
+	$(MAKE) create-cluster
 	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq
