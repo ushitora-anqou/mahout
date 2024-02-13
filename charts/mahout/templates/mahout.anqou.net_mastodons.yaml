@@ -92,6 +92,9 @@ spec:
                   replicas:
                     type: integer
                 type: object
+            required:
+            - image
+            - serverName
             type: object
           status:
             description: MastodonStatus defines the observed state of Mastodon
