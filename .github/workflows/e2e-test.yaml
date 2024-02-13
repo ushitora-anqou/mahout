@@ -13,11 +13,10 @@ jobs:
     steps:
       - name: Checkout tree
         uses: actions/checkout@v4
-      - run: make -C e2e setup
-      - run: make -C e2e create-cluster
       - name: Set-up OCaml 5.0.0
         uses: ocaml/setup-ocaml@v2
         with:
           ocaml-compiler: "5.0.0"
       - run: opam install . --deps-only --with-test
+      - run: make -C e2e setup
       - run: opam exec -- make -C e2e test
