@@ -150,7 +150,7 @@ module Bare_server = struct
     let headers = headers |> Headers.to_list |> Cohttp.Header.of_list in
     (Http.Response.make ~status ~headers (), Cohttp_eio.Body.of_string body)
 
-  let start_server ~listen ~sw env k callback =
+  let start_server ~listen ~sw env callback =
     let callback _conn (req : Request.t) (body : Body.t) =
       (* Invoke the handler *)
       try callback req body
@@ -158,8 +158,8 @@ module Bare_server = struct
         let uri = Request.uri req in
         let meth = Request.meth req in
         Logs.err (fun m ->
-            m "Unexpected exception: %s %s: %s\n%s" (Method.to_string meth)
-              (Uri.to_string uri) (Printexc.to_string e)
+            m "yume: Unexpected exception: %s %s: %s\n%s"
+              (Method.to_string meth) (Uri.to_string uri) (Printexc.to_string e)
               (Printexc.get_backtrace ()));
         respond ~status:`Internal_server_error ~body:"" ~headers:[]
     in
@@ -168,8 +168,7 @@ module Bare_server = struct
       Eio.Net.listen (Eio.Stdenv.net env) ~sw ~backlog:128 ~reuse_addr:true
         listen
     in
-    Eio.Fiber.both k (fun () ->
-        Cohttp_eio.Server.run ~on_error:raise socket server)
+    Cohttp_eio.Server.run ~on_error:raise socket server
 end
 
 module Server = struct
@@ -292,8 +291,8 @@ module Server = struct
         respond ~status ""
 
   let start_server env ~sw ?(listen = `Tcp (Eio.Net.Ipaddr.V4.loopback, 8080))
-      ?error_handler (handler : handler) k : unit =
-    Bare_server.start_server ~listen env ~sw k
+      ?error_handler (handler : handler) : unit =
+    Bare_server.start_server ~listen env ~sw
     @@ fun (req : Bare_server.Request.t) (body : Bare_server.Body.t) :
       Bare_server.Response.t ->
     (* Parse req *)
@@ -385,12 +384,13 @@ module Server = struct
             try handler req with
             | ErrorResponse { status; body } ->
                 Logs.debug (fun m ->
-                    m "Error response raised: %s\n%s" (Status.to_string status)
+                    m "yume: Error response raised: %s\n%s"
+                      (Status.to_string status)
                       (Printexc.get_backtrace ()));
                 respond ~status ~tags:[ "log" ] body
             | e ->
                 Logs.debug (fun m ->
-                    m "Exception raised: %s\n%s" (Printexc.to_string e)
+                    m "yume: Exception raised: %s\n%s" (Printexc.to_string e)
                       (Printexc.get_backtrace ()));
                 respond ~status:`Internal_server_error ""
           in
@@ -505,12 +505,14 @@ module Server = struct
       let (Request { uri; meth; _ }) = req in
       let meth = Method.to_string meth in
       let uri = Uri.to_string uri in
-      Logs.debug (fun m -> m "%s %s" meth uri);
+      Logs.debug (fun m -> m "yume: %s %s" meth uri);
       let resp = inner_handler req in
       (match resp with
       | Response { status; _ } ->
-          Logs.info (fun m -> m "%s %s %s" (Status.to_string status) meth uri)
-      | BareResponse _ -> Logs.info (fun m -> m "[bare] %s %s" meth uri));
+          Logs.info (fun m ->
+              m "yume: response: %s %s %s" (Status.to_string status) meth uri)
+      | BareResponse _ ->
+          Logs.info (fun m -> m "yume: bare response: %s %s" meth uri));
       resp
   end
 end

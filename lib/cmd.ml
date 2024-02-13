@@ -16,6 +16,8 @@ let controller gw_nginx_conf_templ_cm_name =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
   Eio.Switch.run @@ fun sw ->
+  Eio.Fiber.fork ~sw (Http_server.start env ~sw);
+
   let client =
     (* FIXME: use ca cert *)
     Cohttp_eio.Client.make

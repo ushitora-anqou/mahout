@@ -39,18 +39,18 @@ spec:
             - --gw-nginx-conf-templ-cm
             - {{ include "mahout.fullname" . }}-gateway-nginx-conf-template
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-#         ports:
-#           - name: http
-#             containerPort: {{ .Values.service.port }}
-#             protocol: TCP
-#         livenessProbe:
-#           httpGet:
-#             path: /healthz
-#             port: http
-#         readinessProbe:
-#           httpGet:
-#             path: /readyz
-#             port: http
+          ports:
+            - name: http
+              containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           env:
