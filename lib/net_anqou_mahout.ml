@@ -18,11 +18,7 @@ module V1alpha1 = struct
     end
 
     module Gateway = struct
-      type t = {
-        replicas : int; [@yojson.default 1] [@yojson.key "replicas"]
-        nginx_conf_template_config_map : string;
-            [@yojson.default ""] [@yojson.key "nginxConfTemplateConfigMap"]
-      }
+      type t = { replicas : int [@yojson.default 1] [@yojson.key "replicas"] }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 

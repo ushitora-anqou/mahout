@@ -70,8 +70,6 @@ spec:
                 type: array
               gateway:
                 properties:
-                  nginxConfTemplateConfigMap:
-                    type: string
                   replicas:
                     type: integer
                 type: object
