@@ -33,7 +33,7 @@ let controller gw_nginx_conf_templ_cm_name =
 
   let mailbox = Eio.Stream.create 0 in
 
-  Eio.Fiber.fork ~sw (fun () ->
+  K.loop_until_sw_fail env ~sw (fun () ->
       Mastodon.watch_all ~sw client ()
       |> Result.get_ok
       |> K.Json_response_scanner.iter (fun (_, (mastodon : Mastodon.t)) ->
@@ -42,7 +42,7 @@ let controller gw_nginx_conf_templ_cm_name =
              let namespace = Option.get metadata.namespace in
              Eio.Stream.add mailbox (name, namespace)));
 
-  Eio.Fiber.fork ~sw (fun () ->
+  K.loop_until_sw_fail env ~sw (fun () ->
       K.Job.watch_all ~sw client ()
       |> Result.get_ok
       |> K.Json_response_scanner.iter (fun (_ty, (job : K.Job.t)) ->
@@ -58,7 +58,7 @@ let controller gw_nginx_conf_templ_cm_name =
                |> Option.iter (fun (name, namespace) ->
                       Eio.Stream.add mailbox (name, namespace))));
 
-  Eio.Fiber.fork ~sw (fun () ->
+  K.loop_until_sw_fail env ~sw (fun () ->
       K.Pod.watch_all ~sw client ()
       |> Result.get_ok
       |> K.Json_response_scanner.iter (fun (_ty, (pod : K.Pod.t)) ->
@@ -66,16 +66,15 @@ let controller gw_nginx_conf_templ_cm_name =
              |> Option.iter (fun (name, namespace) ->
                     Eio.Stream.add mailbox (name, namespace))));
 
-  let rec loop () =
-    let name, namespace = Eio.Stream.take mailbox in
-    (match
-       Mastodon_reconciler.reconcile ~sw client ~name ~namespace
-         ~gw_nginx_conf_templ_cm_name
-     with
-    | Ok () -> ()
-    | Error e ->
-        Logg.err (fun m ->
-            m "mastodon reconciler failed" [ ("error", `String e) ]));
-    loop ()
-  in
-  loop ()
+  K.loop_until_sw_fail env ~sw (fun () ->
+      let name, namespace = Eio.Stream.take mailbox in
+      match
+        Mastodon_reconciler.reconcile ~sw client ~name ~namespace
+          ~gw_nginx_conf_templ_cm_name
+      with
+      | Ok () -> ()
+      | Error e ->
+          Logg.err (fun m ->
+              m "mastodon reconciler failed" [ ("error", `String e) ]));
+
+  ()

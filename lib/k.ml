@@ -1,3 +1,20 @@
+let loop_until_sw_fail env ?(interval = 1.0) ~sw f =
+  Eio.Fiber.fork ~sw @@ fun () ->
+  let rec loop () =
+    Eio.Fiber.yield ();
+    (try f ()
+     with e ->
+       Logg.err (fun m ->
+           m "loop_until: catch exception"
+             [
+               ("error", `String (Printexc.to_string e));
+               ("trace", `String (Printexc.get_backtrace ()));
+             ]));
+    Eio.Time.sleep (Eio.Stdenv.clock env) interval;
+    loop ()
+  in
+  loop ()
+
 module Bare = struct
   open K8s_1_28_client
 
@@ -504,26 +521,16 @@ module Make (B : Bare.S) = struct
 
   let enable_cache env ~sw client =
     cache := Some (Cache.make ());
-    Eio.Fiber.fork ~sw (fun () ->
-        let rec loop () =
-          (try
-             watch_all ~sw client () |> Result.get_ok
-             |> Json_response_scanner.iter (fun ((ty, data) : watch_event) ->
-                    let name, namespace = get_name_and_ns data |> Option.get in
-                    let cache = Option.get !cache in
-                    match ty with
-                    | `Added | `Modified ->
-                        cache |> Cache.update ~name ~namespace data
-                    | `Deleted -> cache |> Cache.delete ~name ~namespace);
-             assert false
-           with e ->
-             Logg.err (fun m ->
-                 m "cache loop failed"
-                   [ ("error", `String (Printexc.to_string e)) ]));
-          Eio.Time.sleep (Eio.Stdenv.clock env) 1.0;
-          loop ()
-        in
-        loop ());
+    loop_until_sw_fail env ~sw (fun () ->
+        watch_all ~sw client () |> Result.get_ok
+        |> Json_response_scanner.iter (fun ((ty, data) : watch_event) ->
+               let name, namespace = get_name_and_ns data |> Option.get in
+               let cache = Option.get !cache in
+               match ty with
+               | `Added | `Modified ->
+                   cache |> Cache.update ~name ~namespace data
+               | `Deleted -> cache |> Cache.delete ~name ~namespace);
+        assert false);
     ()
 
   let get ~sw client ~name ~namespace () =
