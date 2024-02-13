@@ -12,7 +12,7 @@ let https ~authenticator =
     in
     Tls_eio.client_of_flow ?host tls_config raw
 
-let controller () =
+let controller gw_nginx_conf_templ_cm_name =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
   Eio.Switch.run @@ fun sw ->
@@ -68,7 +68,10 @@ let controller () =
 
   let rec loop () =
     let name, namespace = Eio.Stream.take mailbox in
-    (match Mastodon_reconciler.reconcile ~sw client ~name ~namespace with
+    (match
+       Mastodon_reconciler.reconcile ~sw client ~name ~namespace
+         ~gw_nginx_conf_templ_cm_name
+     with
     | Ok () -> ()
     | Error e ->
         Logg.err (fun m ->

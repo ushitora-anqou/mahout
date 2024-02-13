@@ -47,10 +47,13 @@ let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
         ~name ~controller:true ();
     ]
 
+let running_pod_namespace =
+  Sys.getenv_opt "POD_NAMESPACE" |> Option.value ~default:""
+
 let get_running_pod ~sw client =
   let name = Sys.getenv "POD_NAME" in
-  let namespace = Sys.getenv "POD_NAMESPACE" in
-  K.Pod.get ~sw client ~name ~namespace () |> Result.get_ok
+  K.Pod.get ~sw client ~name ~namespace:running_pod_namespace ()
+  |> Result.get_ok
 
 let create_or_update_deployment ~sw client ~name ~namespace body =
   K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
@@ -222,18 +225,16 @@ let create_or_update_mastodon_deployment ~sw client
   Ok ()
 
 let create_or_update_gateway ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image =
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image
+    ~gw_nginx_conf_templ_cm =
   let ( let* ) = Result.bind in
 
   let nginx_image = "nginx:1.25.3" in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let* gateway =
-    (Option.get mastodon.spec).gateway
-    |> Option.to_result ~none:"gateway is not found"
-  in
-  let nginx_conf_template_cm_name = gateway.nginx_conf_template_config_map in
+  let nginx_conf_template_cm_name = fst gw_nginx_conf_templ_cm in
+  let nginx_conf_template_cm_namespace = snd gw_nginx_conf_templ_cm in
   let nginx_conf_template_cm_key = "nginx.conf" in
 
   let nginx_conf_cm_name = name ^ "-gateway-nginx-conf" in
@@ -249,7 +250,8 @@ let create_or_update_gateway ~sw client
   let owner_references = get_owner_references mastodon in
 
   let* nginx_conf_template_cm =
-    K.Config_map.get ~sw client ~name:nginx_conf_template_cm_name ~namespace ()
+    K.Config_map.get ~sw client ~name:nginx_conf_template_cm_name
+      ~namespace:nginx_conf_template_cm_namespace ()
     |> Result.map_error K.show_error
   in
   let* nginx_conf_template =
@@ -390,13 +392,16 @@ let update_mastodon_status ~sw client ~name ~namespace f =
   let status = f status in
   Mastodon.update_status ~sw client { mastodon with status = Some status }
 
-let create_or_update_deployments ~sw client ~mastodon ~image =
+let create_or_update_deployments ~sw client ~mastodon ~image
+    ~gw_nginx_conf_templ_cm =
   let ( let* ) = Result.bind in
   let deploy =
     create_or_update_mastodon_deployment ~sw client ~mastodon ~image
   in
   let svc = create_or_update_mastodon_service ~sw client ~mastodon in
-  let* _ = create_or_update_gateway ~sw client ~mastodon ~image in
+  let* _ =
+    create_or_update_gateway ~sw client ~mastodon ~image ~gw_nginx_conf_templ_cm
+  in
   let* _ = deploy ~kind:`Web in
   let* _ = deploy ~kind:`Sidekiq in
   let* _ = deploy ~kind:`Streaming in
@@ -541,7 +546,7 @@ type current_state =
   | Normal
 [@@deriving show]
 
-let reconcile ~sw client ~name ~namespace =
+let reconcile ~sw client ~name ~namespace ~gw_nginx_conf_templ_cm_name =
   let ( let* ) = Result.bind in
   Logg.info (fun m ->
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
@@ -554,6 +559,10 @@ let reconcile ~sw client ~name ~namespace =
     match (Option.get mastodon.metadata).deletion_timestamp with
     | None -> Ok ()
     | Some _ -> Error "Mastodon resource already deleted"
+  in
+
+  let gw_nginx_conf_templ_cm =
+    (gw_nginx_conf_templ_cm_name, running_pod_namespace)
   in
 
   let spec = Option.get mastodon.spec in
@@ -648,6 +657,7 @@ let reconcile ~sw client ~name ~namespace =
       in
       let* _ =
         create_or_update_deployments ~sw client ~mastodon ~image:spec_image
+          ~gw_nginx_conf_templ_cm
       in
       Ok ()
   | StartPreMigration ->
@@ -675,6 +685,7 @@ let reconcile ~sw client ~name ~namespace =
       let* _ =
         create_or_update_deployments ~sw client ~mastodon
           ~image:(Option.get migrating_image)
+          ~gw_nginx_conf_templ_cm
       in
       Ok ()
   | StartPostMigration ->
@@ -697,6 +708,7 @@ let reconcile ~sw client ~name ~namespace =
   | Migrating -> Ok ()
   | Normal ->
       create_or_update_deployments ~sw client ~mastodon ~image:spec_image
+        ~gw_nginx_conf_templ_cm
 
 let find_mastodon_from_job ~sw:_ _client (job : K.Job.t) =
   let ( let* ) = Option.bind in

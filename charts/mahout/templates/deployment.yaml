@@ -34,6 +34,10 @@ spec:
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+          args:
+            - controller
+            - --gw-nginx-conf-templ-cm
+            - {{ include "mahout.fullname" . }}-gateway-nginx-conf-template
           imagePullPolicy: {{ .Values.image.pullPolicy }}
 #         ports:
 #           - name: http

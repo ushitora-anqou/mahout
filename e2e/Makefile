@@ -47,7 +47,6 @@ create-cluster:
 	$(KUBECTL) create namespace e2e || true
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
-	$(KUBECTL) apply -f $(WD)/manifests/gateway-nginx-conf-template.yaml
 
 .PHONY: test
 test:
