@@ -28,6 +28,7 @@ module V1alpha1 = struct
 
     module Spec = struct
       type t = {
+        server_name : string; [@yojson.key "serverName"]
         image : string; [@yojson.key "image"]
         env_from : Io_k8s_api_core_v1_env_from_source.t list;
             [@yojson.default []] [@yojson.key "envFrom"]
@@ -47,8 +48,6 @@ module V1alpha1 = struct
         message : string option; [@yojson.default None] [@yojson.key "message"]
         conditions : Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list;
             [@yojson.key "conditions"]
-        server_name : string option;
-            [@yojson.default None] [@yojson.key "serverName"]
         running_image : string option;
             [@yojson.default None] [@yojson.key "runningImage"]
         migrating : bool option;

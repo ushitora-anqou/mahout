@@ -77,6 +77,8 @@ spec:
                 type: object
               image:
                 type: string
+              serverName:
+                type: string
               sidekiq:
                 properties:
                   replicas:
@@ -171,8 +173,6 @@ spec:
               migratingImage:
                 type: string
               runningImage:
-                type: string
-              serverName:
                 type: string
             type: object
         type: object

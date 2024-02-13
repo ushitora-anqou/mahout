@@ -8,16 +8,6 @@ let () =
   let cmd =
     Cmd.(
       group (info "mahout")
-        [
-          v (info "controller") Term.(const Mahout.Cmd.controller $ const ());
-          v (info "check-env")
-            Term.(
-              const Mahout.Cmd.check_env
-              $ Arg.(required & pos 0 (some string) None & info ~docv:"NAME" [])
-              $ Arg.(
-                  required
-                  & pos 1 (some string) None
-                  & info ~docv:"NAMESPACE" []));
-        ])
+        [ v (info "controller") Term.(const Mahout.Cmd.controller $ const ()) ])
   in
   exit (Cmd.eval cmd)

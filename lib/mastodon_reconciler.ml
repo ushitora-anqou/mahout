@@ -11,7 +11,6 @@ let get_svc_name mastodon_name = function
 
 let get_job_name mastodon_name = function
   | `Migration -> mastodon_name ^ "-migration"
-  | `CheckEnv -> mastodon_name ^ "-check-env"
 
 let get_deployment_selector ~kind =
   let name, component =
@@ -52,51 +51,6 @@ let get_running_pod ~sw client =
   let name = Sys.getenv "POD_NAME" in
   let namespace = Sys.getenv "POD_NAMESPACE" in
   K.Pod.get ~sw client ~name ~namespace () |> Result.get_ok
-
-let create_check_env_job ~sw client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
-  let name = Option.get (Option.get mastodon.metadata).name in
-  let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let env_from = (Option.get mastodon.spec).env_from in
-  let owner_references = get_owner_references mastodon in
-  let job_name = get_job_name name `CheckEnv in
-
-  let p = get_running_pod ~sw client in
-  let c = List.hd (Option.get p.spec).containers in
-  let image = Option.get c.image in
-  let service_account_name =
-    Option.get (Option.get p.spec).service_account_name
-  in
-
-  let body =
-    K.Job.make ~api_version:"batch/v1" ~kind:"Job"
-      ~metadata:
-        (K.Object_meta.make ~name:job_name ~namespace ~owner_references ())
-      ~spec:
-        (K.Job_spec.make
-           ~template:
-             (K.Pod_template_spec.make
-                ~spec:
-                  (K.Pod_spec.make ~service_account_name
-                     ~restart_policy:"OnFailure"
-                     ~containers:
-                       K.Container.
-                         [
-                           make ~name:"check-env" ~image ~env_from
-                             ~args:[ "check-env"; name; namespace ]
-                             ~env:
-                               [
-                                 K.Env_var.make ~name:"OCAMLRUNPARAM" ~value:"b"
-                                   ();
-                               ]
-                             ();
-                         ]
-                     ())
-                ())
-           ())
-      ()
-  in
-  K.Job.create ~sw client body
 
 let create_or_update_deployment ~sw client ~name ~namespace body =
   K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
@@ -290,7 +244,7 @@ let create_or_update_gateway ~sw client
     get_deployment_labels ~kind:`Gateway ~mastodon_name:name ~deploy_image:image
   in
 
-  let server_name = Option.get (Option.get mastodon.status).server_name in
+  let server_name = (Option.get mastodon.spec).server_name in
 
   let owner_references = get_owner_references mastodon in
 
@@ -578,7 +532,6 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
   K.Job.create ~sw client body
 
 type current_state =
-  | NoServerName
   | NoDeployments
   | StartPreMigration
   | RolloutDeployments
@@ -605,11 +558,6 @@ let reconcile ~sw client ~name ~namespace =
 
   let spec = Option.get mastodon.spec in
   let spec_image = spec.image in
-  let server_name =
-    match mastodon.status with
-    | None -> None
-    | Some status -> status.server_name
-  in
   let migrating_image =
     match mastodon.status with
     | None -> None
@@ -625,8 +573,7 @@ let reconcile ~sw client ~name ~namespace =
   in
 
   let current_state =
-    if server_name = None then NoServerName
-    else if deployments_status = `NotFound then NoDeployments
+    if deployments_status = `NotFound then NoDeployments
     else if
       Option.is_none migrating_image
       && migration_job_status = `NotFound
@@ -689,12 +636,6 @@ let reconcile ~sw client ~name ~namespace =
         ]);
 
   match current_state with
-  | NoServerName ->
-      let* _ =
-        create_check_env_job ~sw client ~mastodon
-        |> Result.map_error K.show_error
-      in
-      Ok ()
   | NoDeployments ->
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
