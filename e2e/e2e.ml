@@ -45,10 +45,10 @@ let kubectl args =
   let kubectl = Sys.getenv_opt "KUBECTL" |> Option.value ~default:"kubectl" in
   run_command (kubectl ^ " " ^ args)
 
-let wait_available kind condition name =
+let wait_available ~n kind condition name =
   try
     kubectl
-      (Printf.sprintf {|wait -n e2e --for='condition=%s' --timeout=1s %s %s|}
+      (Printf.sprintf {|wait -n %s --for='condition=%s' --timeout=1s %s %s|} n
          condition kind name)
     |> ignore
   with Process_status_error (Unix.WEXITED 1, _, _) ->
@@ -77,9 +77,10 @@ let check_mastodon_version ~host ~endpoint ~expected =
   if got <> expected then
     failwithf "check_mastodon_version: got %s, expected %s" got expected
 
-let wait_not_found kind name =
+let wait_not_found ~n kind name =
   kubectl
-    (Printf.sprintf {|get %s %s 2>&1 | grep "\"%s\" not found"|} kind name name)
+    (Printf.sprintf {|get -n %s %s %s 2>&1 | grep "\"%s\" not found"|} n kind
+       name name)
   |> ignore
 
 let check_schema_migrations_count ~expected =
@@ -99,9 +100,9 @@ let setup () =
   or_true (fun () -> delete_manifest "redis.yaml" |> ignore);
   or_true (fun () -> apply_manifest "postgres.yaml");
   or_true (fun () -> apply_manifest "redis.yaml");
-  eventually (fun () -> wait_pod_available "postgres-0");
-  eventually (fun () -> wait_pod_available "redis-0");
-  eventually (fun () -> wait_deploy_available "mahout");
+  eventually (fun () -> wait_pod_available ~n:"e2e" "postgres-0");
+  eventually (fun () -> wait_pod_available ~n:"e2e" "redis-0");
+  eventually (fun () -> wait_deploy_available ~n:"mahout" "mahout");
   ()
 
 let () =
@@ -111,10 +112,10 @@ let () =
   apply_manifest "mastodon0-v4.1.9.yaml";
 
   eventually (fun () ->
-      wait_deploy_available "mastodon0-gateway-nginx";
-      wait_deploy_available "mastodon0-sidekiq";
-      wait_deploy_available "mastodon0-streaming";
-      wait_deploy_available "mastodon0-web";
+      wait_deploy_available ~n:"e2e" "mastodon0-gateway-nginx";
+      wait_deploy_available ~n:"e2e" "mastodon0-sidekiq";
+      wait_deploy_available ~n:"e2e" "mastodon0-streaming";
+      wait_deploy_available ~n:"e2e" "mastodon0-web";
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.1.9";
@@ -128,10 +129,10 @@ let () =
       ());
 
   eventually (fun () ->
-      wait_deploy_available "mastodon0-gateway-nginx";
-      wait_deploy_available "mastodon0-sidekiq";
-      wait_deploy_available "mastodon0-streaming";
-      wait_deploy_available "mastodon0-web";
+      wait_deploy_available ~n:"e2e" "mastodon0-gateway-nginx";
+      wait_deploy_available ~n:"e2e" "mastodon0-sidekiq";
+      wait_deploy_available ~n:"e2e" "mastodon0-streaming";
+      wait_deploy_available ~n:"e2e" "mastodon0-web";
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon0.ket-apps.test"
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.2.0";
@@ -140,9 +141,9 @@ let () =
 
   delete_manifest "mastodon0-v4.2.0.yaml";
   eventually (fun () ->
-      wait_not_found "deploy" "mastodon0-gateway-nginx";
-      wait_not_found "deploy" "mastodon0-sidekiq";
-      wait_not_found "deploy" "mastodon0-streaming";
-      wait_not_found "deploy" "mastodon0-web");
+      wait_not_found ~n:"e2e" "deploy" "mastodon0-gateway-nginx";
+      wait_not_found ~n:"e2e" "deploy" "mastodon0-sidekiq";
+      wait_not_found ~n:"e2e" "deploy" "mastodon0-streaming";
+      wait_not_found ~n:"e2e" "deploy" "mastodon0-web");
 
   ()

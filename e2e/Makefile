@@ -43,7 +43,8 @@ create-cluster:
 	$(MAKE) clean-cluster
 	$(KIND) create cluster -n $(KIND_CLUSTER_NAME) --image kindest/node:v$(KUBERNETES_VERSION)
 	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
-	$(HELM) install --namespace e2e --create-namespace mahout ../charts/mahout/ -f values.yaml
+	$(HELM) install --namespace mahout --create-namespace mahout ../charts/mahout/ -f values.yaml
+	$(KUBECTL) create namespace e2e || true
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/gateway-nginx-conf-template.yaml
