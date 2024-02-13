@@ -1,3 +1,5 @@
+CHART_TESTING_VERSION:=3.10.1
+
 .PHONY: build
 build:
 	dune build bin/main.exe
@@ -28,3 +30,13 @@ setup-mahout:
 	sleep 3
 	kubectl apply -f config/test-pod.yaml || true
 	kubectl logs deploy/mastodon-operator -f
+
+.PHONY: ct-lint
+ct-lint:
+	docker run \
+		--rm \
+		--user $(shell id -u $(USER)) \
+		--workdir=/data \
+		--volume $(shell pwd):/data \
+		quay.io/helmpack/chart-testing:v$(CHART_TESTING_VERSION) \
+		ct lint --all --validate-maintainers=false
