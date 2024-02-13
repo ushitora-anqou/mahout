@@ -383,7 +383,7 @@ let create_or_update_gateway ~sw client
 
 let update_mastodon_status ~sw client ~name ~namespace f =
   let ( let* ) = Result.bind in
-  let* mastodon = Mastodon.get_status ~sw client ~name ~namespace () in
+  let* mastodon = Mastodon.get ~sw client ~name ~namespace () in
   let status =
     match mastodon.status with
     | None -> Net_anqou_mahout.V1alpha1.Mastodon.Status.make ()
@@ -552,8 +552,7 @@ let reconcile ~sw client ~name ~namespace ~gw_nginx_conf_templ_cm_name =
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
 
   let* mastodon =
-    Mastodon.get_status ~sw client ~name ~namespace ()
-    |> Result.map_error K.show_error
+    Mastodon.get ~sw client ~name ~namespace () |> Result.map_error K.show_error
   in
   let* _ =
     match (Option.get mastodon.metadata).deletion_timestamp with
