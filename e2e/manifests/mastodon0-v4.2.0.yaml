@@ -10,5 +10,3 @@ spec:
   envFrom:
     - secretRef:
         name: secret-env
-  gateway:
-    nginxConfTemplateConfigMap: gateway-nginx-conf-template
