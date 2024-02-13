@@ -25,6 +25,11 @@ $(HELM): | $(BIN)
 		| tar xvz -C $(BIN) --strip-components 1 linux-amd64/helm
 	mv $(BIN)/helm $@
 
+KUBECONFIG := $(shell pwd)/.kubeconfig
+.PHONY: $(KUBECONFIG)
+$(KUBECONFIG): | $(KIND)
+	$(KIND) export kubeconfig --name $(KIND_CLUSTER_NAME) --kubeconfig=$@
+
 .PHONY: setup
 setup: $(KIND) $(KUBECTL) $(HELM)
 
@@ -43,7 +48,8 @@ create-cluster:
 	$(MAKE) clean-cluster
 	$(KIND) create cluster -n $(KIND_CLUSTER_NAME) --image kindest/node:v$(KUBERNETES_VERSION)
 	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
-	$(HELM) install --namespace mahout --create-namespace mahout ../charts/mahout/ -f values.yaml
+	$(MAKE) $(KUBECONFIG)
+	KUBECONFIG=$(KUBECONFIG) $(HELM) install --namespace mahout --create-namespace mahout ../charts/mahout/ -f values.yaml
 	$(KUBECTL) create namespace e2e || true
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
