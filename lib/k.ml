@@ -466,6 +466,10 @@ module Make (B : Bare.S) = struct
                     let labels = Yojson.Safe.Util.to_assoc metadata.labels in
                     Label_selector.check label_selector labels)
 
+    let list_all t =
+      Eio.Mutex.use_ro t.mtx @@ fun () ->
+      Hashtbl.fold (fun _ v acc -> v :: acc) t.name_ns []
+
     let delete ~name ~namespace t =
       Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
       Hashtbl.remove t.name_ns (name, namespace);
@@ -620,6 +624,13 @@ module Make (B : Bare.S) = struct
           label_selector |> Option.map Label_selector.to_string
         in
         B.list_namespaced ~sw client ~namespace ?label_selector ()
+        |> expect_one |> Result.map B.to_list
+
+  let list_all ~sw client () =
+    match !cache with
+    | Some cache -> cache |> Cache.list_all |> Result.ok
+    | None ->
+        B.list_for_all_namespaces ~sw client ()
         |> expect_one |> Result.map B.to_list
 
   let delete ~sw client ?uid ~namespace ~name () =

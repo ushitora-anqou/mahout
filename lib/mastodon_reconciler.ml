@@ -546,7 +546,7 @@ type current_state =
   | Normal
 [@@deriving show]
 
-let reconcile ~sw client ~name ~namespace ~gw_nginx_conf_templ_cm_name =
+let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
   let ( let* ) = Result.bind in
   Logg.info (fun m ->
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
@@ -729,3 +729,9 @@ let find_mastodon_from_pod ~sw:_ _client (pod : K.Pod.t) =
   match labels |> List.assoc_opt Label.mastodon_key with
   | Some (`String name) -> Some (name, Option.get metadata.namespace)
   | _ -> None
+
+include Reconciler.Make (struct
+  type args = string
+
+  let reconcile = reconcile
+end)

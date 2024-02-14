@@ -12,6 +12,15 @@ let https ~authenticator =
     in
     Tls_eio.client_of_flow ?host tls_config raw
 
+let start_reconcile env ~sw client ~watch_all ~list_all f =
+  K.loop_until_sw_fail env ~sw @@ fun () ->
+  Eio.Fiber.both
+    (fun () ->
+      (* This fiber should start first. Watching should start before listing *)
+      watch_all ~sw client () |> Result.get_ok
+      |> K.Json_response_scanner.iter (fun (_, x) -> f x))
+    (fun () -> list_all ~sw client () |> Result.get_ok |> List.iter f)
+
 let controller gw_nginx_conf_templ_cm_name =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
@@ -33,50 +42,40 @@ let controller gw_nginx_conf_templ_cm_name =
   K.Service.enable_cache env ~sw client;
   K.Config_map.enable_cache env ~sw client;
 
-  let mailbox = Eio.Stream.create 0 in
+  let reconciler = Mastodon_reconciler.make () in
 
-  K.loop_until_sw_fail env ~sw (fun () ->
-      Mastodon.watch_all ~sw client ()
-      |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun (_, (mastodon : Mastodon.t)) ->
-             let metadata = Option.get mastodon.metadata in
-             let name = Option.get metadata.name in
-             let namespace = Option.get metadata.namespace in
-             Eio.Stream.add mailbox (name, namespace)));
+  reconciler
+  |> Mastodon_reconciler.watch env ~sw client ~watch_all:Mastodon.watch_all
+       ~list_all:Mastodon.list_all (fun (mastodon : Mastodon.t) ->
+         let metadata = Option.get mastodon.metadata in
+         let name = Option.get metadata.name in
+         let namespace = Option.get metadata.namespace in
+         [ (name, namespace) ]);
 
-  K.loop_until_sw_fail env ~sw (fun () ->
-      K.Job.watch_all ~sw client ()
-      |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun (_ty, (job : K.Job.t)) ->
-             let is_owned =
-               (Option.get job.metadata).owner_references
-               |> List.find_opt (fun (r : K.Owner_reference.t) ->
-                      r.api_version = "mahout.anqou.net/v1alpha1"
-                      && r.kind = "Mastodon" && r.controller = Some true)
-               |> Option.is_some
-             in
-             if is_owned then
-               Mastodon_reconciler.find_mastodon_from_job ~sw client job
-               |> Option.iter (fun (name, namespace) ->
-                      Eio.Stream.add mailbox (name, namespace))));
+  reconciler
+  |> Mastodon_reconciler.watch env ~sw client ~watch_all:K.Job.watch_all
+       ~list_all:K.Job.list_all (fun (job : K.Job.t) ->
+         let is_owned =
+           (Option.get job.metadata).owner_references
+           |> List.find_opt (fun (r : K.Owner_reference.t) ->
+                  r.api_version = "mahout.anqou.net/v1alpha1"
+                  && r.kind = "Mastodon" && r.controller = Some true)
+           |> Option.is_some
+         in
+         if is_owned then
+           Mastodon_reconciler.find_mastodon_from_job ~sw client job
+           |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
+                  [ (name, namespace) ])
+         else []);
 
-  K.loop_until_sw_fail env ~sw (fun () ->
-      K.Pod.watch_all ~sw client ()
-      |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun (_ty, (pod : K.Pod.t)) ->
-             Mastodon_reconciler.find_mastodon_from_pod ~sw client pod
-             |> Option.iter (fun (name, namespace) ->
-                    Eio.Stream.add mailbox (name, namespace))));
+  reconciler
+  |> Mastodon_reconciler.watch env ~sw client ~watch_all:K.Pod.watch_all
+       ~list_all:K.Pod.list_all (fun (pod : K.Pod.t) ->
+         Mastodon_reconciler.find_mastodon_from_pod ~sw client pod
+         |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
+                [ (name, namespace) ]));
 
-  K.loop_until_sw_fail env ~sw (fun () ->
-      let name, namespace = Eio.Stream.take mailbox in
-      match
-        Mastodon_reconciler.reconcile ~sw client ~name ~namespace
-          ~gw_nginx_conf_templ_cm_name
-      with
-      | Ok () -> ()
-      | Error e ->
-          Logg.err (fun m ->
-              m "mastodon reconciler failed" [ ("error", `String e) ]));
+  reconciler
+  |> Mastodon_reconciler.start env ~sw client gw_nginx_conf_templ_cm_name;
 
   ()
