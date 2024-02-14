@@ -21,6 +21,7 @@
   ppx_deriving_yojson.runtime
   ptime
   safepass
+  sha
   tls
   tls-eio
   uuidm

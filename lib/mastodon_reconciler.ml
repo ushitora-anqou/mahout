@@ -99,6 +99,9 @@ let create_or_update_deployment ~sw client ~name ~namespace body =
                                (fun
                                  ((c : K.Container.t), (c' : K.Container.t)) ->
                                  { c with image = c'.image });
+                        volumes =
+                          (Option.get (Option.get body.spec).template.spec)
+                            .volumes;
                       };
                 };
             };
@@ -237,7 +240,7 @@ let create_or_update_gateway ~sw client
   let nginx_conf_template_cm_namespace = snd gw_nginx_conf_templ_cm in
   let nginx_conf_template_cm_key = "nginx.conf" in
 
-  let nginx_conf_cm_name = name ^ "-gateway-nginx-conf" in
+  let nginx_conf_cm_name_prefix = name ^ "-gateway-nginx-conf" in
   let nginx_conf_cm_key = "mastodon-nginx.conf" in
   let nginx_deploy_name = get_deploy_name name `Gateway in
   let svc_name = get_svc_name name `Gateway in
@@ -263,6 +266,23 @@ let create_or_update_gateway ~sw client
       Error
         (Printf.sprintf "nginxConfTemplateConfigMap doesn't have correct %s"
            nginx_conf_template_cm_key)
+  in
+  let nginx_conf_body =
+    nginx_conf_template
+    |> Jingoo.Jg_template.from_string
+         ~models:
+           [
+             ("web_svc_name", Tstr (get_svc_name name `Web));
+             ("streaming_svc_name", Tstr (get_svc_name name `Streaming));
+             ("server_name", Tstr server_name);
+             ("namespace", Tstr namespace);
+           ]
+  in
+  let nginx_conf_cm_name_hash =
+    String.sub (nginx_conf_body |> Sha256.string |> Sha256.to_hex) 0 6
+  in
+  let nginx_conf_cm_name =
+    nginx_conf_cm_name_prefix ^ "-" ^ nginx_conf_cm_name_hash
   in
 
   let body =
@@ -730,8 +750,64 @@ let find_mastodon_from_pod ~sw:_ _client (pod : K.Pod.t) =
   | Some (`String name) -> Some (name, Option.get metadata.namespace)
   | _ -> None
 
-include Reconciler.Make (struct
+open Reconciler.Make (struct
   type args = string
 
   let reconcile = reconcile
 end)
+
+let start env ~sw client gw_nginx_conf_templ_cm_name =
+  let reconciler = make () in
+
+  reconciler
+  |> watch env ~sw client ~watch_all:Mastodon.watch_all
+       ~list_all:Mastodon.list_all (fun (mastodon : Mastodon.t) ->
+         let metadata = Option.get mastodon.metadata in
+         let name = Option.get metadata.name in
+         let namespace = Option.get metadata.namespace in
+         [ (name, namespace) ]);
+
+  reconciler
+  |> watch env ~sw client ~watch_all:K.Job.watch_all ~list_all:K.Job.list_all
+       (fun (job : K.Job.t) ->
+         let is_owned =
+           (Option.get job.metadata).owner_references
+           |> List.find_opt (fun (r : K.Owner_reference.t) ->
+                  r.api_version = "mahout.anqou.net/v1alpha1"
+                  && r.kind = "Mastodon" && r.controller = Some true)
+           |> Option.is_some
+         in
+         if is_owned then
+           find_mastodon_from_job ~sw client job
+           |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
+                  [ (name, namespace) ])
+         else []);
+
+  reconciler
+  |> watch env ~sw client ~watch_all:K.Pod.watch_all ~list_all:K.Pod.list_all
+       (fun (pod : K.Pod.t) ->
+         find_mastodon_from_pod ~sw client pod
+         |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
+                [ (name, namespace) ]));
+
+  reconciler
+  |> watch env ~sw client
+       ~watch_all:K.Config_map.(watch ~namespace:running_pod_namespace)
+       ~list_all:
+         K.Config_map.(
+           list ~namespace:running_pod_namespace ?label_selector:None)
+       (fun (cm : K.Config_map.t) ->
+         if
+           Option.get (Option.get cm.metadata).name
+           <> gw_nginx_conf_templ_cm_name
+         then []
+         else
+           Mastodon.list_all ~sw client ()
+           |> Result.get_ok
+           |> List.map (fun (m : Mastodon.t) ->
+                  let metadata = Option.get m.metadata in
+                  (Option.get metadata.name, Option.get metadata.namespace)));
+
+  reconciler |> start env ~sw client gw_nginx_conf_templ_cm_name;
+
+  ()

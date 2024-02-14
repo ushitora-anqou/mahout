@@ -23,8 +23,12 @@ struct
             |> K.Json_response_scanner.iter (fun (_, x) ->
                    f x |> List.iter (Eio.Stream.add t.mailbox)))
           (fun () ->
-            list_all ~sw client () |> Result.get_ok
-            |> List.iter (fun x -> f x |> List.iter (Eio.Stream.add t.mailbox))));
+            match list_all ~sw client () with
+            | Error msg -> failwith (K.show_error msg)
+            | Ok xs ->
+                xs
+                |> List.iter (fun x ->
+                       f x |> List.iter (Eio.Stream.add t.mailbox))));
     ()
 
   let start env ~sw client args t =

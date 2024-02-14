@@ -35,47 +35,12 @@ let controller gw_nginx_conf_templ_cm_name =
   in
 
   K.Job.enable_cache env ~sw client;
-
-  Mastodon.enable_cache env ~sw client;
   K.Pod.enable_cache env ~sw client;
   K.Deployment.enable_cache env ~sw client;
   K.Service.enable_cache env ~sw client;
   K.Config_map.enable_cache env ~sw client;
+  Mastodon.enable_cache env ~sw client;
 
-  let reconciler = Mastodon_reconciler.make () in
-
-  reconciler
-  |> Mastodon_reconciler.watch env ~sw client ~watch_all:Mastodon.watch_all
-       ~list_all:Mastodon.list_all (fun (mastodon : Mastodon.t) ->
-         let metadata = Option.get mastodon.metadata in
-         let name = Option.get metadata.name in
-         let namespace = Option.get metadata.namespace in
-         [ (name, namespace) ]);
-
-  reconciler
-  |> Mastodon_reconciler.watch env ~sw client ~watch_all:K.Job.watch_all
-       ~list_all:K.Job.list_all (fun (job : K.Job.t) ->
-         let is_owned =
-           (Option.get job.metadata).owner_references
-           |> List.find_opt (fun (r : K.Owner_reference.t) ->
-                  r.api_version = "mahout.anqou.net/v1alpha1"
-                  && r.kind = "Mastodon" && r.controller = Some true)
-           |> Option.is_some
-         in
-         if is_owned then
-           Mastodon_reconciler.find_mastodon_from_job ~sw client job
-           |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
-                  [ (name, namespace) ])
-         else []);
-
-  reconciler
-  |> Mastodon_reconciler.watch env ~sw client ~watch_all:K.Pod.watch_all
-       ~list_all:K.Pod.list_all (fun (pod : K.Pod.t) ->
-         Mastodon_reconciler.find_mastodon_from_pod ~sw client pod
-         |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
-                [ (name, namespace) ]));
-
-  reconciler
-  |> Mastodon_reconciler.start env ~sw client gw_nginx_conf_templ_cm_name;
+  Mastodon_reconciler.start env ~sw client gw_nginx_conf_templ_cm_name;
 
   ()

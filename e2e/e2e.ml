@@ -139,6 +139,15 @@ let () =
       check_schema_migrations_count ~expected:422;
       ());
 
+  apply_manifest "patched-gateway-nginx-conf.yaml";
+  eventually (fun () ->
+      let stdout, _ =
+        http_get "http://mastodon0-gateway.e2e.svc/thisisanendpointfore2etest"
+      in
+      if stdout <> "THIS IS AN ENDPOINT FOR E2E TEST" then
+        failwith "patched gateway nginx.conf doesn't work";
+      ());
+
   delete_manifest "mastodon0-v4.2.0.yaml";
   eventually (fun () ->
       wait_not_found ~n:"e2e" "deploy" "mastodon0-gateway-nginx";

@@ -456,15 +456,19 @@ module Make (B : Bare.S) = struct
     let list ~namespace ?label_selector t =
       Eio.Mutex.use_ro t.mtx @@ fun () ->
       Hashtbl.find_opt t.ns_name namespace
-      |> Option.map @@ fun h ->
-         h |> Hashtbl.to_seq_values
-         |> Seq.filter (fun resource ->
-                match label_selector with
-                | None -> true
-                | Some label_selector ->
-                    let metadata = B.metadata resource |> Option.get in
-                    let labels = Yojson.Safe.Util.to_assoc metadata.labels in
-                    Label_selector.check label_selector labels)
+      |> Option.map (fun h ->
+             h |> Hashtbl.to_seq_values
+             |> Seq.filter (fun resource ->
+                    match label_selector with
+                    | None -> true
+                    | Some label_selector ->
+                        let metadata = B.metadata resource |> Option.get in
+                        let labels =
+                          Yojson.Safe.Util.to_assoc metadata.labels
+                        in
+                        Label_selector.check label_selector labels)
+             |> List.of_seq)
+      |> Option.value ~default:[]
 
     let list_all t =
       Eio.Mutex.use_ro t.mtx @@ fun () ->
@@ -614,11 +618,7 @@ module Make (B : Bare.S) = struct
 
   let list ~sw client ~namespace ?label_selector () =
     match !cache with
-    | Some cache ->
-        cache
-        |> Cache.list ~namespace ?label_selector
-        |> Option.map List.of_seq
-        |> Option.to_result ~none:`Not_found
+    | Some cache -> cache |> Cache.list ~namespace ?label_selector |> Result.ok
     | _ ->
         let label_selector =
           label_selector |> Option.map Label_selector.to_string
