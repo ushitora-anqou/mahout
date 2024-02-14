@@ -1,5 +1,54 @@
 open K
 
+let list_mahout_v1alpha1_mastodon_for_all_namespaces ~sw client
+    ?(headers = Request.default_headers) ?allow_watch_bookmarks ?continue
+    ?field_selector ?label_selector ?limit ?pretty ?resource_version
+    ?resource_version_match ?send_initial_events ?timeout_seconds ?watch () =
+  let uri = Request.build_uri "/apis/mahout.anqou.net/v1alpha1/mastodons" in
+  let headers = Cohttp.Header.add headers "authorization" Request.api_key in
+  let uri =
+    Request.maybe_add_query_param uri "allowWatchBookmarks" string_of_bool
+      allow_watch_bookmarks
+  in
+  let uri =
+    Request.maybe_add_query_param uri "continue" (fun x -> x) continue
+  in
+  let uri =
+    Request.maybe_add_query_param uri "fieldSelector"
+      (fun x -> x)
+      field_selector
+  in
+  let uri =
+    Request.maybe_add_query_param uri "labelSelector"
+      (fun x -> x)
+      label_selector
+  in
+  let uri = Request.maybe_add_query_param uri "limit" Int32.to_string limit in
+  let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
+  let uri =
+    Request.maybe_add_query_param uri "resourceVersion"
+      (fun x -> x)
+      resource_version
+  in
+  let uri =
+    Request.maybe_add_query_param uri "resourceVersionMatch"
+      (fun x -> x)
+      resource_version_match
+  in
+  let uri =
+    Request.maybe_add_query_param uri "sendInitialEvents" string_of_bool
+      send_initial_events
+  in
+  let uri =
+    Request.maybe_add_query_param uri "timeoutSeconds" Int32.to_string
+      timeout_seconds
+  in
+  let uri = Request.maybe_add_query_param uri "watch" string_of_bool watch in
+  let resp, body = Cohttp_eio.Client.call ~sw client `GET uri ~headers in
+  Request.read_json_body_as
+    (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.t_list_of_yojson)
+    resp body
+
 let read_mahout_v1alpha1_namespaced_mastodon ~sw client
     ?(headers = Request.default_headers) ~name ~namespace ?pretty () =
   let uri =

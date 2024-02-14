@@ -2,10 +2,10 @@ exception Not_implemented
 
 module Bare = struct
   type t = Net_anqou_mahout.V1alpha1.Mastodon.t
-  type t_list = |
+  type t_list = Net_anqou_mahout.V1alpha1.Mastodon.t_list
 
   let metadata (m : t) = m.metadata
-  let to_list _ = raise Not_implemented
+  let to_list (m : t_list) = m.items
 
   let watch_namespaced ~sw client ?headers:_ ~namespace ?allow_watch_bookmarks:_
       ?continue:_ ?field_selector:_ ?label_selector:_ ?limit:_ ?pretty:_
@@ -51,11 +51,8 @@ module Bare = struct
       ?send_initial_events:_ ?timeout_seconds:_ ?watch:_ () =
     raise Not_implemented
 
-  let list_for_all_namespaces ~sw:_ _client ?headers:_ ?allow_watch_bookmarks:_
-      ?continue:_ ?field_selector:_ ?label_selector:_ ?limit:_ ?pretty:_
-      ?resource_version:_ ?resource_version_match:_ ?send_initial_events:_
-      ?timeout_seconds:_ ?watch:_ () =
-    raise Not_implemented
+  let list_for_all_namespaces =
+    Mahout_v1alpha1_api.list_mahout_v1alpha1_mastodon_for_all_namespaces
 
   let replace_namespaced ~sw:_ _client ?headers:_ ~name:_ ~namespace:_ ~body:_
       ?pretty:_ ?dry_run:_ ?field_manager:_ ?field_validation:_ () =

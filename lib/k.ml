@@ -425,8 +425,7 @@ module Make (B : Bare.S) = struct
         ns_name = Hashtbl.create 0;
       }
 
-    let update ~name ~namespace data t =
-      Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
+    let unsafe_update ~name ~namespace data t =
       Hashtbl.replace t.name_ns (name, namespace) data;
 
       let h =
@@ -436,6 +435,19 @@ module Make (B : Bare.S) = struct
       in
       Hashtbl.replace h name data;
       Hashtbl.replace t.ns_name namespace h
+
+    let reset data t =
+      Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
+      Hashtbl.clear t.name_ns;
+      Hashtbl.clear t.ns_name;
+      data
+      |> List.iter (fun (name, namespace, v) ->
+             unsafe_update ~name ~namespace v t);
+      ()
+
+    let update ~name ~namespace data t =
+      Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
+      unsafe_update ~name ~namespace data t
 
     let get ~name ~namespace t =
       Eio.Mutex.use_ro t.mtx @@ fun () ->
@@ -522,14 +534,38 @@ module Make (B : Bare.S) = struct
   let enable_cache env ~sw client =
     cache := Some (Cache.make ());
     loop_until_sw_fail env ~sw (fun () ->
-        watch_all ~sw client () |> Result.get_ok
-        |> Json_response_scanner.iter (fun ((ty, data) : watch_event) ->
-               let name, namespace = get_name_and_ns data |> Option.get in
-               let cache = Option.get !cache in
-               match ty with
-               | `Added | `Modified ->
-                   cache |> Cache.update ~name ~namespace data
-               | `Deleted -> cache |> Cache.delete ~name ~namespace);
+        Eio.Fiber.both
+          (fun () ->
+            (* NOTE: This fiber runs first, so listing should be performed after watching. *)
+            watch_all ~sw client () |> Result.get_ok
+            |> Json_response_scanner.iter (fun ((ty, data) : watch_event) ->
+                   let name, namespace = get_name_and_ns data |> Option.get in
+                   let cache = Option.get !cache in
+                   match ty with
+                   | `Added | `Modified ->
+                       cache |> Cache.update ~name ~namespace data
+                   | `Deleted -> cache |> Cache.delete ~name ~namespace))
+          (fun () ->
+            match
+              B.list_for_all_namespaces ~sw client ()
+              |> expect_one |> Result.map B.to_list
+            with
+            | Error e ->
+                Logg.err (fun m ->
+                    m "enable_cache: list failed"
+                      [ ("error", `String (show_error e)) ]);
+                assert false
+            | Ok xs ->
+                let data =
+                  xs
+                  |> List.map (fun x ->
+                         let metadata = Option.get (B.metadata x) in
+                         ( Option.get metadata.name,
+                           Option.get metadata.namespace,
+                           x ))
+                in
+                Cache.reset data (Option.get !cache);
+                ());
         assert false);
     ()
 

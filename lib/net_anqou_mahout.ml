@@ -64,6 +64,16 @@ module V1alpha1 = struct
       status : Status.t option; [@yojson.default None] [@yojson.key "status"]
     }
     [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
+
+    type t_list = {
+      api_version : string option;
+          [@yojson.default None] [@yojson.key "apiVersion"]
+      items : t list; [@default []] [@yojson.key "items"]
+      kind : string option; [@yojson.default None] [@yojson.key "kind"]
+      metadata : Io_k8s_apimachinery_pkg_apis_meta_v1_list_meta.t option;
+          [@yojson.default None] [@yojson.key "metadata"]
+    }
+    [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
   end
   [@@warning "-32"]
 end

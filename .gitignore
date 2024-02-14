@@ -29,3 +29,4 @@ setup.log
 _opam/
 e2e/_bin
 e2e/.kube
+e2e/.kubeconfig
