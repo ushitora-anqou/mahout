@@ -5,6 +5,7 @@ module Bare = struct
   type t_list = Net_anqou_mahout.V1alpha1.Mastodon.t_list
 
   let metadata (m : t) = m.metadata
+  let list_metadata (m : t_list) = m.metadata
   let to_list (m : t_list) = m.items
 
   let watch_namespaced ~sw client ?headers:_ ~namespace ?allow_watch_bookmarks:_

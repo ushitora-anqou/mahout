@@ -27,6 +27,9 @@ module Bare = struct
     val metadata :
       t -> Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option
 
+    val list_metadata :
+      t_list -> Io_k8s_apimachinery_pkg_apis_meta_v1_list_meta.t option
+
     val to_list : t_list -> t list
 
     val read_namespaced :
@@ -224,6 +227,7 @@ module Bare = struct
     type t_list = Io_k8s_api_core_v1_config_map_list.t
 
     let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
     let to_list (v : t_list) = v.items
     let read_namespaced = Core_v1_api.read_core_v1_namespaced_config_map
     let create_namespaced = Core_v1_api.create_core_v1_namespaced_config_map
@@ -266,6 +270,7 @@ module Bare = struct
     type t_list = Io_k8s_api_apps_v1_deployment_list.t
 
     let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
     let to_list (v : t_list) = v.items
     let read_namespaced = Apps_v1_api.read_apps_v1_namespaced_deployment
     let create_namespaced = Apps_v1_api.create_apps_v1_namespaced_deployment
@@ -303,6 +308,7 @@ module Bare = struct
     type t_list = Io_k8s_api_batch_v1_job_list.t
 
     let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
     let to_list (v : t_list) = v.items
     let read_namespaced = Batch_v1_api.read_batch_v1_namespaced_job
     let create_namespaced = Batch_v1_api.create_batch_v1_namespaced_job
@@ -337,6 +343,7 @@ module Bare = struct
     type t_list = Io_k8s_api_core_v1_pod_list.t
 
     let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
     let to_list (v : t_list) = v.items
     let read_namespaced = Core_v1_api.read_core_v1_namespaced_pod
     let create_namespaced = Core_v1_api.create_core_v1_namespaced_pod
@@ -371,6 +378,7 @@ module Bare = struct
     type t_list = Io_k8s_api_core_v1_service_list.t
 
     let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
     let to_list (v : t_list) = v.items
     let read_namespaced = Core_v1_api.read_core_v1_namespaced_service
     let create_namespaced = Core_v1_api.create_core_v1_namespaced_service
@@ -411,6 +419,122 @@ type error =
 [@@deriving show]
 
 module Make (B : Bare.S) = struct
+  open struct
+    let expect : _ -> (_, error) result = function
+      | Ok x -> Ok x
+      | Error (resp : Cohttp.Response.t) when resp.status = `Not_found ->
+          Error `Not_found
+      | Error resp ->
+          Error
+            (`Connection_failure (Format.asprintf "%a" Http.Response.pp resp))
+
+    let expect_one x : (_, error) result =
+      match expect x with
+      | Error e -> Error e
+      | Ok scanner -> (
+          match Json_response_scanner.scan scanner with
+          | Error (`Msg msg) -> Error (`Scan_failure msg)
+          | Ok v -> Ok v)
+
+    let get_name_and_ns body =
+      match B.metadata body with
+      | None | Some { name = None; _ } -> None
+      | Some { name = Some name; namespace; _ } ->
+          Some (name, Option.value ~default:"default" namespace)
+  end
+
+  type t = B.t
+
+  let of_yojson = B.of_yojson
+  let to_yojson = B.to_yojson
+
+  type watch_event = [ `Added | `Modified | `Deleted ] * t
+
+  let string_of_watch_event : watch_event -> string = function
+    | `Added, v -> "ADDED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Modified, v -> "MODIFIED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+    | `Deleted, v -> "DELETED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
+
+  let parse_watch_event
+      (ev : Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) =
+    match ev._type with
+    | "ADDED" -> (`Added, ev._object |> B.of_yojson |> Result.get_ok)
+    | "MODIFIED" -> (`Modified, ev._object |> B.of_yojson |> Result.get_ok)
+    | "DELETED" -> (`Deleted, ev._object |> B.of_yojson |> Result.get_ok)
+    | _ -> failwith "invalid watch event"
+
+  module Watcher = struct
+    type t = {
+      mtx : Eio.Mutex.t;
+      mutable started : bool;
+      mutable handlers : (watch_event -> unit) list;
+    }
+
+    let make () = { mtx = Eio.Mutex.create (); started = false; handlers = [] }
+
+    let start env ~sw client t =
+      let ( let* ) = Result.bind in
+
+      Eio.Mutex.use_rw ~protect:true t.mtx (fun () ->
+          if t.started then failwith "watcher: start: already started";
+          t.started <- true);
+
+      let call_handlers ev =
+        Eio.Mutex.use_ro t.mtx @@ fun () ->
+        t.handlers |> List.rev |> List.iter (fun handler -> handler ev)
+      in
+
+      let list () =
+        let* xs = B.list_for_all_namespaces ~sw client () |> expect_one in
+        let resource_version =
+          Option.get (Option.get (B.list_metadata xs)).resource_version
+        in
+        xs |> B.to_list |> List.iter (fun x -> call_handlers (`Added, x));
+        Ok resource_version
+      in
+
+      let watch resource_version =
+        (* NOTE: This fiber runs first, so listing should be performed after watching. *)
+        let* scanner =
+          B.watch_for_all_namespaces ~sw client ~watch:true ~resource_version ()
+          |> expect
+        in
+        Ok
+          (scanner
+          |> Json_response_scanner.iter (fun src ->
+                 let event = parse_watch_event src in
+                 call_handlers event;
+                 ()))
+      in
+
+      loop_until_sw_fail env ~sw (fun () ->
+          let resource_version =
+            match list () with
+            | Ok x -> x
+            | Error e ->
+                Logg.err (fun m ->
+                    m "watcher: list failed"
+                      [ ("error", `String (show_error e)) ]);
+                failwith "list failed"
+          in
+          let () =
+            match watch resource_version with
+            | Ok x -> x
+            | Error e ->
+                Logg.err (fun m ->
+                    m "watcher: watch failed"
+                      [ ("error", `String (show_error e)) ]);
+                failwith "watch failed"
+          in
+          Logg.err (fun m -> m "watcher: watch exited" []);
+          failwith "watcher: watch exited");
+      ()
+
+    let register_handler f t =
+      Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
+      t.handlers <- f :: t.handlers
+  end
+
   module Cache = struct
     type 'a t = {
       mtx : Eio.Mutex.t;
@@ -481,100 +605,19 @@ module Make (B : Bare.S) = struct
       |> Option.iter (fun h -> Hashtbl.remove h name)
   end
 
-  open struct
-    let expect : _ -> (_, error) result = function
-      | Ok x -> Ok x
-      | Error (resp : Cohttp.Response.t) when resp.status = `Not_found ->
-          Error `Not_found
-      | Error resp ->
-          Error
-            (`Connection_failure (Format.asprintf "%a" Http.Response.pp resp))
-
-    let expect_one x : (_, error) result =
-      match expect x with
-      | Error e -> Error e
-      | Ok scanner -> (
-          match Json_response_scanner.scan scanner with
-          | Error (`Msg msg) -> Error (`Scan_failure msg)
-          | Ok v -> Ok v)
-
-    let get_name_and_ns body =
-      match B.metadata body with
-      | None | Some { name = None; _ } -> None
-      | Some { name = Some name; namespace; _ } ->
-          Some (name, Option.value ~default:"default" namespace)
-  end
-
-  type t = B.t
-
-  let of_yojson = B.of_yojson
-  let to_yojson = B.to_yojson
-
-  type watch_event = [ `Added | `Modified | `Deleted ] * t
-
-  let string_of_watch_event : watch_event -> string = function
-    | `Added, v -> "ADDED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
-    | `Modified, v -> "MODIFIED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
-    | `Deleted, v -> "DELETED " ^ (v |> to_yojson |> Yojson.Safe.to_string)
-
-  let parse_watch_event
-      (ev : Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t) =
-    match ev._type with
-    | "ADDED" -> (`Added, ev._object |> B.of_yojson |> Result.get_ok)
-    | "MODIFIED" -> (`Modified, ev._object |> B.of_yojson |> Result.get_ok)
-    | "DELETED" -> (`Deleted, ev._object |> B.of_yojson |> Result.get_ok)
-    | _ -> failwith "invalid watch event"
-
-  let watch ~sw client ~namespace () :
-      (watch_event Json_response_scanner.t, Http.Response.t) result =
-    B.watch_namespaced ~sw client ~namespace ~watch:true ()
-    |> Result.map (fun scanner ->
-           scanner |> Json_response_scanner.with_conv parse_watch_event)
-
-  let watch_all ~sw client () :
-      (watch_event Json_response_scanner.t, Http.Response.t) result =
-    B.watch_for_all_namespaces ~sw client ~watch:true ()
-    |> Result.map (fun scanner ->
-           scanner |> Json_response_scanner.with_conv parse_watch_event)
-
+  let watcher = Watcher.make ()
+  let register_watcher f = watcher |> Watcher.register_handler f
   let cache = ref None
 
   let enable_cache env ~sw client =
     cache := Some (Cache.make ());
-    loop_until_sw_fail env ~sw (fun () ->
-        Eio.Fiber.both
-          (fun () ->
-            (* NOTE: This fiber runs first, so listing should be performed after watching. *)
-            watch_all ~sw client () |> Result.get_ok
-            |> Json_response_scanner.iter (fun ((ty, data) : watch_event) ->
-                   let name, namespace = get_name_and_ns data |> Option.get in
-                   let cache = Option.get !cache in
-                   match ty with
-                   | `Added | `Modified ->
-                       cache |> Cache.update ~name ~namespace data
-                   | `Deleted -> cache |> Cache.delete ~name ~namespace))
-          (fun () ->
-            match
-              B.list_for_all_namespaces ~sw client ()
-              |> expect_one |> Result.map B.to_list
-            with
-            | Error e ->
-                Logg.err (fun m ->
-                    m "enable_cache: list failed"
-                      [ ("error", `String (show_error e)) ]);
-                assert false
-            | Ok xs ->
-                let data =
-                  xs
-                  |> List.map (fun x ->
-                         let metadata = Option.get (B.metadata x) in
-                         ( Option.get metadata.name,
-                           Option.get metadata.namespace,
-                           x ))
-                in
-                Cache.reset data (Option.get !cache);
-                ());
-        assert false);
+    watcher |> Watcher.start env ~sw client;
+    register_watcher (fun (ty, data) ->
+        let name, namespace = get_name_and_ns data |> Option.get in
+        let cache = Option.get !cache in
+        match ty with
+        | `Added | `Modified -> cache |> Cache.update ~name ~namespace data
+        | `Deleted -> cache |> Cache.delete ~name ~namespace);
     ()
 
   let get ~sw client ~name ~namespace () =

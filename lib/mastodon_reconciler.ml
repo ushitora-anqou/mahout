@@ -570,7 +570,11 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
   let ( let* ) = Result.bind in
   Logg.info (fun m ->
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
-
+  Fun.protect ~finally:(fun () ->
+      Logg.info (fun m ->
+          m "reconcile done"
+            [ ("name", `String name); ("namespace", `String namespace) ]))
+  @@ fun () ->
   let* mastodon =
     Mastodon.get ~sw client ~name ~namespace () |> Result.map_error K.show_error
   in
@@ -760,15 +764,15 @@ let start env ~sw client gw_nginx_conf_templ_cm_name =
   let reconciler = make () in
 
   reconciler
-  |> watch env ~sw client ~watch_all:Mastodon.watch_all
-       ~list_all:Mastodon.list_all (fun (mastodon : Mastodon.t) ->
+  |> start_watching ~register_watcher:Mastodon.register_watcher
+       (fun (mastodon : Mastodon.t) ->
          let metadata = Option.get mastodon.metadata in
          let name = Option.get metadata.name in
          let namespace = Option.get metadata.namespace in
          [ (name, namespace) ]);
 
   reconciler
-  |> watch env ~sw client ~watch_all:K.Job.watch_all ~list_all:K.Job.list_all
+  |> start_watching ~register_watcher:K.Job.register_watcher
        (fun (job : K.Job.t) ->
          let is_owned =
            (Option.get job.metadata).owner_references
@@ -784,22 +788,20 @@ let start env ~sw client gw_nginx_conf_templ_cm_name =
          else []);
 
   reconciler
-  |> watch env ~sw client ~watch_all:K.Pod.watch_all ~list_all:K.Pod.list_all
+  |> start_watching ~register_watcher:K.Pod.register_watcher
        (fun (pod : K.Pod.t) ->
          find_mastodon_from_pod ~sw client pod
          |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
                 [ (name, namespace) ]));
 
   reconciler
-  |> watch env ~sw client
-       ~watch_all:K.Config_map.(watch ~namespace:running_pod_namespace)
-       ~list_all:
-         K.Config_map.(
-           list ~namespace:running_pod_namespace ?label_selector:None)
+  |> start_watching ~register_watcher:K.Config_map.register_watcher
        (fun (cm : K.Config_map.t) ->
          if
-           Option.get (Option.get cm.metadata).name
-           <> gw_nginx_conf_templ_cm_name
+           Option.get (Option.get cm.metadata).namespace
+           <> running_pod_namespace
+           || Option.get (Option.get cm.metadata).name
+              <> gw_nginx_conf_templ_cm_name
          then []
          else
            Mastodon.list_all ~sw client ()

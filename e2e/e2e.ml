@@ -155,4 +155,21 @@ let () =
       wait_not_found ~n:"e2e" "deploy" "mastodon0-streaming";
       wait_not_found ~n:"e2e" "deploy" "mastodon0-web");
 
+  for _ = 0 to 9 do
+    apply_manifest "mastodon0-v4.2.0.yaml";
+    eventually (fun () ->
+        wait_deploy_available ~n:"e2e" "mastodon0-gateway-nginx";
+        wait_deploy_available ~n:"e2e" "mastodon0-sidekiq";
+        wait_deploy_available ~n:"e2e" "mastodon0-streaming";
+        wait_deploy_available ~n:"e2e" "mastodon0-web";
+        ());
+    delete_manifest "mastodon0-v4.2.0.yaml";
+    eventually (fun () ->
+        wait_not_found ~n:"e2e" "deploy" "mastodon0-gateway-nginx";
+        wait_not_found ~n:"e2e" "deploy" "mastodon0-sidekiq";
+        wait_not_found ~n:"e2e" "deploy" "mastodon0-streaming";
+        wait_not_found ~n:"e2e" "deploy" "mastodon0-web");
+    ()
+  done;
+
   ()
