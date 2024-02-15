@@ -606,12 +606,12 @@ module Make (B : Bare.S) = struct
   end
 
   let watcher = Watcher.make ()
+  let enable_watcher env ~sw client = Watcher.start env ~sw client watcher
   let register_watcher f = watcher |> Watcher.register_handler f
   let cache = ref None
 
-  let enable_cache env ~sw client =
+  let enable_cache () =
     cache := Some (Cache.make ());
-    watcher |> Watcher.start env ~sw client;
     register_watcher (fun (ty, data) ->
         let name, namespace = get_name_and_ns data |> Option.get in
         let cache = Option.get !cache in

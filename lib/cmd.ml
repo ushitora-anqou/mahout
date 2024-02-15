@@ -34,13 +34,21 @@ let controller gw_nginx_conf_templ_cm_name =
       (Eio.Stdenv.net env)
   in
 
+  K.Job.enable_watcher env ~sw client;
+  K.Pod.enable_watcher env ~sw client;
+  K.Deployment.enable_watcher env ~sw client;
+  K.Service.enable_watcher env ~sw client;
+  K.Config_map.enable_watcher env ~sw client;
+  Mastodon.enable_watcher env ~sw client;
+
+  (*
   K.Job.enable_cache env ~sw client;
   K.Pod.enable_cache env ~sw client;
   K.Deployment.enable_cache env ~sw client;
   K.Service.enable_cache env ~sw client;
   K.Config_map.enable_cache env ~sw client;
   Mastodon.enable_cache env ~sw client;
-
+  *)
   Mastodon_reconciler.start env ~sw client gw_nginx_conf_templ_cm_name;
 
   ()
