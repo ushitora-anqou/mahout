@@ -12,15 +12,6 @@ let https ~authenticator =
     in
     Tls_eio.client_of_flow ?host tls_config raw
 
-let start_reconcile env ~sw client ~watch_all ~list_all f =
-  K.loop_until_sw_fail env ~sw @@ fun () ->
-  Eio.Fiber.both
-    (fun () ->
-      (* This fiber should start first. Watching should start before listing *)
-      watch_all ~sw client () |> Result.get_ok
-      |> K.Json_response_scanner.iter (fun (_, x) -> f x))
-    (fun () -> list_all ~sw client () |> Result.get_ok |> List.iter f)
-
 let controller gw_nginx_conf_templ_cm_name =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->

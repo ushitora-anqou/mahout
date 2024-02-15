@@ -1,4 +1,4 @@
-let loop_until_sw_fail env ?(interval = 1.0) ~sw f =
+let fork_loop_until_sw_fail env ?(interval = 1.0) ~sw f =
   Eio.Fiber.fork ~sw @@ fun () ->
   let rec loop () =
     Eio.Fiber.yield ();
@@ -9,8 +9,8 @@ let loop_until_sw_fail env ?(interval = 1.0) ~sw f =
              [
                ("error", `String (Printexc.to_string e));
                ("trace", `String (Printexc.get_backtrace ()));
-             ]));
-    Eio.Time.sleep (Eio.Stdenv.clock env) interval;
+             ]);
+       Eio.Time.sleep (Eio.Stdenv.clock env) interval);
     loop ()
   in
   loop ()
@@ -507,7 +507,7 @@ module Make (B : Bare.S) = struct
                  ()))
       in
 
-      loop_until_sw_fail env ~sw (fun () ->
+      fork_loop_until_sw_fail env ~sw (fun () ->
           let resource_version =
             match list () with
             | Ok x -> x

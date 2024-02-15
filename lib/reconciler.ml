@@ -18,7 +18,7 @@ struct
     register_watcher (fun (_, x) -> f x |> List.iter (Eio.Stream.add t.mailbox))
 
   let start env ~sw client args t =
-    K.loop_until_sw_fail env ~sw (fun () ->
+    K.fork_loop_until_sw_fail env ~sw (fun () ->
         let name, namespace = Eio.Stream.take t.mailbox in
         match S.reconcile ~sw client ~name ~namespace args with
         | Ok () -> ()
