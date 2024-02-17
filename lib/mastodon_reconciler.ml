@@ -56,6 +56,21 @@ let get_running_pod ~sw client =
   K.Pod.get ~sw client ~name ~namespace:running_pod_namespace ()
   |> Result.get_ok
 
+let create_or_update_configmap ~sw client ~name ~namespace body =
+  K.Config_map.create_or_update ~sw client ~name ~namespace @@ function
+  | None -> body
+  | Some body0 ->
+      {
+        body0 with
+        metadata =
+          Some
+            {
+              (Option.get body0.metadata) with
+              labels = (Option.get body.metadata).labels;
+            };
+        data = body.data;
+      }
+
 let create_or_update_deployment ~sw client ~name ~namespace body =
   K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
   | None -> body
@@ -279,18 +294,26 @@ let create_or_update_gateway ~sw client
              ("namespace", Tstr namespace);
            ]
   in
-  let nginx_conf_cm_name_hash =
-    String.sub (nginx_conf_body |> Sha256.string |> Sha256.to_hex) 0 6
+  let nginx_conf_cm_name_short_hash =
+    String.sub (nginx_conf_body |> Sha256.string |> Sha256.to_hex) 0 8
   in
   let nginx_conf_cm_name =
-    nginx_conf_cm_name_prefix ^ "-" ^ nginx_conf_cm_name_hash
+    nginx_conf_cm_name_prefix ^ "-" ^ nginx_conf_cm_name_short_hash
   in
 
   let body =
     K.Config_map.make
       ~metadata:
         (K.Object_meta.make ~name:nginx_conf_cm_name ~namespace
-           ~owner_references ())
+           ~owner_references
+           ~labels:
+             (`Assoc
+               [
+                 (Label.mastodon_key, `String name);
+                 ( Label.nginx_conf_cm_hash_key,
+                   `String nginx_conf_cm_name_short_hash );
+               ])
+           ())
       ~data:
         (`Assoc
           [
@@ -310,8 +333,8 @@ let create_or_update_gateway ~sw client
       ()
   in
   let* _ =
-    K.Config_map.create_or_update ~sw client ~name:nginx_conf_cm_name ~namespace
-      (fun _ -> body)
+    create_or_update_configmap ~sw client ~name:nginx_conf_cm_name ~namespace
+      body
     |> Result.map_error K.show_error
   in
 
@@ -398,6 +421,36 @@ let create_or_update_gateway ~sw client
     K.Service.create_or_update ~sw client ~name:svc_name ~namespace (fun _ ->
         body)
     |> Result.map_error K.show_error
+  in
+
+  (* Drop unnecessary configmaps *)
+  let* unnecessary_cms =
+    K.Config_map.list ~sw client ~namespace
+      ~label_selector:
+        Label_selector.
+          [
+            Eq (Label.mastodon_key, name);
+            Exist Label.nginx_conf_cm_hash_key;
+            NotEq (Label.nginx_conf_cm_hash_key, nginx_conf_cm_name_short_hash);
+          ]
+      ()
+    |> Result.map_error K.show_error
+  in
+  let* () =
+    unnecessary_cms
+    |> List.fold_left
+         (fun e (cm : K.Config_map.t) ->
+           let* _ = e in
+           let metadata = Option.get cm.metadata in
+           let name = Option.get metadata.name in
+           let namespace = Option.get metadata.namespace in
+           let uid = Option.get metadata.uid in
+           Logg.info (fun m ->
+               m "deleting unnecessary gateway cm"
+                 [ ("name", `String name); ("namespace", `String namespace) ]);
+           K.Config_map.delete ~sw client ~name ~namespace ~uid ()
+           |> Result.map_error K.show_error)
+         (Ok ())
   in
 
   Ok ()

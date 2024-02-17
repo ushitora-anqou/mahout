@@ -146,6 +146,15 @@ let () =
       in
       if stdout <> "THIS IS AN ENDPOINT FOR E2E TEST" then
         failwith "patched gateway nginx.conf doesn't work";
+
+      let stdout, _ =
+        kubectl
+          {|get cm -n e2e -l mahout.anqou.net/mastodon=mastodon0 -o json | jq '.items | length'|}
+      in
+      let length = String.trim stdout in
+      if length <> "1" then
+        failwithf "old gateway nginx.conf is not removed: %s <> 1" length;
+
       ());
 
   delete_manifest "mastodon0-v4.2.0.yaml";
