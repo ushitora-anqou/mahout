@@ -10,7 +10,8 @@ let get_svc_name mastodon_name = function
   | `Gateway -> mastodon_name ^ "-gateway"
 
 let get_job_name mastodon_name = function
-  | `Migration -> mastodon_name ^ "-migration"
+  | `PreMigration -> mastodon_name ^ "-pre-migration"
+  | `PostMigration -> mastodon_name ^ "-post-migration"
 
 let get_deployment_selector ~kind =
   let name, component =
@@ -494,20 +495,18 @@ let get_deployments_status ~sw client ~name ~namespace =
   | Error `NotCommon -> Ok `NotCommon
   | Ok image -> get_deployments_pod_statuses ~sw client ~name ~namespace ~image
 
-let get_migration_job_status ~sw client ~name ~namespace =
-  match
-    K.Job.get ~sw client ~name:(get_job_name name `Migration) ~namespace ()
-  with
+let get_job_status ~sw client ~name ~namespace ~kind =
+  match K.Job.get ~sw client ~name:(get_job_name name kind) ~namespace () with
   | Error `Not_found -> Ok `NotFound
   | Error e -> Error e
   | Ok j when (Option.get j.status).succeeded = Some 1l -> Ok `Completed
   | Ok _ -> Ok `NotCompleted
 
-let delete_migration_job ~sw client ~(mastodon : Mastodon.t) =
+let delete_job ~sw client ~(mastodon : Mastodon.t) ~kind =
   let ( let* ) = Result.bind in
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let job_name = get_job_name name `Migration in
+  let job_name = get_job_name name kind in
   let* _ = K.Job.delete ~sw client ~name:job_name ~namespace () in
   Ok ()
 
@@ -516,7 +515,10 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let env_from = (Option.get mastodon.spec).env_from in
   let owner_references = get_owner_references mastodon in
-  let job_name = get_job_name name `Migration in
+  let job_name =
+    get_job_name name
+      (match kind with `Pre -> `PreMigration | `Post -> `PostMigration)
+  in
 
   let env =
     match kind with
@@ -599,57 +601,54 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
     get_deployments_status ~sw client ~name ~namespace
     |> Result.map_error K.show_error
   in
-  let* migration_job_status =
-    get_migration_job_status ~sw client ~name ~namespace
+  let* pre_mig_job =
+    get_job_status ~sw client ~name ~namespace ~kind:`PreMigration
+    |> Result.map_error K.show_error
+  in
+  let* post_mig_job =
+    get_job_status ~sw client ~name ~namespace ~kind:`PostMigration
     |> Result.map_error K.show_error
   in
 
   let current_state =
-    if deployments_status = `NotFound then NoDeployments
-    else if
-      Option.is_none migrating_image
-      && migration_job_status = `NotFound
-      &&
-      match deployments_status with
-      | `Ready image when image <> spec_image -> true
-      | _ -> false
-    then StartPreMigration
-    else if
-      Option.is_some migrating_image
-      && migration_job_status = `NotFound
-      &&
-      match deployments_status with
-      | `Ready image when image <> Option.get migrating_image -> true
-      | _ -> false
-    then StartPreMigration
-    else if
-      Option.is_some migrating_image
-      && migration_job_status = `Completed
-      &&
-      match deployments_status with
-      | `NotCommon -> (* Case when the previous deployment was cancelled *) true
-      | `Ready image when image <> Option.get migrating_image -> true
-      | _ -> false
-    then RolloutDeployments
-    else if
-      Option.is_some migrating_image
-      && migration_job_status = `NotFound
-      && deployments_status = `Ready (Option.get migrating_image)
-    then StartPostMigration
-    else if
-      Option.is_some migrating_image
-      && migration_job_status = `Completed
-      && deployments_status = `Ready (Option.get migrating_image)
-    then PostMigrationCompleted
-    else if Option.is_some migrating_image then Migrating
-    else Normal
+    match (pre_mig_job, post_mig_job, deployments_status, migrating_image) with
+    | `NotFound, `NotFound, `NotFound, Some _ -> 1
+    | `NotFound, `NotFound, `NotFound, None -> 2
+    | `NotFound, `NotFound, `NotCommon, Some _ -> 3
+    | `NotFound, `NotFound, `NotCommon, None -> 4
+    | `NotFound, `NotFound, (`Ready version | `NotReady version), Some mig ->
+        if version = mig then 5 else 6
+    | `NotFound, `NotFound, (`Ready version | `NotReady version), None ->
+        if version = spec_image then 7 else -1
+    | `NotFound, `Completed, `NotFound, Some _ -> 8
+    | `NotFound, `Completed, `NotFound, None -> 9
+    | `NotFound, `Completed, `NotCommon, Some _ -> 10
+    | `NotFound, `Completed, `NotCommon, None -> 11
+    | `NotFound, `Completed, (`Ready version | `NotReady version), Some mig ->
+        if version = mig then 12 else 13
+    | `NotFound, `Completed, (`Ready _ | `NotReady _), None -> 14
+    | `Completed, `NotFound, `NotFound, Some _ -> 15
+    | `Completed, `NotFound, `NotFound, None -> 16
+    | `Completed, `NotFound, `NotCommon, Some _ -> 17
+    | `Completed, `NotFound, `NotCommon, None -> 18
+    | `Completed, `NotFound, (`Ready version | `NotReady version), Some mig ->
+        if version = mig then 19 else 20
+    | `Completed, `NotFound, (`Ready _ | `NotReady _), None -> 21
+    | `Completed, `Completed, `NotFound, Some _ -> 22
+    | `Completed, `Completed, `NotFound, None -> 23
+    | `Completed, `Completed, `NotCommon, Some _ -> 24
+    | `Completed, `Completed, `NotCommon, None -> 25
+    | `Completed, `Completed, (`Ready version | `NotReady version), Some mig ->
+        if version = mig then 26 else 27
+    | `Completed, `Completed, (`Ready _ | `NotReady _), None -> 28
+    | `NotCompleted, _, _, _ | _, `NotCompleted, _, _ -> 0
   in
 
   Logg.info (fun m ->
       m "reconcile"
         [
           ("spec_image", `String spec_image);
-          ( "migration_image",
+          ( "migrating_image",
             `String (migrating_image |> Option.value ~default:"") );
           ( "deployments_status",
             `String
@@ -658,80 +657,91 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
               | `NotCommon -> "NotCommon"
               | `NotReady s -> "NotReady " ^ s
               | `Ready s -> "Ready " ^ s) );
-          ( "migration_job_status",
+          ( "pre_mig_job",
             `String
-              (match migration_job_status with
+              (match pre_mig_job with
               | `NotFound -> "NotFound"
               | `Completed -> "Completed"
               | `NotCompleted -> "NotCompleted") );
-          ("current_state", `String (show_current_state current_state));
+          ( "post_mig_job",
+            `String
+              (match post_mig_job with
+              | `NotFound -> "NotFound"
+              | `Completed -> "Completed"
+              | `NotCompleted -> "NotCompleted") );
+          ("current_state", `Int current_state);
         ]);
 
   match current_state with
-  | NoDeployments ->
+  | 0 -> Ok ()
+  | 1 ->
+      let* _ =
+        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+        |> Result.map_error K.show_error
+      in
+      Ok ()
+  | 2 ->
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
             { status with migrating_image = Some spec_image })
         |> Result.map_error K.show_error
       in
-      let* _ =
-        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
-        |> Result.map_error K.show_error
-      in
-      let* _ =
-        create_or_update_deployments ~sw client ~mastodon ~image:spec_image
-          ~gw_nginx_conf_templ_cm
-      in
       Ok ()
-  | StartPreMigration ->
-      let* _ =
-        update_mastodon_status ~sw client ~name ~namespace (fun status ->
-            {
-              status with
-              migrating_image =
-                (match migrating_image with
-                | Some x -> Some x
-                | None -> Some spec_image);
-            })
-        |> Result.map_error K.show_error
-      in
-      let* _ =
-        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Pre
-        |> Result.map_error K.show_error
-      in
-      Ok ()
-  | RolloutDeployments ->
-      let* _ =
-        delete_migration_job ~sw client ~mastodon
-        |> Result.map_error K.show_error
-      in
-      let* _ =
-        create_or_update_deployments ~sw client ~mastodon
-          ~image:(Option.get migrating_image)
-          ~gw_nginx_conf_templ_cm
-      in
-      Ok ()
-  | StartPostMigration ->
-      let* _ =
-        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
-        |> Result.map_error K.show_error
-      in
-      Ok ()
-  | PostMigrationCompleted ->
-      let* _ =
-        delete_migration_job ~sw client ~mastodon
-        |> Result.map_error K.show_error
-      in
+  | 5 ->
       let* _ =
         update_mastodon_status ~sw client ~name ~namespace (fun status ->
             { status with migrating_image = None })
         |> Result.map_error K.show_error
       in
       Ok ()
-  | Migrating -> Ok ()
-  | Normal ->
-      create_or_update_deployments ~sw client ~mastodon ~image:spec_image
-        ~gw_nginx_conf_templ_cm
+  | 6 ->
+      let* _ =
+        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Pre
+        |> Result.map_error K.show_error
+      in
+      Ok ()
+  | -1 ->
+      let* _ =
+        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+            { status with migrating_image = Some spec_image })
+        |> Result.map_error K.show_error
+      in
+      Ok ()
+  | 7 ->
+      let* _ =
+        create_or_update_deployments ~sw client ~mastodon ~image:spec_image
+          ~gw_nginx_conf_templ_cm
+      in
+      Ok ()
+  | 8 | 10 | 17 | 20 ->
+      let* _ =
+        create_or_update_deployments ~sw client ~mastodon
+          ~image:(Option.get migrating_image)
+          ~gw_nginx_conf_templ_cm
+      in
+      Ok ()
+  | 12 ->
+      let* _ =
+        delete_job ~sw client ~mastodon ~kind:`PostMigration
+        |> Result.map_error K.show_error
+      in
+      Ok ()
+  | 19 ->
+      let* _ =
+        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+        |> Result.map_error K.show_error
+      in
+      Ok ()
+  | 26 ->
+      let* _ =
+        delete_job ~sw client ~mastodon ~kind:`PreMigration
+        |> Result.map_error K.show_error
+      in
+      Ok ()
+  | _ ->
+      Logg.err (fun m ->
+          m "unexpected current state" [ ("current_state", `Int current_state) ]);
+      Ok ()
 
 let find_mastodon_from_job ~sw:_ _client (job : K.Job.t) =
   let ( let* ) = Option.bind in

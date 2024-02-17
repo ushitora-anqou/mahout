@@ -32,14 +32,13 @@ let controller gw_nginx_conf_templ_cm_name =
   K.Config_map.enable_watcher env ~sw client;
   Mastodon.enable_watcher env ~sw client;
 
-  (*
-  K.Job.enable_cache env ~sw client;
-  K.Pod.enable_cache env ~sw client;
-  K.Deployment.enable_cache env ~sw client;
-  K.Service.enable_cache env ~sw client;
-  K.Config_map.enable_cache env ~sw client;
-  Mastodon.enable_cache env ~sw client;
-  *)
+  K.Job.enable_cache ();
+  K.Pod.enable_cache ();
+  K.Deployment.enable_cache ();
+  K.Service.enable_cache ();
+  K.Config_map.enable_cache ();
+  Mastodon.enable_cache ();
+
   Mastodon_reconciler.start env ~sw client gw_nginx_conf_templ_cm_name;
 
   ()
