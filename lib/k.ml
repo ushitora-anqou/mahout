@@ -484,50 +484,51 @@ module Make (B : Bare.S) = struct
         t.handlers |> List.rev |> List.iter (fun handler -> handler ev)
       in
 
+      let latest_resource_version = ref "" in
       let list () =
         let* xs = B.list_for_all_namespaces ~sw client () |> expect_one in
         let resource_version =
           Option.get (Option.get (B.list_metadata xs)).resource_version
         in
         xs |> B.to_list |> List.iter (fun x -> call_handlers (`Added, x));
-        Ok resource_version
+        latest_resource_version := resource_version;
+        Ok ()
       in
-
-      let watch resource_version =
+      let watch () =
         (* NOTE: This fiber runs first, so listing should be performed after watching. *)
         let* scanner =
-          B.watch_for_all_namespaces ~sw client ~watch:true ~resource_version ()
+          B.watch_for_all_namespaces ~sw client ~watch:true
+            ~resource_version:!latest_resource_version ()
           |> expect
         in
         Ok
           (scanner
           |> Json_response_scanner.iter (fun src ->
                  let event = parse_watch_event src in
+                 (match B.metadata (snd event) with
+                 | Some { resource_version = Some resource_version; _ } ->
+                     latest_resource_version := resource_version
+                 | _ -> ());
                  call_handlers event;
                  ()))
       in
 
       fork_loop_until_sw_fail env ~sw (fun () ->
-          let resource_version =
-            match list () with
-            | Ok x -> x
-            | Error e ->
-                Logg.err (fun m ->
-                    m "watcher: list failed"
-                      [ ("error", `String (show_error e)) ]);
-                failwith "list failed"
-          in
-          let () =
-            match watch resource_version with
-            | Ok x -> x
-            | Error e ->
-                Logg.err (fun m ->
-                    m "watcher: watch failed"
-                      [ ("error", `String (show_error e)) ]);
-                failwith "watch failed"
-          in
-          Logg.err (fun m -> m "watcher: watch exited" []);
-          failwith "watcher: watch exited");
+          (if !latest_resource_version = "" then
+             match list () with
+             | Ok x -> x
+             | Error e ->
+                 Logg.err (fun m ->
+                     m "watcher: list failed"
+                       [ ("error", `String (show_error e)) ]);
+                 failwith "list failed");
+          match watch () with
+          | Ok () -> ()
+          | Error e ->
+              Logg.err (fun m ->
+                  m "watcher: watch failed"
+                    [ ("error", `String (show_error e)) ]);
+              failwith "watch failed");
       ()
 
     let register_handler f t =
