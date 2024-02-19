@@ -586,7 +586,7 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
       ~metadata:
         (K.Object_meta.make ~name:job_name ~namespace ~owner_references ())
       ~spec:
-        (K.Job_spec.make
+        (K.Job_spec.make ~backoff_limit:1000l
            ~template:
              (K.Pod_template_spec.make
                 ~spec:
