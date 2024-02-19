@@ -3,4 +3,4 @@ name: mahout
 description: A Helm chart for Mahout, a Mastodon operator.
 type: application
 version: 0.1.0
-appVersion: "0.1.1"
+appVersion: "0.1.2"
