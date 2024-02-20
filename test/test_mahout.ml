@@ -34,6 +34,17 @@ let test_label_selector_notin () =
   assert (check [ NotIn ("hoge", [ "piyo" ]) ] []);
   ()
 
+let test_reconciler_runqueue () =
+  let open Mahout.Reconciler.Runqueue in
+  Eio_main.run @@ fun env ->
+  let rq = create () in
+  let now = Eio.Time.now (Eio.Stdenv.clock env) in
+  push rq ~deadline:(now +. 0.5) 2;
+  push rq ~deadline:now 1;
+  assert ([ 1 ] = take ~protect:true env rq);
+  assert ([ 2 ] = take ~protect:true env rq);
+  ()
+
 let () =
   let open Alcotest in
   run "mahout"
@@ -47,4 +58,5 @@ let () =
           test_case "in" `Quick test_label_selector_in;
           test_case "notin" `Quick test_label_selector_notin;
         ] );
+      ("reconciler", [ test_case "runqueue" `Quick test_reconciler_runqueue ]);
     ]
