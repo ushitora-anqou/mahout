@@ -553,7 +553,14 @@ let get_job_status ~sw client ~name ~namespace ~kind =
   | Error `Not_found -> Ok `NotFound
   | Error e -> Error e
   | Ok j when (Option.get j.status).succeeded = Some 1l -> Ok `Completed
+  | Ok j when (Option.get j.status).failed = Some 1l -> Ok `Failed
   | Ok _ -> Ok `NotCompleted
+
+let string_of_job_status = function
+  | `NotFound -> "NotFound"
+  | `Completed -> "Completed"
+  | `NotCompleted -> "NotCompleted"
+  | `Failed -> "Failed"
 
 let delete_job ~sw client ~(mastodon : Mastodon.t) ~kind =
   let ( let* ) = Result.bind in
@@ -586,7 +593,7 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
       ~metadata:
         (K.Object_meta.make ~name:job_name ~namespace ~owner_references ())
       ~spec:
-        (K.Job_spec.make ~backoff_limit:1000l
+        (K.Job_spec.make
            ~template:
              (K.Pod_template_spec.make
                 ~spec:
@@ -681,6 +688,8 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
         if version = mig then 26 else 27
     | `Completed, `Completed, (`Ready _ | `NotReady _), None -> 28
     | `NotCompleted, _, _, _ | _, `NotCompleted, _, _ -> 0
+    | `Failed, _, _, _ -> 29
+    | _, `Failed, _, _ -> 30
   in
 
   Logg.info (fun m ->
@@ -696,18 +705,8 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
               | `NotCommon -> "NotCommon"
               | `NotReady s -> "NotReady " ^ s
               | `Ready s -> "Ready " ^ s) );
-          ( "pre_mig_job",
-            `String
-              (match pre_mig_job with
-              | `NotFound -> "NotFound"
-              | `Completed -> "Completed"
-              | `NotCompleted -> "NotCompleted") );
-          ( "post_mig_job",
-            `String
-              (match post_mig_job with
-              | `NotFound -> "NotFound"
-              | `Completed -> "Completed"
-              | `NotCompleted -> "NotCompleted") );
+          ("pre_mig_job", `String (string_of_job_status pre_mig_job));
+          ("post_mig_job", `String (string_of_job_status post_mig_job));
           ("current_state", `Int current_state);
         ]);
 
@@ -759,7 +758,7 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
-  | 12 ->
+  | 12 | 30 ->
       let* _ =
         delete_job ~sw client ~mastodon ~kind:`PostMigration
         |> Result.map_error K.show_error
@@ -771,7 +770,7 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 26 ->
+  | 26 | 29 ->
       let* _ =
         delete_job ~sw client ~mastodon ~kind:`PreMigration
         |> Result.map_error K.show_error
