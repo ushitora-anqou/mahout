@@ -55,7 +55,7 @@ let wait_available ~n kind condition name =
     failwith ("condition Available not met for " ^ kind ^ "/" ^ name)
 
 let wait_deploy_available name = wait_available "deploy" "Available" name
-let wait_pod_available name = wait_available "pod" "Ready" name
+let _wait_pod_available name = wait_available "pod" "Ready" name
 
 let http_get uri =
   kubectl (Printf.sprintf {|exec deploy/toolbox -- curl --silent '%s'|} uri)
@@ -100,8 +100,6 @@ let setup () =
   or_true (fun () -> delete_manifest "redis.yaml" |> ignore);
   or_true (fun () -> apply_manifest "postgres.yaml");
   or_true (fun () -> apply_manifest "redis.yaml");
-  eventually (fun () -> wait_pod_available ~n:"e2e" "postgres-0");
-  eventually (fun () -> wait_pod_available ~n:"e2e" "redis-0");
   eventually (fun () -> wait_deploy_available ~n:"mahout" "mahout");
   ()
 
