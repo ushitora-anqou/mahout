@@ -3,6 +3,16 @@ entries:
   mahout:
   - apiVersion: v2
     appVersion: 0.1.4
+    created: "2024-02-21T13:54:39.074085176Z"
+    description: A Helm chart for Mahout, a Mastodon operator.
+    digest: b139f2d5d4baebde507c0573ff5f3e34debb2bc4be58b62999057ccebcbac686
+    name: mahout
+    type: application
+    urls:
+    - https://github.com/ushitora-anqou/mahout/releases/download/mahout-chart-v0.1.4/mahout-0.1.4.tgz
+    version: 0.1.4
+  - apiVersion: v2
+    appVersion: 0.1.4
     created: "2024-02-21T12:02:27.310574707Z"
     description: A Helm chart for Mahout, a Mastodon operator.
     digest: b6721e36b3f9a78a06f44d6a9a6b1a67edfb76e3bed67d4d84bdf114a1df2547
@@ -41,4 +51,4 @@ entries:
     urls:
     - https://github.com/ushitora-anqou/mahout/releases/download/mahout-chart-v0.1.0/mahout-0.1.0.tgz
     version: 0.1.0
-generated: "2024-02-21T12:02:27.31059258Z"
+generated: "2024-02-21T13:54:39.074138695Z"
