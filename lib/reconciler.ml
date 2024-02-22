@@ -60,7 +60,6 @@ module Make (S : sig
   type args
 
   val reconcile :
-    sw:Eio.Switch.t ->
     Cohttp_eio.Client.t ->
     name:string ->
     namespace:string ->
@@ -80,12 +79,12 @@ struct
                Runqueue.push t.rq { name; namespace; i = 0 }
                  ~deadline:(Eio.Time.now env#clock)))
 
-  let start env ~sw client args t =
+  let start env client args t =
     let reconcile_each { name; namespace; i } =
       (* Run reconcile up to 10 times per second *)
       Eio.Time.sleep env#clock 0.1;
 
-      match S.reconcile ~sw client ~name ~namespace args with
+      match S.reconcile client ~name ~namespace args with
       | Ok () -> ()
       | Error e ->
           Logg.err (fun m -> m "reconciler failed" [ ("error", `String e) ]);
@@ -98,8 +97,11 @@ struct
           Runqueue.push t.rq ~deadline { name; namespace; i = i + 1 };
           ()
     in
-    K.fork_loop_until_sw_fail env ~sw (fun () ->
-        Runqueue.take env t.rq ~protect:true
-        |> List.sort_uniq compare |> List.iter reconcile_each);
-    ()
+    let rec loop () =
+      Eio.Fiber.yield ();
+      Runqueue.take env t.rq ~protect:true
+      |> List.sort_uniq compare |> List.iter reconcile_each;
+      loop ()
+    in
+    loop ()
 end

@@ -51,13 +51,12 @@ let get_owner_references (mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) =
 let running_pod_namespace =
   Sys.getenv_opt "POD_NAMESPACE" |> Option.value ~default:""
 
-let get_running_pod ~sw client =
+let get_running_pod client =
   let name = Sys.getenv "POD_NAME" in
-  K.Pod.get ~sw client ~name ~namespace:running_pod_namespace ()
-  |> Result.get_ok
+  K.Pod.get client ~name ~namespace:running_pod_namespace () |> Result.get_ok
 
-let create_or_update_configmap ~sw client ~name ~namespace body =
-  K.Config_map.create_or_update ~sw client ~name ~namespace @@ function
+let create_or_update_configmap client ~name ~namespace body =
+  K.Config_map.create_or_update client ~name ~namespace @@ function
   | None -> body
   | Some body0 ->
       {
@@ -71,8 +70,8 @@ let create_or_update_configmap ~sw client ~name ~namespace body =
         data = body.data;
       }
 
-let create_or_update_deployment ~sw client ~name ~namespace body =
-  K.Deployment.create_or_update ~sw client ~name ~namespace @@ function
+let create_or_update_deployment client ~name ~namespace body =
+  K.Deployment.create_or_update client ~name ~namespace @@ function
   | None -> body
   | Some body0 ->
       {
@@ -123,7 +122,7 @@ let create_or_update_deployment ~sw client ~name ~namespace body =
             };
       }
 
-let create_or_update_mastodon_service ~sw client
+let create_or_update_mastodon_service client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~kind =
   let ( let* ) = Result.bind in
 
@@ -145,14 +144,13 @@ let create_or_update_mastodon_service ~sw client
       ()
   in
   let* _ =
-    K.Service.create_or_update ~sw client ~name:svc_name ~namespace (fun _ ->
-        body)
+    K.Service.create_or_update client ~name:svc_name ~namespace (fun _ -> body)
     |> Result.map_error K.show_error
   in
 
   Ok ()
 
-let create_or_update_mastodon_deployment ~sw client
+let create_or_update_mastodon_deployment client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image ~kind =
   let ( let* ) = Result.bind in
 
@@ -237,13 +235,13 @@ let create_or_update_mastodon_deployment ~sw client
   in
 
   let* _ =
-    create_or_update_deployment ~sw client ~name:deploy_name ~namespace body
+    create_or_update_deployment client ~name:deploy_name ~namespace body
     |> Result.map_error K.show_error
   in
 
   Ok ()
 
-let create_or_update_gateway ~sw client
+let create_or_update_gateway client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image
     ~gw_nginx_conf_templ_cm =
   let ( let* ) = Result.bind in
@@ -269,7 +267,7 @@ let create_or_update_gateway ~sw client
   let owner_references = get_owner_references mastodon in
 
   let* nginx_conf_template_cm =
-    K.Config_map.get ~sw client ~name:nginx_conf_template_cm_name
+    K.Config_map.get client ~name:nginx_conf_template_cm_name
       ~namespace:nginx_conf_template_cm_namespace ()
     |> Result.map_error K.show_error
   in
@@ -333,8 +331,7 @@ let create_or_update_gateway ~sw client
       ()
   in
   let* _ =
-    create_or_update_configmap ~sw client ~name:nginx_conf_cm_name ~namespace
-      body
+    create_or_update_configmap client ~name:nginx_conf_cm_name ~namespace body
     |> Result.map_error K.show_error
   in
 
@@ -402,8 +399,7 @@ let create_or_update_gateway ~sw client
       ()
   in
   let* _ =
-    create_or_update_deployment ~sw client ~name:nginx_deploy_name ~namespace
-      body
+    create_or_update_deployment client ~name:nginx_deploy_name ~namespace body
     |> Result.map_error K.show_error
   in
 
@@ -418,14 +414,13 @@ let create_or_update_gateway ~sw client
       ()
   in
   let* _ =
-    K.Service.create_or_update ~sw client ~name:svc_name ~namespace (fun _ ->
-        body)
+    K.Service.create_or_update client ~name:svc_name ~namespace (fun _ -> body)
     |> Result.map_error K.show_error
   in
 
   (* Drop unnecessary configmaps *)
   let* unnecessary_cms =
-    K.Config_map.list ~sw client ~namespace
+    K.Config_map.list client ~namespace
       ~label_selector:
         Label_selector.
           [
@@ -448,33 +443,31 @@ let create_or_update_gateway ~sw client
            Logg.info (fun m ->
                m "deleting unnecessary gateway cm"
                  [ ("name", `String name); ("namespace", `String namespace) ]);
-           K.Config_map.delete ~sw client ~name ~namespace ~uid ()
+           K.Config_map.delete client ~name ~namespace ~uid ()
            |> Result.map_error K.show_error)
          (Ok ())
   in
 
   Ok ()
 
-let update_mastodon_status ~sw client ~name ~namespace f =
+let update_mastodon_status client ~name ~namespace f =
   let ( let* ) = Result.bind in
-  let* mastodon = Mastodon.get ~sw client ~name ~namespace () in
+  let* mastodon = Mastodon.get client ~name ~namespace () in
   let status =
     match mastodon.status with
     | None -> Net_anqou_mahout.V1alpha1.Mastodon.Status.make ()
     | Some status -> status
   in
   let status = f status in
-  Mastodon.update_status ~sw client { mastodon with status = Some status }
+  Mastodon.update_status client { mastodon with status = Some status }
 
-let create_or_update_deployments ~sw client ~mastodon ~image
-    ~gw_nginx_conf_templ_cm =
+let create_or_update_deployments client ~mastodon ~image ~gw_nginx_conf_templ_cm
+    =
   let ( let* ) = Result.bind in
-  let deploy =
-    create_or_update_mastodon_deployment ~sw client ~mastodon ~image
-  in
-  let svc = create_or_update_mastodon_service ~sw client ~mastodon in
+  let deploy = create_or_update_mastodon_deployment client ~mastodon ~image in
+  let svc = create_or_update_mastodon_service client ~mastodon in
   let* _ =
-    create_or_update_gateway ~sw client ~mastodon ~image ~gw_nginx_conf_templ_cm
+    create_or_update_gateway client ~mastodon ~image ~gw_nginx_conf_templ_cm
   in
   let* _ = deploy ~kind:`Web in
   let* _ = deploy ~kind:`Sidekiq in
@@ -492,9 +485,9 @@ let image_of_deployment (deploy : K.Deployment.t) =
   in
   Option.get (List.hd containers).image
 
-let fetch_deployments_image ~sw client ~name ~namespace =
+let fetch_deployments_image client ~name ~namespace =
   let fetch_deploy_image kind =
-    K.Deployment.get ~sw client ~namespace ~name:(get_deploy_name name kind) ()
+    K.Deployment.get client ~namespace ~name:(get_deploy_name name kind) ()
     |> Result.map image_of_deployment
     |> Result.map_error (fun (e : K.error) -> `K e)
   in
@@ -508,13 +501,13 @@ let fetch_deployments_image ~sw client ~name ~namespace =
   if image0 = image1 && image1 = image2 && image2 = image3 then Ok image0
   else Error `NotCommon
 
-let get_deployments_pod_statuses ~sw client ~name ~namespace ~image =
+let get_deployments_pod_statuses client ~name ~namespace ~image =
   let ( let* ) = Result.bind in
 
   let image_label_value = Label.encode_deploy_image image in
 
   let* all_pods =
-    K.Pod.list ~sw client ~namespace
+    K.Pod.list client ~namespace
       ~label_selector:
         Label_selector.
           [ Eq (Label.mastodon_key, name); Exist Label.deploy_image_key ]
@@ -522,7 +515,7 @@ let get_deployments_pod_statuses ~sw client ~name ~namespace ~image =
   in
 
   let* live_pods =
-    K.Pod.list ~sw client ~namespace
+    K.Pod.list client ~namespace
       ~label_selector:
         Label_selector.
           [
@@ -541,15 +534,15 @@ let get_deployments_pod_statuses ~sw client ~name ~namespace ~image =
     (if List.length all_pods = List.length live_pods then `Ready image
      else `NotReady image)
 
-let get_deployments_status ~sw client ~name ~namespace =
-  match fetch_deployments_image ~sw client ~name ~namespace with
+let get_deployments_status client ~name ~namespace =
+  match fetch_deployments_image client ~name ~namespace with
   | Error (`K `Not_found) -> Ok `NotFound
   | Error (`K e) -> Error e
   | Error `NotCommon -> Ok `NotCommon
-  | Ok image -> get_deployments_pod_statuses ~sw client ~name ~namespace ~image
+  | Ok image -> get_deployments_pod_statuses client ~name ~namespace ~image
 
-let get_job_status ~sw client ~name ~namespace ~kind =
-  match K.Job.get ~sw client ~name:(get_job_name name kind) ~namespace () with
+let get_job_status client ~name ~namespace ~kind =
+  match K.Job.get client ~name:(get_job_name name kind) ~namespace () with
   | Error `Not_found -> Ok `NotFound
   | Error e -> Error e
   | Ok j when (Option.get j.status).succeeded = Some 1l -> Ok `Completed
@@ -562,15 +555,15 @@ let string_of_job_status = function
   | `NotCompleted -> "NotCompleted"
   | `Failed -> "Failed"
 
-let delete_job ~sw client ~(mastodon : Mastodon.t) ~kind =
+let delete_job client ~(mastodon : Mastodon.t) ~kind =
   let ( let* ) = Result.bind in
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let job_name = get_job_name name kind in
-  let* _ = K.Job.delete ~sw client ~name:job_name ~namespace () in
+  let* _ = K.Job.delete client ~name:job_name ~namespace () in
   Ok ()
 
-let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
+let create_migration_job client ~(mastodon : Mastodon.t) ~image ~kind =
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let env_from = (Option.get mastodon.spec).env_from in
@@ -616,7 +609,7 @@ let create_migration_job ~sw client ~(mastodon : Mastodon.t) ~image ~kind =
            ())
       ()
   in
-  K.Job.create ~sw client body
+  K.Job.create client body
 
 type current_state =
   | NoDeployments
@@ -628,7 +621,7 @@ type current_state =
   | Normal
 [@@deriving show]
 
-let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
+let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
     (mastodon : Mastodon.t) =
   let ( let* ) = Result.bind in
 
@@ -644,15 +637,15 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
     | Some status -> status.migrating_image
   in
   let* deployments_status =
-    get_deployments_status ~sw client ~name ~namespace
+    get_deployments_status client ~name ~namespace
     |> Result.map_error K.show_error
   in
   let* pre_mig_job =
-    get_job_status ~sw client ~name ~namespace ~kind:`PreMigration
+    get_job_status client ~name ~namespace ~kind:`PreMigration
     |> Result.map_error K.show_error
   in
   let* post_mig_job =
-    get_job_status ~sw client ~name ~namespace ~kind:`PostMigration
+    get_job_status client ~name ~namespace ~kind:`PostMigration
     |> Result.map_error K.show_error
   in
 
@@ -714,65 +707,65 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
   | 0 -> Ok ()
   | 1 ->
       let* _ =
-        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+        create_migration_job client ~mastodon ~image:spec_image ~kind:`Post
         |> Result.map_error K.show_error
       in
       Ok ()
   | 2 ->
       let* _ =
-        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+        update_mastodon_status client ~name ~namespace (fun status ->
             { status with migrating_image = Some spec_image })
         |> Result.map_error K.show_error
       in
       Ok ()
   | 5 ->
       let* _ =
-        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+        update_mastodon_status client ~name ~namespace (fun status ->
             { status with migrating_image = None })
         |> Result.map_error K.show_error
       in
       Ok ()
   | 6 ->
       let* _ =
-        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Pre
+        create_migration_job client ~mastodon ~image:spec_image ~kind:`Pre
         |> Result.map_error K.show_error
       in
       Ok ()
   | -1 ->
       let* _ =
-        update_mastodon_status ~sw client ~name ~namespace (fun status ->
+        update_mastodon_status client ~name ~namespace (fun status ->
             { status with migrating_image = Some spec_image })
         |> Result.map_error K.show_error
       in
       Ok ()
   | 7 ->
       let* _ =
-        create_or_update_deployments ~sw client ~mastodon ~image:spec_image
+        create_or_update_deployments client ~mastodon ~image:spec_image
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
   | 8 | 10 | 17 | 20 ->
       let* _ =
-        create_or_update_deployments ~sw client ~mastodon
+        create_or_update_deployments client ~mastodon
           ~image:(Option.get migrating_image)
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
   | 12 | 30 ->
       let* _ =
-        delete_job ~sw client ~mastodon ~kind:`PostMigration
+        delete_job client ~mastodon ~kind:`PostMigration
         |> Result.map_error K.show_error
       in
       Ok ()
   | 19 ->
       let* _ =
-        create_migration_job ~sw client ~mastodon ~image:spec_image ~kind:`Post
+        create_migration_job client ~mastodon ~image:spec_image ~kind:`Post
         |> Result.map_error K.show_error
       in
       Ok ()
   | 26 | 29 ->
       let* _ =
-        delete_job ~sw client ~mastodon ~kind:`PreMigration
+        delete_job client ~mastodon ~kind:`PreMigration
         |> Result.map_error K.show_error
       in
       Ok ()
@@ -781,7 +774,7 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
           m "unexpected current state" [ ("current_state", `Int current_state) ]);
       Ok ()
 
-let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
+let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name =
   Logg.info (fun m ->
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
   Fun.protect ~finally:(fun () ->
@@ -789,7 +782,7 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
           m "reconcile done"
             [ ("name", `String name); ("namespace", `String namespace) ]))
   @@ fun () ->
-  match Mastodon.get ~sw client ~name ~namespace () with
+  match Mastodon.get client ~name ~namespace () with
   | Error `Not_found ->
       Logg.info (fun m ->
           m "Mastodon resource not found"
@@ -800,10 +793,10 @@ let reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name =
       match (Option.get mastodon.metadata).deletion_timestamp with
       | Some _ -> Error "Mastodon resource already deleted"
       | None ->
-          reconcile ~sw client ~name ~namespace gw_nginx_conf_templ_cm_name
-            mastodon)
+          reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name mastodon
+      )
 
-let find_mastodon_from_job ~sw:_ _client (job : K.Job.t) =
+let find_mastodon_from_job _client (job : K.Job.t) =
   let ( let* ) = Option.bind in
   let* metadata = job.metadata in
   let* owner_reference =
@@ -816,7 +809,7 @@ let find_mastodon_from_job ~sw:_ _client (job : K.Job.t) =
   let* namespace = metadata.namespace in
   Some (name, namespace)
 
-let find_mastodon_from_pod ~sw:_ _client (pod : K.Pod.t) =
+let find_mastodon_from_pod _client (pod : K.Pod.t) =
   let ( let* ) = Option.bind in
   let* metadata = pod.metadata in
   let* labels = match metadata.labels with `Assoc l -> Some l | _ -> None in
@@ -830,7 +823,7 @@ open Reconciler.Make (struct
   let reconcile = reconcile
 end)
 
-let start env ~sw client gw_nginx_conf_templ_cm_name =
+let start env client gw_nginx_conf_templ_cm_name () =
   let reconciler = make () in
 
   reconciler
@@ -852,7 +845,7 @@ let start env ~sw client gw_nginx_conf_templ_cm_name =
            |> Option.is_some
          in
          if is_owned then
-           find_mastodon_from_job ~sw client job
+           find_mastodon_from_job client job
            |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
                   [ (name, namespace) ])
          else []);
@@ -860,7 +853,7 @@ let start env ~sw client gw_nginx_conf_templ_cm_name =
   reconciler
   |> start_watching env ~register_watcher:K.Pod.register_watcher
        (fun (pod : K.Pod.t) ->
-         find_mastodon_from_pod ~sw client pod
+         find_mastodon_from_pod client pod
          |> Option.fold ~none:[] ~some:(fun (name, namespace) ->
                 [ (name, namespace) ]));
 
@@ -874,12 +867,10 @@ let start env ~sw client gw_nginx_conf_templ_cm_name =
               <> gw_nginx_conf_templ_cm_name
          then []
          else
-           Mastodon.list_all ~sw client ()
+           Mastodon.list_all client ()
            |> Result.get_ok
            |> List.map (fun (m : Mastodon.t) ->
                   let metadata = Option.get m.metadata in
                   (Option.get metadata.name, Option.get metadata.namespace)));
 
-  reconciler |> start env ~sw client gw_nginx_conf_templ_cm_name;
-
-  ()
+  reconciler |> start env client gw_nginx_conf_templ_cm_name

@@ -1,20 +1,3 @@
-let fork_loop_until_sw_fail env ?(interval = 1.0) ~sw f =
-  Eio.Fiber.fork ~sw @@ fun () ->
-  let rec loop () =
-    Eio.Fiber.yield ();
-    (try f ()
-     with e ->
-       Logg.err (fun m ->
-           m "loop_until: catch exception"
-             [
-               ("error", `String (Printexc.to_string e));
-               ("trace", `String (Printexc.get_backtrace ()));
-             ]);
-       Eio.Time.sleep (Eio.Stdenv.clock env) interval);
-    loop ()
-  in
-  loop ()
-
 module Bare = struct
   open K8s_1_28_client
 
@@ -472,7 +455,7 @@ module Make (B : Bare.S) = struct
 
     let make () = { mtx = Eio.Mutex.create (); started = false; handlers = [] }
 
-    let start env ~sw client t =
+    let start client t =
       let ( let* ) = Result.bind in
 
       Eio.Mutex.use_rw ~protect:true t.mtx (fun () ->
@@ -486,6 +469,7 @@ module Make (B : Bare.S) = struct
 
       let latest_resource_version = ref "" in
       let list () =
+        Eio.Switch.run @@ fun sw ->
         let* xs = B.list_for_all_namespaces ~sw client () |> expect_one in
         let resource_version =
           Option.get (Option.get (B.list_metadata xs)).resource_version
@@ -495,6 +479,7 @@ module Make (B : Bare.S) = struct
         Ok ()
       in
       let watch () =
+        Eio.Switch.run @@ fun sw ->
         (* NOTE: This fiber runs first, so listing should be performed after watching. *)
         let* scanner =
           B.watch_for_all_namespaces ~sw client ~watch:true
@@ -513,23 +498,23 @@ module Make (B : Bare.S) = struct
                  ()))
       in
 
-      fork_loop_until_sw_fail env ~sw (fun () ->
-          (if !latest_resource_version = "" then
-             match list () with
-             | Ok x -> x
-             | Error e ->
-                 Logg.err (fun m ->
-                     m "watcher: list failed"
-                       [ ("error", `String (show_error e)) ]);
-                 failwith "list failed");
-          match watch () with
-          | Ok () -> ()
-          | Error e ->
-              Logg.err (fun m ->
-                  m "watcher: watch failed"
-                    [ ("error", `String (show_error e)) ]);
-              failwith "watch failed");
-      ()
+      let rec loop () : unit =
+        (if !latest_resource_version = "" then
+           match list () with
+           | Ok x -> x
+           | Error e ->
+               Logg.err (fun m ->
+                   m "watcher: list failed"
+                     [ ("error", `String (show_error e)) ]);
+               failwith "list failed");
+        (match watch () with
+        | Ok () -> ()
+        | Error e ->
+            Logg.err (fun m ->
+                m "watcher: watch failed" [ ("error", `String (show_error e)) ]));
+        loop ()
+      in
+      loop ()
 
     let register_handler f t =
       Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
@@ -607,7 +592,7 @@ module Make (B : Bare.S) = struct
   end
 
   let watcher = Watcher.make ()
-  let enable_watcher env ~sw client = Watcher.start env ~sw client watcher
+  let start_watcher client () = Watcher.start client watcher
   let register_watcher f = watcher |> Watcher.register_handler f
   let cache = ref None
 
@@ -621,46 +606,52 @@ module Make (B : Bare.S) = struct
         | `Deleted -> cache |> Cache.delete ~name ~namespace);
     ()
 
-  let get ~sw client ~name ~namespace () =
+  let get client ~name ~namespace () =
+    Eio.Switch.run @@ fun sw ->
     match !cache with
     | None -> B.read_namespaced ~sw client ~name ~namespace () |> expect_one
     | Some cache ->
         cache |> Cache.get ~name ~namespace |> Option.to_result ~none:`Not_found
 
-  let get_status ~sw client ~name ~namespace () =
+  let get_status client ~name ~namespace () =
+    Eio.Switch.run @@ fun sw ->
     B.read_status ~sw client ~name ~namespace () |> expect_one
 
-  let update ~sw client body =
+  let update client body =
+    Eio.Switch.run @@ fun sw ->
     match get_name_and_ns body with
     | None -> Error `No_metadata
     | Some (name, namespace) ->
         B.replace_namespaced ~sw client ~name ~namespace ~body () |> expect_one
 
-  let update_status ~sw client body =
+  let update_status client body =
+    Eio.Switch.run @@ fun sw ->
     match get_name_and_ns body with
     | None -> Error `No_metadata
     | Some (name, namespace) ->
         B.replace_status ~sw client ~name ~namespace ~body () |> expect_one
 
-  let create ~sw client body =
+  let create client body =
+    Eio.Switch.run @@ fun sw ->
     match get_name_and_ns body with
     | None -> Error `No_metadata
     | Some (_, namespace) ->
         B.create_namespaced ~sw client ~namespace ~body () |> expect_one
 
-  let create_or_update ~sw client ~name ~namespace f =
-    match get ~sw client ~name ~namespace () with
-    | Error `Not_found -> create ~sw client (f None)
+  let create_or_update client ~name ~namespace f =
+    match get client ~name ~namespace () with
+    | Error `Not_found -> create client (f None)
     | Error _ as e -> e
-    | Ok v -> update ~sw client (f (Some v))
+    | Ok v -> update client (f (Some v))
 
-  let create_or_update_status ~sw client ~name ~namespace f =
-    match get_status ~sw client ~name ~namespace () with
-    | Error `Not_found -> create ~sw client (f None)
+  let create_or_update_status client ~name ~namespace f =
+    match get_status client ~name ~namespace () with
+    | Error `Not_found -> create client (f None)
     | Error _ as e -> e
-    | Ok v -> update_status ~sw client (f (Some v))
+    | Ok v -> update_status client (f (Some v))
 
-  let list ~sw client ~namespace ?label_selector () =
+  let list client ~namespace ?label_selector () =
+    Eio.Switch.run @@ fun sw ->
     match !cache with
     | Some cache -> cache |> Cache.list ~namespace ?label_selector |> Result.ok
     | _ ->
@@ -670,14 +661,16 @@ module Make (B : Bare.S) = struct
         B.list_namespaced ~sw client ~namespace ?label_selector ()
         |> expect_one |> Result.map B.to_list
 
-  let list_all ~sw client () =
+  let list_all client () =
+    Eio.Switch.run @@ fun sw ->
     match !cache with
     | Some cache -> cache |> Cache.list_all |> Result.ok
     | None ->
         B.list_for_all_namespaces ~sw client ()
         |> expect_one |> Result.map B.to_list
 
-  let delete ~sw client ?uid ~namespace ~name () =
+  let delete client ?uid ~namespace ~name () =
+    Eio.Switch.run @@ fun sw ->
     B.delete_namespaced ~sw client ~name ~namespace
       ~body:
         (Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.make

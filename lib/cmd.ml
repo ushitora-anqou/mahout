@@ -25,12 +25,12 @@ let controller gw_nginx_conf_templ_cm_name =
       (Eio.Stdenv.net env)
   in
 
-  K.Job.enable_watcher env ~sw client;
-  K.Pod.enable_watcher env ~sw client;
-  K.Deployment.enable_watcher env ~sw client;
-  K.Service.enable_watcher env ~sw client;
-  K.Config_map.enable_watcher env ~sw client;
-  Mastodon.enable_watcher env ~sw client;
+  Eio.Fiber.fork ~sw (K.Job.start_watcher client);
+  Eio.Fiber.fork ~sw (K.Pod.start_watcher client);
+  Eio.Fiber.fork ~sw (K.Deployment.start_watcher client);
+  Eio.Fiber.fork ~sw (K.Service.start_watcher client);
+  Eio.Fiber.fork ~sw (K.Config_map.start_watcher client);
+  Eio.Fiber.fork ~sw (Mastodon.start_watcher client);
 
   K.Job.enable_cache ();
   K.Pod.enable_cache ();
@@ -39,6 +39,7 @@ let controller gw_nginx_conf_templ_cm_name =
   K.Config_map.enable_cache ();
   Mastodon.enable_cache ();
 
-  Mastodon_reconciler.start env ~sw client gw_nginx_conf_templ_cm_name;
+  Eio.Fiber.fork ~sw
+    (Mastodon_reconciler.start env client gw_nginx_conf_templ_cm_name);
 
   ()
