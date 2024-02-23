@@ -164,6 +164,13 @@ let create_or_update_mastodon_deployment client
   in
   let owner_references = get_owner_references mastodon in
 
+  let replicas =
+    match kind with
+    | `Sidekiq -> (Option.get (Option.get mastodon.spec).sidekiq).replicas
+    | `Streaming -> (Option.get (Option.get mastodon.spec).streaming).replicas
+    | `Web -> (Option.get (Option.get mastodon.spec).web).replicas
+  in
+
   let container =
     let open K.Container in
     match kind with
@@ -223,7 +230,7 @@ let create_or_update_mastodon_deployment client
         (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references ())
       ~spec:
         K.Deployment_spec.(
-          make ~replicas:1l
+          make ~replicas
             ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
@@ -246,7 +253,7 @@ let create_or_update_gateway client
     ~gw_nginx_conf_templ_cm =
   let ( let* ) = Result.bind in
 
-  let nginx_image = "nginx:1.25.3" in
+  let nginx_image = (Option.get (Option.get mastodon.spec).gateway).image in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
@@ -298,6 +305,8 @@ let create_or_update_gateway client
   let nginx_conf_cm_name =
     nginx_conf_cm_name_prefix ^ "-" ^ nginx_conf_cm_name_short_hash
   in
+
+  let replicas = (Option.get (Option.get mastodon.spec).gateway).replicas in
 
   let body =
     K.Config_map.make
@@ -389,7 +398,7 @@ let create_or_update_gateway client
            ())
       ~spec:
         K.Deployment_spec.(
-          make ~replicas:1l
+          make ~replicas
             ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
@@ -713,15 +722,15 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
       Ok ()
   | 2 ->
       let* _ =
-        update_mastodon_status client ~name ~namespace (fun status ->
-            { status with migrating_image = Some spec_image })
+        update_mastodon_status client ~name ~namespace
+          (Mastodon.Status.with_migrating_image (Some spec_image))
         |> Result.map_error K.show_error
       in
       Ok ()
   | 5 ->
       let* _ =
-        update_mastodon_status client ~name ~namespace (fun status ->
-            { status with migrating_image = None })
+        update_mastodon_status client ~name ~namespace
+          (Mastodon.Status.with_migrating_image None)
         |> Result.map_error K.show_error
       in
       Ok ()
@@ -733,8 +742,8 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
       Ok ()
   | -1 ->
       let* _ =
-        update_mastodon_status client ~name ~namespace (fun status ->
-            { status with migrating_image = Some spec_image })
+        update_mastodon_status client ~name ~namespace
+          (Mastodon.Status.with_migrating_image (Some spec_image))
         |> Result.map_error K.show_error
       in
       Ok ()

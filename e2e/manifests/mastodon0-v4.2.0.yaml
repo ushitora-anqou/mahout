@@ -10,3 +10,12 @@ spec:
   envFrom:
     - secretRef:
         name: secret-env
+  gateway:
+    replicas: 1
+    image: "nginx:1.25.4"
+  sidekiq:
+    replicas: 1
+  streaming:
+    replicas: 1
+  web:
+    replicas: 1

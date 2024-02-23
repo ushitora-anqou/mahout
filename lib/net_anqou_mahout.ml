@@ -3,22 +3,31 @@ open K
 module V1alpha1 = struct
   module Mastodon = struct
     module Web = struct
-      type t = { replicas : int [@yojson.key "replicas"] }
+      type t = {
+        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+      }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
     module Sidekiq = struct
-      type t = { replicas : int [@yojson.key "replicas"] }
+      type t = {
+        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+      }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
     module Streaming = struct
-      type t = { replicas : int [@yojson.key "replicas"] }
+      type t = {
+        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+      }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
     module Gateway = struct
-      type t = { replicas : int [@yojson.default 1] [@yojson.key "replicas"] }
+      type t = {
+        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+        image : string; [@yojson.default ""] [@yojson.key "image"]
+      }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
@@ -41,13 +50,6 @@ module V1alpha1 = struct
 
     module Status = struct
       type t = {
-        message : string option; [@yojson.default None] [@yojson.key "message"]
-        conditions : Io_k8s_apimachinery_pkg_apis_meta_v1_condition.t list;
-            [@yojson.key "conditions"]
-        running_image : string option;
-            [@yojson.default None] [@yojson.key "runningImage"]
-        migrating : bool option;
-            [@yojson.default None] [@yojson.key "migrating"]
         migrating_image : string option;
             [@yojson.default None] [@yojson.key "migratingImage"]
       }
