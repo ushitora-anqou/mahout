@@ -679,8 +679,10 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
     | `Completed, `NotFound, `NotFound, None -> 16
     | `Completed, `NotFound, `NotCommon, Some _ -> 17
     | `Completed, `NotFound, `NotCommon, None -> 18
-    | `Completed, `NotFound, (`Ready version | `NotReady version), Some mig ->
-        if version = mig then 19 else 20
+    | `Completed, `NotFound, `Ready version, Some mig ->
+        if version = mig then 31 else 20
+    | `Completed, `NotFound, `NotReady version, Some mig ->
+        if version = mig then 32 else 20
     | `Completed, `NotFound, (`Ready _ | `NotReady _), None -> 21
     | `Completed, `Completed, `NotFound, Some _ -> 22
     | `Completed, `Completed, `NotFound, None -> 23
@@ -753,7 +755,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
-  | 8 | 10 | 17 | 20 ->
+  | 8 | 10 | 17 | 20 | 32 ->
       let* _ =
         create_or_update_deployments client ~mastodon
           ~image:(Option.get migrating_image)
@@ -766,7 +768,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 19 ->
+  | 31 ->
       let* _ =
         create_migration_job client ~mastodon ~image:spec_image ~kind:`Post
         |> Result.map_error K.show_error
