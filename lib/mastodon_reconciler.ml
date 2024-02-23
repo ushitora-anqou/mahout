@@ -667,7 +667,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
     | `NotFound, `NotFound, (`Ready version | `NotReady version), Some mig ->
         if version = mig then 5 else 6
     | `NotFound, `NotFound, (`Ready version | `NotReady version), None ->
-        if version = spec_image then 7 else -1
+        if version = spec_image then 7 else 33
     | `NotFound, `Completed, `NotFound, Some _ -> 8
     | `NotFound, `Completed, `NotFound, None -> 9
     | `NotFound, `Completed, `NotCommon, Some _ -> 10
@@ -740,7 +740,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
         |> Result.map_error K.show_error
       in
       Ok ()
-  | -1 ->
+  | 33 ->
       let* _ =
         update_mastodon_status client ~name ~namespace
           (Mastodon.Status.with_migrating_image (Some spec_image))
