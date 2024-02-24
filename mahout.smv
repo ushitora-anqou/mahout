@@ -1,0 +1,214 @@
+MODULE cached_version(to_be)
+    VAR
+        current : {none, 1, 2, 3};
+    ASSIGN
+        init(current) := none;
+        next(current) := {current, to_be};
+    CTLSPEC (to_be = 1 & current = none) -> (EX (current = 1) & EX (current != 1 & EX (current = 1)));
+
+MODULE job(create, delete)
+    VAR
+        state : {not_found, not_completed, completed, failed};
+    ASSIGN
+        init(state) := not_found;
+        next(state) :=
+            case
+                delete : not_found;
+                state = not_found & create : {not_found, not_completed, completed, failed};
+                state = not_completed : {not_completed, completed, failed};
+                TRUE : state;
+            esac;
+
+MODULE deploys(spec_version)
+    VAR
+        state : {not_found, not_common, not_ready, ready};
+        version : {not_available, 1, 2, 3};
+    ASSIGN
+        init(state) := not_found;
+        init(version) := not_available;
+
+        next(state) :=
+            case
+                spec_version = none : not_found;
+                state = not_found : {not_common, not_ready, ready};
+                state = not_common : {not_common, not_ready, ready};
+                state in {not_ready, ready} & version = spec_version : {not_ready, ready};
+                state in {not_ready, ready} & version != spec_version : {not_common, not_ready, ready};
+            esac;
+
+        next(version) :=
+            case
+                spec_version = none : not_available;
+                next(state) in {not_found, not_common} : not_available;
+                next(state) in {not_ready, ready} : spec_version;
+            esac;
+    INVARSPEC state in {not_found, not_common} -> version = not_available;
+    INVARSPEC state in {not_ready, ready} -> version != not_available;
+    INVARSPEC spec_version = none -> (next(state) = not_found & next(version) = not_available);
+
+MODULE main
+    VAR
+        state : 0..34; -- 0 = dead state
+
+        pre_job_create : boolean;
+        pre_job_delete : boolean;
+        pre_job : job(pre_job_create, pre_job_delete);
+
+        post_job_create : boolean;
+        post_job_delete : boolean;
+        post_job : job(post_job_create, post_job_delete);
+
+        d_spec_version_to_be : {none, 1, 2, 3};
+        d_spec_version : cached_version(d_spec_version_to_be);
+        d : deploys(d_spec_version.current);
+
+        spec_version : {1, 2, 3};
+
+        mig_to_be : {none, 1, 2, 3};
+        mig : cached_version(mig_to_be);
+    ASSIGN
+        init(pre_job_create) := FALSE;
+        init(pre_job_delete) := FALSE;
+        init(post_job_create) := FALSE;
+        init(post_job_delete) := FALSE;
+        init(d_spec_version_to_be) := none;
+        init(spec_version) := {1, 2, 3};
+        init(mig_to_be) := none;
+
+        state :=
+            case
+                pre_job.state = not_found & post_job.state = not_found & d.state = not_found & mig.current != none : 1 ;
+                pre_job.state = not_found & post_job.state = not_found & d.state = not_found & mig.current = none : 2 ;
+                pre_job.state = not_found & post_job.state = not_found & d.state in {ready, not_ready} & mig.current != none & mig.current = d.version : 5 ;
+                pre_job.state = not_found & post_job.state = not_found & d.state in {ready, not_ready} & mig.current != none & mig.current != d.version : 6 ;
+                pre_job.state = not_found & post_job.state = not_found & d.state in {ready, not_ready} & mig.current = none & d.version = spec_version : 7 ;
+                pre_job.state = not_found & post_job.state = not_found & d.state in {ready, not_ready} & mig.current = none & d.version != spec_version : 33;
+                pre_job.state = not_found & post_job.state = completed & d.state = not_found & mig.current != none : 8 ;
+                pre_job.state = not_found & post_job.state = completed & d.state = not_common & mig.current != none : 10;
+                pre_job.state = not_found & post_job.state = completed & d.state in {ready, not_ready} & mig.current != none & mig.current = d.version : 12;
+                pre_job.state = completed & post_job.state = not_found & d.state = not_common & mig.current != none : 17;
+                pre_job.state = completed & post_job.state = not_found & d.state = ready & mig.current != none & mig.current = d.version : 31;
+                pre_job.state = completed & post_job.state = not_found & d.state = not_ready & mig.current != none & mig.current = d.version : 32;
+                pre_job.state = completed & post_job.state = not_found & d.state in {ready, not_ready} & mig.current != none & mig.current != d.version : 20;
+                pre_job.state = completed & post_job.state = completed & d.state in {ready, not_ready} & mig.current != none & mig.current = d.version : 26;
+                pre_job.state = not_completed : 34;
+                post_job.state = not_completed : 34;
+                pre_job.state = failed : 29;
+                post_job.state = failed : 30;
+                TRUE : 0;
+            esac;
+
+        next(pre_job_create) :=
+            case
+                state = 6 : {TRUE, FALSE};
+                TRUE : FALSE;
+            esac;
+        next(pre_job_delete) :=
+            case
+                state in {26, 29} : {TRUE, FALSE};
+                TRUE : FALSE;
+            esac;
+        next(post_job_create) :=
+            case
+                state in {1, 31} : {TRUE, FALSE};
+                TRUE : FALSE;
+            esac;
+        next(post_job_delete) :=
+            case
+                state in {12, 30} : {TRUE, FALSE};
+                TRUE : FALSE;
+            esac;
+        next(d_spec_version_to_be) :=
+            case
+                state = 7 : {spec_version, d_spec_version_to_be};
+                state in {8, 10, 17, 20, 32} & mig.current != none : {mig.current, d_spec_version_to_be};
+                TRUE : d_spec_version_to_be;
+            esac;
+        next(spec_version) := {1, 2, 3};
+        next(mig_to_be) :=
+            case
+                state in {2, 33} & mig_to_be = mig.current : {spec_version, mig_to_be};
+                state = 5 : {none, mig_to_be};
+                TRUE : mig_to_be;
+            esac;
+
+    INVARSPEC state != 0;
+
+    CTLSPEC AG(EF(state = 7 & d.version = spec_version));
+
+    CTLSPEC AG(state = 1 -> AX(state in {1, 8, 30, 34}));
+    CTLSPEC EF(state = 1 & EX(state = 1));
+    CTLSPEC EF(state = 1 & EX(state = 8));
+    CTLSPEC EF(state = 1 & EX(state = 30));
+    CTLSPEC EF(state = 1 & EX(state = 34));
+
+    CTLSPEC AG(state = 2 -> AX(state in {1, 2}));
+    CTLSPEC EF(state = 2 & EX(state = 1));
+    CTLSPEC EF(state = 2 & EX(state = 2));
+
+    CTLSPEC AG(state = 5 -> AX(state in {5, 7, 33}));
+    CTLSPEC EF(state = 5 & EX(state = 5));
+    CTLSPEC EF(state = 5 & EX(state = 7));
+    CTLSPEC EF(state = 5 & EX(state = 33));
+
+    CTLSPEC AG(state = 6 -> AX(state in {6, 20, 29, 34}));
+    CTLSPEC EF(state = 6 & EX(state = 6));
+    CTLSPEC EF(state = 6 & EX(state = 20));
+    CTLSPEC EF(state = 6 & EX(state = 29));
+    CTLSPEC EF(state = 6 & EX(state = 34));
+
+    CTLSPEC AG(state = 7 -> AX(state in {6, 7, 33}));
+    CTLSPEC EF(state = 7 & EX(state = 6));
+    CTLSPEC EF(state = 7 & EX(state = 7));
+    CTLSPEC EF(state = 7 & EX(state = 33));
+
+    CTLSPEC AG(state = 33 -> AX(state in {6, 7, 33}));
+    CTLSPEC EF(state = 33 & EX(state = 6));
+    CTLSPEC EF(state = 33 & EX(state = 7));
+    CTLSPEC EF(state = 33 & EX(state = 33));
+
+    CTLSPEC AG(state = 8 -> AX(state in {8, 10, 12}));
+    CTLSPEC EF(state = 8 & EX(state = 8));
+    CTLSPEC EF(state = 8 & EX(state = 10));
+    CTLSPEC EF(state = 8 & EX(state = 12));
+
+    CTLSPEC AG(state = 10 -> AX(state in {10, 12}));
+    CTLSPEC EF(state = 10 & EX(state = 10));
+    CTLSPEC EF(state = 10 & EX(state = 12));
+
+    CTLSPEC AG(state = 12 -> AX(state in {5, 12}));
+    CTLSPEC EF(state = 12 & EX(state = 5));
+    CTLSPEC EF(state = 12 & EX(state = 12));
+
+    CTLSPEC AG(state = 17 -> AX(state in {17, 31, 32}));
+    CTLSPEC EF(state = 17 & EX(state = 17));
+    CTLSPEC EF(state = 17 & EX(state = 31));
+    CTLSPEC EF(state = 17 & EX(state = 32));
+
+    CTLSPEC AG(state = 31 -> AX(state in {26, 30, 31, 32, 34}));
+    CTLSPEC EF(state = 31 & EX(state = 26));
+    CTLSPEC EF(state = 31 & EX(state = 30));
+    CTLSPEC EF(state = 31 & EX(state = 31));
+    CTLSPEC EF(state = 31 & EX(state = 32));
+    CTLSPEC EF(state = 31 & EX(state = 34));
+
+    CTLSPEC AG(state = 32 -> AX(state in {26, 30, 31, 32, 34}));
+    CTLSPEC EF(state = 32 & EX(state = 26));
+    CTLSPEC EF(state = 32 & EX(state = 30));
+    CTLSPEC EF(state = 32 & EX(state = 31));
+    CTLSPEC EF(state = 32 & EX(state = 32));
+    CTLSPEC EF(state = 32 & EX(state = 34));
+
+    CTLSPEC AG(state = 20 -> AX(state in {17, 20, 31, 32}));
+    CTLSPEC EF(state = 20 & EX(state = 17));
+    CTLSPEC EF(state = 20 & EX(state = 20));
+    CTLSPEC EF(state = 20 & EX(state = 31));
+    CTLSPEC EF(state = 20 & EX(state = 32));
+
+    CTLSPEC AG(state = 26 -> AX(state in {12, 26}));
+    CTLSPEC EF(state = 26 & EX(state = 12));
+    CTLSPEC EF(state = 26 & EX(state = 26));
+
+    CTLSPEC EF state = 34;
+    CTLSPEC EF state = 29;
+    CTLSPEC EF state = 30;
