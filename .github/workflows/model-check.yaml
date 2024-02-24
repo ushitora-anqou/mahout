@@ -1,0 +1,19 @@
+name: Perform model checking by NuSMV
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+permissions: read-all
+
+jobs:
+  model-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout tree
+        uses: actions/checkout@v4
+      - run: wget https://nusmv.fbk.eu/distrib/NuSMV-2.6.0-linux64.tar.gz
+      - run: tar xf NuSMV-2.6.0-linux64.tar.gz
+      - run: NuSMV-2.6.0-Linux/bin/NuSMV mahout.smv | tee nusmv_log
+      - run: cat nusmv_log | egrep '^-- (specification|invariant) .+ is false$' && exit 1 || true
