@@ -55,9 +55,8 @@ module Bare = struct
   let list_for_all_namespaces =
     Mahout_v1alpha1_api.list_mahout_v1alpha1_mastodon_for_all_namespaces
 
-  let replace_namespaced ~sw:_ _client ?headers:_ ~name:_ ~namespace:_ ~body:_
-      ?pretty:_ ?dry_run:_ ?field_manager:_ ?field_validation:_ () =
-    raise Not_implemented
+  let replace_namespaced =
+    Mahout_v1alpha1_api.replace_mahout_v1alpha1_namespaced_mastodon
 
   let read_status =
     Mahout_v1alpha1_api.read_mahout_v1alpha1_namespaced_mastodon_status

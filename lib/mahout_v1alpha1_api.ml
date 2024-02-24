@@ -129,6 +129,34 @@ let patch_mahout_v1alpha1_namespaced_mastodon_status ~sw client ~name ~namespace
     (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.of_yojson)
     resp body
 
+let replace_mahout_v1alpha1_namespaced_mastodon ~sw client
+    ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run
+    ?field_manager ?field_validation () =
+  let uri =
+    Request.build_uri
+      "/apis/mahout.anqou.net/v1alpha1/namespaces/{namespace}/mastodons/{name}"
+  in
+  let headers = Cohttp.Header.add headers "authorization" Request.api_key in
+  let uri = Request.replace_path_param uri "name" (fun x -> x) name in
+  let uri = Request.replace_path_param uri "namespace" (fun x -> x) namespace in
+  let uri = Request.maybe_add_query_param uri "pretty" (fun x -> x) pretty in
+  let uri = Request.maybe_add_query_param uri "dryRun" (fun x -> x) dry_run in
+  let uri =
+    Request.maybe_add_query_param uri "fieldManager" (fun x -> x) field_manager
+  in
+  let uri =
+    Request.maybe_add_query_param uri "fieldValidation"
+      (fun x -> x)
+      field_validation
+  in
+  let body =
+    Request.write_as_json_body Net_anqou_mahout.V1alpha1.Mastodon.to_yojson body
+  in
+  let resp, body = Cohttp_eio.Client.call ~sw client `PUT uri ~headers ~body in
+  Request.read_json_body_as
+    (JsonSupport.unwrap Net_anqou_mahout.V1alpha1.Mastodon.of_yojson)
+    resp body
+
 let replace_mahout_v1alpha1_namespaced_mastodon_status ~sw client
     ?(headers = Request.default_headers) ~name ~namespace ~body ?pretty ?dry_run
     ?field_manager ?field_validation () =
