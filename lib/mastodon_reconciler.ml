@@ -680,7 +680,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
     | `Completed, `Completed, (`Ready version | `NotReady version), Some mig ->
         if version = mig then 26 else 27
     | `Completed, `Completed, (`Ready _ | `NotReady _), None -> 28
-    | `NotCompleted, _, _, _ | _, `NotCompleted, _, _ -> 0
+    | `NotCompleted, _, _, _ | _, `NotCompleted, _, _ -> 34
     | `Failed, _, _, _ -> 29
     | _, `Failed, _, _ -> 30
   in
@@ -704,7 +704,6 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
         ]);
 
   match current_state with
-  | 0 -> Ok ()
   | 1 ->
       let* _ =
         create_migration_job client ~mastodon ~image:spec_image ~kind:`Post
@@ -762,6 +761,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
         |> Result.map_error K.show_error
       in
       Ok ()
+  | 34 -> Ok ()
   | _ ->
       Logg.err (fun m ->
           m "unexpected current state" [ ("current_state", `Int current_state) ]);
