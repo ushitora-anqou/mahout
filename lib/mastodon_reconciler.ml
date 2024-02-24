@@ -459,17 +459,6 @@ let create_or_update_gateway client
 
   Ok ()
 
-let update_mastodon_status client ~name ~namespace f =
-  let ( let* ) = Result.bind in
-  let* mastodon = Mastodon.get client ~name ~namespace () in
-  let status =
-    match mastodon.status with
-    | None -> Net_anqou_mahout.V1alpha1.Mastodon.Status.make ()
-    | Some status -> status
-  in
-  let status = f status in
-  Mastodon.update_status client { mastodon with status = Some status }
-
 let create_or_update_deployments client ~mastodon ~image ~gw_nginx_conf_templ_cm
     =
   let ( let* ) = Result.bind in
@@ -724,15 +713,15 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
       Ok ()
   | 2 | 33 ->
       let* _ =
-        update_mastodon_status client ~name ~namespace
-          (Mastodon.Status.with_migrating_image (Some spec_image))
+        Mastodon.update_status client
+          { mastodon with status = Some { migrating_image = Some spec_image } }
         |> Result.map_error K.show_error
       in
       Ok ()
   | 5 ->
       let* _ =
-        update_mastodon_status client ~name ~namespace
-          (Mastodon.Status.with_migrating_image None)
+        Mastodon.update_status client
+          { mastodon with status = Some { migrating_image = None } }
         |> Result.map_error K.show_error
       in
       Ok ()
