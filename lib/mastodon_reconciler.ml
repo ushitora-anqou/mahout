@@ -722,7 +722,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 2 ->
+  | 2 | 33 ->
       let* _ =
         update_mastodon_status client ~name ~namespace
           (Mastodon.Status.with_migrating_image (Some spec_image))
@@ -739,13 +739,6 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
   | 6 ->
       let* _ =
         create_migration_job client ~mastodon ~image:spec_image ~kind:`Pre
-        |> Result.map_error K.show_error
-      in
-      Ok ()
-  | 33 ->
-      let* _ =
-        update_mastodon_status client ~name ~namespace
-          (Mastodon.Status.with_migrating_image (Some spec_image))
         |> Result.map_error K.show_error
       in
       Ok ()
