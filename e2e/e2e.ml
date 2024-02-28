@@ -108,7 +108,7 @@ let () =
       wait_deploy_available ~n:"e2e" "mastodon0-streaming";
       wait_deploy_available ~n:"e2e" "mastodon0-web";
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
-      check_mastodon_version ~host:"mastodon0.ket-apps.test"
+      check_mastodon_version ~host:"mastodon.test"
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.1.9";
       check_schema_migrations_count ~expected:395;
       ());
@@ -125,7 +125,7 @@ let () =
       wait_deploy_available ~n:"e2e" "mastodon0-streaming";
       wait_deploy_available ~n:"e2e" "mastodon0-web";
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
-      check_mastodon_version ~host:"mastodon0.ket-apps.test"
+      check_mastodon_version ~host:"mastodon.test"
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.2.0";
       check_schema_migrations_count ~expected:422;
       ());
