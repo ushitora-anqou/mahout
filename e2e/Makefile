@@ -50,12 +50,14 @@ create-cluster:
 	$(KIND) load docker-image $(IMAGE) -n $(KIND_CLUSTER_NAME)
 	$(MAKE) $(KUBECONFIG)
 	$(KUBECTL) create namespace mahout
-	KUBECONFIG=$(KUBECONFIG) $(HELM) install --namespace mahout mahout ../charts/mahout/ -f values.yaml
 	$(KUBECTL) create namespace e2e
 	$(KUBECTL) apply -f $(WD)/manifests/secret-env.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/toolbox.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/postgres.yaml
+	$(KUBECTL) apply -f $(WD)/manifests/redis.yaml
 
 .PHONY: test
 test:
 	$(MAKE) create-cluster
+	KUBECONFIG=$(KUBECONFIG) $(HELM) install --namespace mahout mahout ../charts/mahout/ -f values.yaml
 	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq

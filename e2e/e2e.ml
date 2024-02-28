@@ -2,7 +2,7 @@ module Logg = Mahout.Logg
 
 exception Process_status_error of Unix.process_status * string * string
 
-let or_true f = try f () with Process_status_error _ -> ()
+let _or_true f = try f () with Process_status_error _ -> ()
 let failwithf f = Printf.ksprintf failwith f
 
 let eventually ?(count = 60) ?(interval = 5) f =
@@ -94,14 +94,7 @@ let check_schema_migrations_count ~expected =
     failwithf "check_schema_migrations_count: got %d, expected %d" count
       expected
 
-let setup () =
-  or_true (fun () -> kubectl {|delete -n e2e mastodon mastodon0|} |> ignore);
-  or_true (fun () -> delete_manifest "postgres.yaml" |> ignore);
-  or_true (fun () -> delete_manifest "redis.yaml" |> ignore);
-  or_true (fun () -> apply_manifest "postgres.yaml");
-  or_true (fun () -> apply_manifest "redis.yaml");
-  eventually (fun () -> wait_deploy_available ~n:"mahout" "mahout");
-  ()
+let setup () = ()
 
 let () =
   Mahout.Logg.setup ~enable_trace:false @@ fun () ->
