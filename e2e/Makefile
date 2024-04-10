@@ -56,8 +56,12 @@ create-cluster:
 	$(KUBECTL) apply -f $(WD)/manifests/postgres.yaml
 	$(KUBECTL) apply -f $(WD)/manifests/redis.yaml
 
+.PHONY: helm-install-mahout
+helm-install-mahout:
+	KUBECONFIG=$(KUBECONFIG) $(HELM) install --namespace mahout mahout ../charts/mahout/ -f values.yaml
+
 .PHONY: test
 test:
 	$(MAKE) create-cluster
-	KUBECONFIG=$(KUBECONFIG) $(HELM) install --namespace mahout mahout ../charts/mahout/ -f values.yaml
-	OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq
+	$(MAKE) helm-install-mahout
+	bash -o pipefail -c "OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq"

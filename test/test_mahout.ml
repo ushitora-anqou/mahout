@@ -45,6 +45,48 @@ let test_reconciler_runqueue () =
   assert ([ 2 ] = take ~protect:true env rq);
   ()
 
+let test_mastodon_crd_to_yojson () =
+  let open Mahout.Net_anqou_mahout.V1alpha1.Mastodon in
+  let got =
+    Spec.make ~server_name:"a" ~image:"b" ~web:(Web.make ~replicas:1l ()) ()
+    |> Spec.to_yojson
+  in
+  let expected =
+    `Assoc
+      [
+        ("serverName", `String "a");
+        ("image", `String "b");
+        ("web", `Assoc [ ("replicas", `Int 1) ]);
+      ]
+  in
+  Printf.eprintf "got: %s\n" (Yojson.Safe.to_string got);
+  Printf.eprintf "expected: %s\n" (Yojson.Safe.to_string expected);
+  assert (Yojson.Safe.to_string got = Yojson.Safe.to_string expected);
+  ()
+
+let test_mastodon_crd_of_yojson () =
+  let open Mahout.Net_anqou_mahout.V1alpha1.Mastodon in
+  let expected =
+    Spec.make ~server_name:"a" ~image:"b" ~web:(Web.make ~replicas:1l ()) ()
+  in
+  let got =
+    `Assoc
+      [
+        ("serverName", `String "a");
+        ("image", `String "b");
+        ("envFrom", `List []);
+        ("web", `Assoc [ ("replicas", `Int 1) ]);
+        ("sidekiq", `Null);
+        ("streaming", `Null);
+        (* no "gateway" field *)
+      ]
+    |> Spec.of_yojson |> Result.get_ok
+  in
+  Printf.eprintf "got: %s\n" (Spec.show got);
+  Printf.eprintf "expected: %s\n" (Spec.show expected);
+  assert (got = expected);
+  ()
+
 let () =
   let open Alcotest in
   run "mahout"
@@ -59,4 +101,9 @@ let () =
           test_case "notin" `Quick test_label_selector_notin;
         ] );
       ("reconciler", [ test_case "runqueue" `Quick test_reconciler_runqueue ]);
+      ( "mastodon crd",
+        [
+          test_case "to_yojson" `Quick test_mastodon_crd_to_yojson;
+          test_case "of_yojson" `Quick test_mastodon_crd_of_yojson;
+        ] );
     ]
