@@ -1,7 +1,6 @@
 name: Perform model checking by NuSMV
 
 on:
-  pull_request:
   push:
   workflow_dispatch:
 
