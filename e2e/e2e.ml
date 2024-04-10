@@ -5,13 +5,29 @@ exception Process_status_error of Unix.process_status * string * string
 let _or_true f = try f () with Process_status_error _ -> ()
 let failwithf f = Printf.ksprintf failwith f
 
+let consistently ?(count = 24) ?(interval = 5) f =
+  let rec loop i =
+    if i = 0 then ()
+    else (
+      (try f ()
+       with e ->
+         Logg.err (fun m ->
+             m "consistently: failed"
+               [ ("exc", `String (Printexc.to_string e)) ]);
+         raise e);
+      Unix.sleep interval;
+      loop (i - 1))
+  in
+  loop count
+
 let eventually ?(count = 60) ?(interval = 5) f =
   let rec loop i =
     try f () with
-    | e when i = 0 -> raise e
-    | e ->
+    | e when i = 0 ->
         Logg.err (fun m ->
             m "eventually: failed" [ ("exc", `String (Printexc.to_string e)) ]);
+        raise e
+    | _ ->
         Unix.sleep interval;
         loop (i - 1)
   in
@@ -147,6 +163,26 @@ let () =
         failwithf "old gateway nginx.conf is not removed: %s <> 1" length;
 
       ());
+
+  (* Check that the age of a web Pod must be smaller than 90 seconds *)
+  consistently (fun () ->
+      let stdout, _ =
+        kubectl
+          {|get pod -n e2e -l app.kubernetes.io/component=web -o json | jq -r '.items[].metadata.creationTimestamp'|}
+      in
+      let now = Ptime_clock.now () in
+      let b =
+        stdout |> String.split_on_char '\n'
+        |> List.for_all (fun create ->
+               if create = "" then true
+               else
+                 let t, _, _ = Ptime.of_rfc3339 create |> Result.get_ok in
+                 let dur =
+                   Ptime.diff now t |> Ptime.Span.to_int_s |> Option.get
+                 in
+                 dur < 90)
+      in
+      assert b);
 
   delete_manifest "mastodon0-v4.2.0.yaml";
   eventually (fun () ->

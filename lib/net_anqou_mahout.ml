@@ -2,30 +2,39 @@ open K
 
 module V1alpha1 = struct
   module Mastodon = struct
+    module Periodic_restart = struct
+      type t = {
+        schedule : string option; [@yojson.default None] [@yojson.key "schedule"]
+      }
+      [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
+    end
+
     module Web = struct
       type t = {
-        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+        replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
+        periodic_restart : Periodic_restart.t option;
+            [@yojson.default None] [@yojson.key "periodicRestart"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
     module Sidekiq = struct
       type t = {
-        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+        replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
     module Streaming = struct
       type t = {
-        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+        replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
     module Gateway = struct
       type t = {
-        replicas : int32; [@yojson.default 1l] [@yojson.key "replicas"]
+        replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
         image : string; [@yojson.default ""] [@yojson.key "image"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]

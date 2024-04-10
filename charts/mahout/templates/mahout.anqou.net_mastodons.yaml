@@ -98,6 +98,11 @@ spec:
                 type: object
               web:
                 properties:
+                  periodicRestart:
+                    properties:
+                      schedule:
+                        type: string
+                    type: object
                   replicas:
                     type: integer
                 required:

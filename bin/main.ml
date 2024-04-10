@@ -14,6 +14,13 @@ let () =
                       [ "gw-nginx-conf-templ-cm" ]
                       ~docv:"NAME"
                       ~doc:"gateway nginx.conf template ConfigMap name"));
+          v (info "restart")
+            Term.(
+              const Mahout.Cmd.restart
+              $ Arg.(value & Arg.opt string "" & info [ "name" ] ~docv:"NAME")
+              $ Arg.(
+                  value & Arg.opt string ""
+                  & info [ "namespace" ] ~docv:"NAMESPACE"));
         ])
   in
   exit (Cmd.eval cmd)

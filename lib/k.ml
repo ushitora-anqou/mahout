@@ -205,6 +205,246 @@ module Bare = struct
     val to_yojson : t -> Yojson.Safe.t
   end
 
+  module type S_cluster = sig
+    type t
+    type t_list
+
+    val metadata :
+      t -> Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option
+
+    val list_metadata :
+      t_list -> Io_k8s_apimachinery_pkg_apis_meta_v1_list_meta.t option
+
+    val to_list : t_list -> t list
+
+    val read :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      ?pretty:string ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val create :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      body:t ->
+      ?pretty:string ->
+      ?dry_run:string ->
+      ?field_manager:string ->
+      ?field_validation:string ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val patch :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      body:Yojson.Safe.t ->
+      ?pretty:string ->
+      ?dry_run:string ->
+      ?field_manager:string ->
+      ?field_validation:string ->
+      ?force:bool ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val delete :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      ?pretty:string ->
+      ?dry_run:string ->
+      ?grace_period_seconds:int32 ->
+      ?orphan_dependents:bool ->
+      ?propagation_policy:string ->
+      body:Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.t ->
+      unit ->
+      (unit, Cohttp.Response.t) result
+
+    val watch :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      ?allow_watch_bookmarks:bool ->
+      ?continue:string ->
+      ?field_selector:string ->
+      ?label_selector:string ->
+      ?limit:int32 ->
+      ?pretty:string ->
+      ?resource_version:string ->
+      ?resource_version_match:string ->
+      ?send_initial_events:bool ->
+      ?timeout_seconds:int32 ->
+      ?watch:bool ->
+      unit ->
+      ( Io_k8s_apimachinery_pkg_apis_meta_v1_watch_event.t
+        Json_response_scanner.t,
+        Cohttp.Response.t )
+      result
+
+    val list :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      ?pretty:string ->
+      ?allow_watch_bookmarks:bool ->
+      ?continue:string ->
+      ?field_selector:string ->
+      ?label_selector:string ->
+      ?limit:int32 ->
+      ?resource_version:string ->
+      ?resource_version_match:string ->
+      ?send_initial_events:bool ->
+      ?timeout_seconds:int32 ->
+      ?watch:bool ->
+      unit ->
+      (t_list Json_response_scanner.t, Cohttp.Response.t) result
+
+    val replace :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      body:t ->
+      ?pretty:string ->
+      ?dry_run:string ->
+      ?field_manager:string ->
+      ?field_validation:string ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val read_status :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      ?pretty:string ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val replace_status :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      body:t ->
+      ?pretty:string ->
+      ?dry_run:string ->
+      ?field_manager:string ->
+      ?field_validation:string ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val patch_status :
+      sw:Eio.Switch.t ->
+      Cohttp_eio.Client.t ->
+      ?headers:Cohttp.Header.t ->
+      name:string ->
+      body:Yojson.Safe.t ->
+      ?pretty:string ->
+      ?dry_run:string ->
+      ?field_manager:string ->
+      ?field_validation:string ->
+      ?force:bool ->
+      unit ->
+      (t Json_response_scanner.t, Cohttp.Response.t) result
+
+    val of_yojson : Yojson.Safe.t -> (t, string) result
+    val to_yojson : t -> Yojson.Safe.t
+  end
+
+  module With_namespace (M : S_cluster) = struct
+    type t = M.t
+    type t_list = M.t_list
+
+    let metadata = M.metadata
+    let list_metadata = M.list_metadata
+    let to_list = M.to_list
+
+    let read_namespaced ~sw client ?headers ~name ~namespace:_ =
+      M.read ~sw client ?headers ~name
+
+    let create_namespaced ~sw client ?headers ~namespace:_ =
+      M.create ~sw client ?headers
+
+    let patch_namespaced ~sw client ?headers ~name ~namespace:_ ~body =
+      M.patch ~sw client ?headers ~name ~body
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace:_ ?pretty
+        ?dry_run ?grace_period_seconds ?orphan_dependents ?propagation_policy
+        ~body () =
+      M.delete ~sw client ?headers ~name ?pretty ?dry_run ?grace_period_seconds
+        ?orphan_dependents ?propagation_policy ~body ()
+
+    let watch_namespaced ~sw client ?headers ~namespace:_ =
+      M.watch ~sw client ?headers
+
+    let watch_for_all_namespaces ~sw client = M.watch ~sw client
+
+    let list_namespaced ~sw client ?headers ~namespace:_ =
+      M.list ~sw client ?headers
+
+    let list_for_all_namespaces ~sw client ?headers ?allow_watch_bookmarks
+        ?continue ?field_selector ?label_selector ?limit ?pretty
+        ?resource_version ?resource_version_match ?send_initial_events
+        ?timeout_seconds ?watch () =
+      M.list ~sw client ?headers ?allow_watch_bookmarks ?continue
+        ?field_selector ?label_selector ?limit ?pretty ?resource_version
+        ?resource_version_match ?send_initial_events ?timeout_seconds ?watch ()
+
+    let replace_namespaced ~sw client ?headers ~name ~namespace:_ =
+      M.replace ~sw client ?headers ~name
+
+    let read_status ~sw:_ = assert false
+    let replace_status ~sw:_ = assert false
+    let patch_status ~sw:_ = assert false
+    let of_yojson = M.of_yojson
+    let to_yojson = M.to_yojson
+  end
+
+  module Cron_job = struct
+    type t = Io_k8s_api_batch_v1_cron_job.t
+    type t_list = Io_k8s_api_batch_v1_cron_job_list.t
+
+    let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
+    let to_list (v : t_list) = v.items
+    let read_namespaced = Batch_v1_api.read_batch_v1_namespaced_cron_job
+    let create_namespaced = Batch_v1_api.create_batch_v1_namespaced_cron_job
+    let patch_namespaced = Batch_v1_api.patch_batch_v1_namespaced_cron_job
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Batch_v1_api.delete_batch_v1_namespaced_cron_job ~sw client ?headers ~name
+        ~namespace ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced = Batch_v1_api.watch_batch_v1_namespaced_cron_job_list
+    let replace_namespaced = Batch_v1_api.replace_batch_v1_namespaced_cron_job
+    let list_namespaced = Batch_v1_api.list_batch_v1_namespaced_cron_job
+
+    let watch_for_all_namespaces =
+      Batch_v1_api.watch_batch_v1_cron_job_list_for_all_namespaces
+
+    let list_for_all_namespaces =
+      Batch_v1_api.list_batch_v1_cron_job_for_all_namespaces
+
+    let read_status = Batch_v1_api.read_batch_v1_namespaced_cron_job_status
+    let patch_status = Batch_v1_api.patch_batch_v1_namespaced_cron_job_status
+
+    let replace_status =
+      Batch_v1_api.replace_batch_v1_namespaced_cron_job_status
+
+    let of_yojson = Io_k8s_api_batch_v1_cron_job.of_yojson
+    let to_yojson = Io_k8s_api_batch_v1_cron_job.to_yojson
+  end
+
   module Config_map = struct
     type t = Io_k8s_api_core_v1_config_map.t
     type t_list = Io_k8s_api_core_v1_config_map_list.t
@@ -390,6 +630,153 @@ module Bare = struct
     let of_yojson = Io_k8s_api_core_v1_service.of_yojson
     let to_yojson = Io_k8s_api_core_v1_service.to_yojson
   end
+
+  module Role = struct
+    type t = Io_k8s_api_rbac_v1_role.t
+    type t_list = Io_k8s_api_rbac_v1_role_list.t
+
+    let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
+    let to_list (v : t_list) = v.items
+
+    let read_namespaced =
+      Rbac_authorization_v1_api.read_rbac_authorization_v1_namespaced_role
+
+    let create_namespaced =
+      Rbac_authorization_v1_api.create_rbac_authorization_v1_namespaced_role
+
+    let patch_namespaced =
+      Rbac_authorization_v1_api.patch_rbac_authorization_v1_namespaced_role
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Rbac_authorization_v1_api.delete_rbac_authorization_v1_namespaced_role ~sw
+        client ?headers ~name ~namespace ?pretty ?dry_run ?grace_period_seconds
+        ?orphan_dependents ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced =
+      Rbac_authorization_v1_api.watch_rbac_authorization_v1_namespaced_role_list
+
+    let replace_namespaced =
+      Rbac_authorization_v1_api.replace_rbac_authorization_v1_namespaced_role
+
+    let list_namespaced =
+      Rbac_authorization_v1_api.list_rbac_authorization_v1_namespaced_role
+
+    let watch_for_all_namespaces =
+      Rbac_authorization_v1_api
+      .watch_rbac_authorization_v1_role_list_for_all_namespaces
+
+    let list_for_all_namespaces =
+      Rbac_authorization_v1_api
+      .list_rbac_authorization_v1_role_for_all_namespaces
+
+    let read_status ~sw:_ = assert false
+    let patch_status ~sw:_ = assert false
+    let replace_status ~sw:_ = assert false
+    let of_yojson = Io_k8s_api_rbac_v1_role.of_yojson
+    let to_yojson = Io_k8s_api_rbac_v1_role.to_yojson
+  end
+
+  module Role_binding = struct
+    type t = Io_k8s_api_rbac_v1_role_binding.t
+    type t_list = Io_k8s_api_rbac_v1_role_binding_list.t
+
+    let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
+    let to_list (v : t_list) = v.items
+
+    let read_namespaced =
+      Rbac_authorization_v1_api
+      .read_rbac_authorization_v1_namespaced_role_binding
+
+    let create_namespaced =
+      Rbac_authorization_v1_api
+      .create_rbac_authorization_v1_namespaced_role_binding
+
+    let patch_namespaced =
+      Rbac_authorization_v1_api
+      .patch_rbac_authorization_v1_namespaced_role_binding
+
+    let delete_namespaced ~sw client ?headers ~name ~namespace ?pretty ?dry_run
+        ?grace_period_seconds ?orphan_dependents ?propagation_policy ~body () =
+      Rbac_authorization_v1_api
+      .delete_rbac_authorization_v1_namespaced_role_binding ~sw client ?headers
+        ~name ~namespace ?pretty ?dry_run ?grace_period_seconds
+        ?orphan_dependents ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch_namespaced =
+      Rbac_authorization_v1_api
+      .watch_rbac_authorization_v1_namespaced_role_binding_list
+
+    let replace_namespaced =
+      Rbac_authorization_v1_api
+      .replace_rbac_authorization_v1_namespaced_role_binding
+
+    let list_namespaced =
+      Rbac_authorization_v1_api
+      .list_rbac_authorization_v1_namespaced_role_binding
+
+    let watch_for_all_namespaces =
+      Rbac_authorization_v1_api
+      .watch_rbac_authorization_v1_role_binding_list_for_all_namespaces
+
+    let list_for_all_namespaces =
+      Rbac_authorization_v1_api
+      .list_rbac_authorization_v1_role_binding_for_all_namespaces
+
+    let read_status ~sw:_ = assert false
+    let patch_status ~sw:_ = assert false
+    let replace_status ~sw:_ = assert false
+    let of_yojson = Io_k8s_api_rbac_v1_role_binding.of_yojson
+    let to_yojson = Io_k8s_api_rbac_v1_role_binding.to_yojson
+  end
+
+  module Cluster_role_binding = With_namespace (struct
+    type t = Io_k8s_api_rbac_v1_cluster_role_binding.t
+    type t_list = Io_k8s_api_rbac_v1_cluster_role_binding_list.t
+
+    let metadata (v : t) = v.metadata
+    let list_metadata (v : t_list) = v.metadata
+    let to_list (v : t_list) = v.items
+
+    let read =
+      Rbac_authorization_v1_api.read_rbac_authorization_v1_cluster_role_binding
+
+    let create =
+      Rbac_authorization_v1_api
+      .create_rbac_authorization_v1_cluster_role_binding
+
+    let patch =
+      Rbac_authorization_v1_api.patch_rbac_authorization_v1_cluster_role_binding
+
+    let delete ~sw client ?headers ~name ?pretty ?dry_run ?grace_period_seconds
+        ?orphan_dependents ?propagation_policy ~body () =
+      Rbac_authorization_v1_api
+      .delete_rbac_authorization_v1_cluster_role_binding ~sw client ?headers
+        ~name ?pretty ?dry_run ?grace_period_seconds ?orphan_dependents
+        ?propagation_policy ~body ()
+      |> Result.map ignore
+
+    let watch =
+      Rbac_authorization_v1_api
+      .watch_rbac_authorization_v1_cluster_role_binding_list
+
+    let replace =
+      Rbac_authorization_v1_api
+      .replace_rbac_authorization_v1_cluster_role_binding
+
+    let list =
+      Rbac_authorization_v1_api.list_rbac_authorization_v1_cluster_role_binding
+
+    let read_status ~sw:_ = assert false
+    let replace_status ~sw:_ = assert false
+    let patch_status ~sw:_ = assert false
+    let of_yojson = Io_k8s_api_rbac_v1_cluster_role_binding.of_yojson
+    let to_yojson = Io_k8s_api_rbac_v1_cluster_role_binding.to_yojson
+  end)
 end
 
 include K8s_1_28_client
@@ -400,6 +787,15 @@ type error =
   | `Not_found
   | `Scan_failure of string ]
 [@@deriving show]
+
+type resource_watching_state = First_list_finished
+
+module type Resource_type = sig
+  val start_watcher :
+    resource_watching_state Eio.Stream.t -> Cohttp_eio.Client.t -> unit -> unit
+
+  val enable_cache : unit -> unit
+end
 
 module Make (B : Bare.S) = struct
   open struct
@@ -455,7 +851,7 @@ module Make (B : Bare.S) = struct
 
     let make () = { mtx = Eio.Mutex.create (); started = false; handlers = [] }
 
-    let start client t =
+    let start m client t =
       let ( let* ) = Result.bind in
 
       Eio.Mutex.use_rw ~protect:true t.mtx (fun () ->
@@ -480,7 +876,6 @@ module Make (B : Bare.S) = struct
       in
       let watch () =
         Eio.Switch.run @@ fun sw ->
-        (* NOTE: This fiber runs first, so listing should be performed after watching. *)
         let* scanner =
           B.watch_for_all_namespaces ~sw client ~watch:true
             ~resource_version:!latest_resource_version ()
@@ -498,7 +893,7 @@ module Make (B : Bare.S) = struct
                  ()))
       in
 
-      let rec loop () : unit =
+      let rec loop is_first : unit =
         (if !latest_resource_version = "" then
            match list () with
            | Ok x -> x
@@ -507,14 +902,15 @@ module Make (B : Bare.S) = struct
                    m "watcher: list failed"
                      [ ("error", `String (show_error e)) ]);
                failwith "list failed");
+        if is_first then Eio.Stream.add m First_list_finished;
         (match watch () with
         | Ok () -> ()
         | Error e ->
             Logg.err (fun m ->
                 m "watcher: watch failed" [ ("error", `String (show_error e)) ]));
-        loop ()
+        loop false
       in
-      loop ()
+      loop true
 
     let register_handler f t =
       Eio.Mutex.use_rw ~protect:true t.mtx @@ fun () ->
@@ -592,7 +988,7 @@ module Make (B : Bare.S) = struct
   end
 
   let watcher = Watcher.make ()
-  let start_watcher client () = Watcher.start client watcher
+  let start_watcher m client () = Watcher.start m client watcher
   let register_watcher f = watcher |> Watcher.register_handler f
   let cache = ref None
 
@@ -606,14 +1002,16 @@ module Make (B : Bare.S) = struct
         | `Deleted -> cache |> Cache.delete ~name ~namespace);
     ()
 
-  let get client ~name ~namespace () =
+  let get client ~name ?namespace () =
+    let namespace = Option.value ~default:"" namespace in
     Eio.Switch.run @@ fun sw ->
     match !cache with
     | None -> B.read_namespaced ~sw client ~name ~namespace () |> expect_one
     | Some cache ->
         cache |> Cache.get ~name ~namespace |> Option.to_result ~none:`Not_found
 
-  let get_status client ~name ~namespace () =
+  let get_status client ~name ?namespace () =
+    let namespace = Option.value ~default:"" namespace in
     Eio.Switch.run @@ fun sw ->
     B.read_status ~sw client ~name ~namespace () |> expect_one
 
@@ -638,19 +1036,22 @@ module Make (B : Bare.S) = struct
     | Some (_, namespace) ->
         B.create_namespaced ~sw client ~namespace ~body () |> expect_one
 
-  let create_or_update client ~name ~namespace f =
+  let create_or_update client ~name ?namespace f =
+    let namespace = Option.value ~default:"" namespace in
     match get client ~name ~namespace () with
     | Error `Not_found -> create client (f None)
     | Error _ as e -> e
     | Ok v -> update client (f (Some v))
 
-  let create_or_update_status client ~name ~namespace f =
+  let create_or_update_status client ~name ?namespace f =
+    let namespace = Option.value ~default:"" namespace in
     match get_status client ~name ~namespace () with
     | Error `Not_found -> create client (f None)
     | Error _ as e -> e
     | Ok v -> update_status client (f (Some v))
 
-  let list client ~namespace ?label_selector () =
+  let list client ?namespace ?label_selector () =
+    let namespace = Option.value ~default:"" namespace in
     Eio.Switch.run @@ fun sw ->
     match !cache with
     | Some cache -> cache |> Cache.list ~namespace ?label_selector |> Result.ok
@@ -669,7 +1070,8 @@ module Make (B : Bare.S) = struct
         B.list_for_all_namespaces ~sw client ()
         |> expect_one |> Result.map B.to_list
 
-  let delete client ?uid ~namespace ~name () =
+  let delete client ?uid ?namespace ~name () =
+    let namespace = Option.value ~default:"" namespace in
     Eio.Switch.run @@ fun sw ->
     B.delete_namespaced ~sw client ~name ~namespace
       ~body:
@@ -699,6 +1101,12 @@ module Job = struct
   let make = Io_k8s_api_batch_v1_job.make
 end
 
+module Cron_job = struct
+  include Make (Bare.Cron_job)
+
+  let make = Io_k8s_api_batch_v1_cron_job.make
+end
+
 module Pod = struct
   include Make (Bare.Pod)
 
@@ -711,14 +1119,34 @@ module Service = struct
   let make = Io_k8s_api_core_v1_service.make
 end
 
+module Cluster_role_binding = struct
+  include Make (Bare.Cluster_role_binding)
+
+  let make = Io_k8s_api_rbac_v1_cluster_role_binding.make
+end
+
+module Role = struct
+  include Make (Bare.Role)
+
+  let make = Io_k8s_api_rbac_v1_role.make
+end
+
+module Role_binding = struct
+  include Make (Bare.Role_binding)
+
+  let make = Io_k8s_api_rbac_v1_role_binding.make
+end
+
 (* Not implemented *)
 module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
 module Container = Io_k8s_api_core_v1_container
 module Container_port = Io_k8s_api_core_v1_container_port
+module Cron_job_spec = Io_k8s_api_batch_v1_cron_job_spec
 module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
 module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
 module Env_from_source = Io_k8s_api_core_v1_env_from_source
 module Env_var = Io_k8s_api_core_v1_env_var
+module Http_get_action = Io_k8s_api_core_v1_http_get_action
 module Job_spec = Io_k8s_api_batch_v1_job_spec
 module Job_template_spec = Io_k8s_api_batch_v1_job_template_spec
 module Key_to_path = Io_k8s_api_core_v1_key_to_path
@@ -727,10 +1155,39 @@ module Object_meta = Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta
 module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
 module Pod_spec = Io_k8s_api_core_v1_pod_spec
 module Pod_template_spec = Io_k8s_api_core_v1_pod_template_spec
+module Policy_rule = Io_k8s_api_rbac_v1_policy_rule
 module Probe = Io_k8s_api_core_v1_probe
+module Role_ref = Io_k8s_api_rbac_v1_role_ref
 module Service_port = Io_k8s_api_core_v1_service_port
 module Service_spec = Io_k8s_api_core_v1_service_spec
+module Subject = Io_k8s_api_rbac_v1_subject
 module Tcp_socket_action = Io_k8s_api_core_v1_tcp_socket_action
 module Volume = Io_k8s_api_core_v1_volume
-module Http_get_action = Io_k8s_api_core_v1_http_get_action
 module Volume_mount = Io_k8s_api_core_v1_volume_mount
+
+let make_client env =
+  let null_auth ?ip:_ ~host:_ _ =
+    Ok None (* Warning: use a real authenticator in your code! *)
+  in
+  let https ~authenticator =
+    let tls_config = Tls.Config.client ~authenticator () in
+    fun uri raw ->
+      let host =
+        try
+          uri |> Uri.host |> Option.get |> Domain_name.of_string_exn
+          |> Domain_name.host_exn |> Option.some
+        with _ -> None
+      in
+      Tls_eio.client_of_flow ?host tls_config raw
+  in
+  (* FIXME: use ca cert *)
+  Cohttp_eio.Client.make
+    ~https:(Some (https ~authenticator:null_auth))
+    (Eio.Stdenv.net env)
+
+let setup_resource ~sw (module Resource : Resource_type) client =
+  Resource.enable_cache ();
+  let m = Eio.Stream.create 0 in
+  Eio.Fiber.fork ~sw (Resource.start_watcher m client);
+  let First_list_finished = Eio.Stream.take m in
+  ()

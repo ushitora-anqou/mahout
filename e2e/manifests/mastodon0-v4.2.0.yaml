@@ -19,3 +19,5 @@ spec:
     replicas: 1
   web:
     replicas: 1
+    periodicRestart:
+      schedule: "* * * * *"

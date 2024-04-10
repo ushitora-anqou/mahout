@@ -55,73 +55,6 @@ let get_running_pod client =
   let name = Sys.getenv "POD_NAME" in
   K.Pod.get client ~name ~namespace:running_pod_namespace () |> Result.get_ok
 
-let create_or_update_configmap client ~name ~namespace body =
-  K.Config_map.create_or_update client ~name ~namespace @@ function
-  | None -> body
-  | Some body0 ->
-      {
-        body0 with
-        metadata =
-          Some
-            {
-              (Option.get body0.metadata) with
-              labels = (Option.get body.metadata).labels;
-            };
-        data = body.data;
-      }
-
-let create_or_update_deployment client ~name ~namespace body =
-  K.Deployment.create_or_update client ~name ~namespace @@ function
-  | None -> body
-  | Some body0 ->
-      {
-        body0 with
-        spec =
-          Some
-            {
-              (Option.get body0.spec) with
-              template =
-                {
-                  metadata =
-                    Some
-                      {
-                        (Option.get (Option.get body0.spec).template.metadata) with
-                        labels =
-                          (Option.get (Option.get body.spec).template.metadata)
-                            .labels;
-                      };
-                  spec =
-                    Some
-                      {
-                        (Option.get (Option.get body0.spec).template.spec) with
-                        init_containers =
-                          List.combine
-                            (Option.get (Option.get body0.spec).template.spec)
-                              .init_containers
-                            (Option.get (Option.get body.spec).template.spec)
-                              .init_containers
-                          |> List.map
-                               (fun
-                                 ((c : K.Container.t), (c' : K.Container.t)) ->
-                                 { c with image = c'.image });
-                        containers =
-                          List.combine
-                            (Option.get (Option.get body0.spec).template.spec)
-                              .containers
-                            (Option.get (Option.get body.spec).template.spec)
-                              .containers
-                          |> List.map
-                               (fun
-                                 ((c : K.Container.t), (c' : K.Container.t)) ->
-                                 { c with image = c'.image });
-                        volumes =
-                          (Option.get (Option.get body.spec).template.spec)
-                            .volumes;
-                      };
-                };
-            };
-      }
-
 let create_or_update_mastodon_service client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~kind =
   let ( let* ) = Result.bind in
@@ -170,6 +103,20 @@ let create_or_update_mastodon_deployment client
     | `Streaming -> (Option.get (Option.get mastodon.spec).streaming).replicas
     | `Web -> (Option.get (Option.get mastodon.spec).web).replicas
   in
+  let replicas = Option.value ~default:1l replicas in
+
+  let annotations = [] in
+  let annotations =
+    match
+      ( kind,
+        (Option.get mastodon.metadata).annotations |> Yojson.Safe.Util.to_assoc
+        |> List.assoc_opt Label.web_restart_time_key )
+    with
+    | `Web, Some restartTime ->
+        (Label.web_restart_time_key, restartTime) :: annotations
+    | _ -> annotations
+  in
+  let annotations = `Assoc annotations in
 
   let container =
     let open K.Container in
@@ -234,7 +181,8 @@ let create_or_update_mastodon_deployment client
             ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
             ~template:
               (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
+                 ~metadata:
+                   (K.Object_meta.make ~labels:(`Assoc labels) ~annotations ())
                  ~spec:(K.Pod_spec.make ~containers:[ container ] ())
                  ())
             ())
@@ -242,7 +190,8 @@ let create_or_update_mastodon_deployment client
   in
 
   let* _ =
-    create_or_update_deployment client ~name:deploy_name ~namespace body
+    K.Deployment.create_or_update client ~name:deploy_name ~namespace (fun _ ->
+        body)
     |> Result.map_error K.show_error
   in
 
@@ -306,7 +255,10 @@ let create_or_update_gateway client
     nginx_conf_cm_name_prefix ^ "-" ^ nginx_conf_cm_name_short_hash
   in
 
-  let replicas = (Option.get (Option.get mastodon.spec).gateway).replicas in
+  let replicas =
+    (Option.get (Option.get mastodon.spec).gateway).replicas
+    |> Option.value ~default:1l
+  in
 
   let body =
     K.Config_map.make
@@ -340,7 +292,8 @@ let create_or_update_gateway client
       ()
   in
   let* _ =
-    create_or_update_configmap client ~name:nginx_conf_cm_name ~namespace body
+    K.Config_map.create_or_update client ~name:nginx_conf_cm_name ~namespace
+      (fun _ -> body)
     |> Result.map_error K.show_error
   in
 
@@ -408,7 +361,8 @@ let create_or_update_gateway client
       ()
   in
   let* _ =
-    create_or_update_deployment client ~name:nginx_deploy_name ~namespace body
+    K.Deployment.create_or_update client ~name:nginx_deploy_name ~namespace
+      (fun _ -> body)
     |> Result.map_error K.show_error
   in
 
@@ -459,9 +413,125 @@ let create_or_update_gateway client
 
   Ok ()
 
-let create_or_update_deployments client ~mastodon ~image ~gw_nginx_conf_templ_cm
-    =
+let create_or_update_restart_rbac client ~(mastodon : Mastodon.t)
+    ~service_account_name =
+  let name = Option.get (Option.get mastodon.metadata).name in
+  let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let owner_references = get_owner_references mastodon in
+
+  let role_name = Printf.sprintf "%s-restart" name in
+  let role_binding_name = Printf.sprintf "%s-restart" name in
+
   let ( let* ) = Result.bind in
+  let* _ =
+    K.Role.create_or_update client ~name:role_name ~namespace (fun _ ->
+        K.Role.make
+          ~metadata:
+            (K.Object_meta.make ~name:role_name ~namespace ~owner_references ())
+          ~rules:
+            [
+              K.Policy_rule.make ~api_groups:[ "mahout.anqou.net" ]
+                ~resources:[ "mastodons" ] ~resource_names:[ name ]
+                ~verbs:
+                  [
+                    "create";
+                    "delete";
+                    "get";
+                    "list";
+                    "patch";
+                    "update";
+                    "watch";
+                  ]
+                ();
+            ]
+          ())
+    |> Result.map_error K.show_error
+  in
+
+  let* _ =
+    K.Role_binding.create_or_update client ~name:role_binding_name ~namespace
+      (fun _ ->
+        K.Role_binding.make
+          ~metadata:
+            (K.Object_meta.make ~name:role_binding_name ~namespace
+               ~owner_references ())
+          ~subjects:
+            [
+              K.Subject.make ~kind:"ServiceAccount" ~namespace
+                ~name:service_account_name ();
+            ]
+          ~role_ref:
+            (K.Role_ref.make ~api_group:"rbac.authorization.k8s.io" ~kind:"Role"
+               ~name:role_name)
+          ())
+    |> Result.map_error K.show_error
+  in
+
+  Ok ()
+
+let create_or_update_restart_cronjob client ~(mastodon : Mastodon.t)
+    ~service_account_name =
+  let name = Option.get (Option.get mastodon.metadata).name in
+  let namespace = Option.get (Option.get mastodon.metadata).namespace in
+  let owner_references = get_owner_references mastodon in
+
+  let operator_pod = get_running_pod client in
+  let image =
+    ((operator_pod.spec |> Option.get).containers |> List.hd).image
+    |> Option.get
+  in
+
+  let cronjob_name = Printf.sprintf "%s-restart-web" name in
+  let suspend, schedule =
+    match
+      let ( let* ) = Option.bind in
+      let* spec = mastodon.spec in
+      let* web = spec.web in
+      let* p = web.periodic_restart in
+      p.schedule
+    with
+    | None -> (true, None)
+    | Some sched -> (false, Some sched)
+  in
+  let schedule = schedule |> Option.value ~default:"0 0 * * *" in
+
+  let args = [ "restart"; "--name"; name; "--namespace"; namespace ] in
+
+  let body =
+    K.Cron_job.make
+      ~metadata:
+        (K.Object_meta.make ~name:cronjob_name ~namespace ~owner_references ())
+      ~spec:
+        (K.Cron_job_spec.make ~schedule ~suspend
+           ~job_template:
+             (K.Job_template_spec.make
+                ~spec:
+                  (K.Job_spec.make
+                     ~template:
+                       (K.Pod_template_spec.make
+                          ~spec:
+                            (K.Pod_spec.make ~service_account_name
+                               ~restart_policy:"OnFailure"
+                               ~containers:
+                                 [
+                                   K.Container.make ~name:"restart" ~image ~args
+                                     ();
+                                 ]
+                               ())
+                          ())
+                     ())
+                ())
+           ())
+      ()
+  in
+  K.Cron_job.create_or_update client ~name:cronjob_name ~namespace (function
+    | None -> body
+    | Some body0 -> { body0 with spec = body.spec })
+  |> Result.map_error K.show_error
+
+let create_or_update_stuff client ~mastodon ~image ~gw_nginx_conf_templ_cm =
+  let ( let* ) = Result.bind in
+  let service_account_name = "default" in
   let deploy = create_or_update_mastodon_deployment client ~mastodon ~image in
   let svc = create_or_update_mastodon_service client ~mastodon in
   let* _ =
@@ -472,6 +542,12 @@ let create_or_update_deployments client ~mastodon ~image ~gw_nginx_conf_templ_cm
   let* _ = deploy ~kind:`Streaming in
   let* _ = svc ~kind:`Web in
   let* _ = svc ~kind:`Streaming in
+  let* _ =
+    create_or_update_restart_rbac client ~mastodon ~service_account_name
+  in
+  let* _ =
+    create_or_update_restart_cronjob client ~mastodon ~service_account_name
+  in
   Ok ()
 
 let image_of_deployment (deploy : K.Deployment.t) =
@@ -619,7 +695,9 @@ type current_state =
   | Normal
 [@@deriving show]
 
-let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
+type reconcile_args = { gw_nginx_conf_templ_cm_name : string }
+
+let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
     (mastodon : Mastodon.t) =
   let ( let* ) = Result.bind in
 
@@ -732,13 +810,13 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
       Ok ()
   | 7 ->
       let* _ =
-        create_or_update_deployments client ~mastodon ~image:spec_image
+        create_or_update_stuff client ~mastodon ~image:spec_image
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
   | 8 | 10 | 17 | 20 | 32 ->
       let* _ =
-        create_or_update_deployments client ~mastodon
+        create_or_update_stuff client ~mastodon
           ~image:(Option.get migrating_image)
           ~gw_nginx_conf_templ_cm
       in
@@ -767,7 +845,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name
           m "unexpected current state" [ ("current_state", `Int current_state) ]);
       Ok ()
 
-let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name =
+let reconcile client ~name ~namespace args =
   Logg.info (fun m ->
       m "reconcile" [ ("name", `String name); ("namespace", `String namespace) ]);
   Fun.protect ~finally:(fun () ->
@@ -785,9 +863,7 @@ let reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name =
   | Ok mastodon -> (
       match (Option.get mastodon.metadata).deletion_timestamp with
       | Some _ -> Error "Mastodon resource already deleted"
-      | None ->
-          reconcile client ~name ~namespace gw_nginx_conf_templ_cm_name mastodon
-      )
+      | None -> reconcile client ~name ~namespace args mastodon)
 
 let find_mastodon_from_job _client (job : K.Job.t) =
   let ( let* ) = Option.bind in
@@ -811,12 +887,12 @@ let find_mastodon_from_pod _client (pod : K.Pod.t) =
   | _ -> None
 
 open Reconciler.Make (struct
-  type args = string
+  type args = reconcile_args
 
   let reconcile = reconcile
 end)
 
-let start env client gw_nginx_conf_templ_cm_name () =
+let start env client ({ gw_nginx_conf_templ_cm_name; _ } as args) () =
   let reconciler = make () in
 
   reconciler
@@ -866,4 +942,4 @@ let start env client gw_nginx_conf_templ_cm_name () =
                   let metadata = Option.get m.metadata in
                   (Option.get metadata.name, Option.get metadata.namespace)));
 
-  reconciler |> start env client gw_nginx_conf_templ_cm_name
+  reconciler |> start env client args
