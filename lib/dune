@@ -25,4 +25,5 @@
   tls
   tls-eio
   uuidm
-  yojson))
+  yojson
+  yume))

@@ -1,5 +1,5 @@
-let handle_healthz _req = Yume.Server.respond ~status:`OK "HEALTHY"
-let handle_readyz _req = Yume.Server.respond ~status:`OK "READY"
+let handle_healthz _ _req = Yume.Server.respond ~status:`OK "HEALTHY"
+let handle_readyz _ _req = Yume.Server.respond ~status:`OK "READY"
 
 let start env ~sw () =
   let listen =
@@ -26,4 +26,4 @@ let start env ~sw () =
     ] [@ocamlformat "disable"]
   in
   let handler = Logger.use @@ Router.use routes @@ default_handler in
-  start_server env ~sw ~listen handler
+  start_server env ~sw ~listen handler ignore
