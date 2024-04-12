@@ -32,6 +32,10 @@ Mahout will then start the necessary migration jobs and deployments for nginx, w
 When upgrading Mastodon, all you need to do is edit the `image` field in the `Mastodon` resource.
 Mahout will take care of the necessary DB migrations and roll out the new deployments.
 
+## More Examples
+
+See our e2e tests, especially [the manifests](https://github.com/ushitora-anqou/mahout/blob/master/e2e/manifests/mastodon0-v4.2.0.yaml) used in the tests.
+
 ## License
 
 - `charts/mahout/templates/gateway-nginx-conf-template.yaml`
