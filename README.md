@@ -9,7 +9,7 @@ Currently, Mahout supports Kubernetes 1.28 only.
 Install Mahout via Helm.
 
 ```
-helm install --namespace mahout mahout ../charts/mahout/
+helm install --namespace mahout --repo https://ushitora-anqou.github.io/mahout mahout mahout
 ```
 
 Create and apply a `Mastodon` resource for your server:
