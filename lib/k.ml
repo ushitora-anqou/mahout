@@ -1165,11 +1165,23 @@ module Tcp_socket_action = Io_k8s_api_core_v1_tcp_socket_action
 module Volume = Io_k8s_api_core_v1_volume
 module Volume_mount = Io_k8s_api_core_v1_volume_mount
 
+let tls_authenticator =
+  try
+    let ic =
+      open_in_bin "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
+    in
+    Fun.protect ~finally:(fun () -> close_in ic) @@ fun () ->
+    let cert =
+      ic |> In_channel.input_all |> Cstruct.of_string
+      |> X509.Certificate.decode_pem |> Result.get_ok
+    in
+    let time () = Some (Ptime_clock.now ()) in
+    Some (X509.Authenticator.chain_of_trust ~time [ cert ])
+  with _ -> None
+
 let make_client env =
-  let null_auth ?ip:_ ~host:_ _ =
-    Ok None (* Warning: use a real authenticator in your code! *)
-  in
-  let https ~authenticator =
+  let authenticator = Option.get tls_authenticator in
+  let https =
     let tls_config = Tls.Config.client ~authenticator () in
     fun uri raw ->
       let host =
@@ -1180,10 +1192,7 @@ let make_client env =
       in
       Tls_eio.client_of_flow ?host tls_config raw
   in
-  (* FIXME: use ca cert *)
-  Cohttp_eio.Client.make
-    ~https:(Some (https ~authenticator:null_auth))
-    (Eio.Stdenv.net env)
+  Cohttp_eio.Client.make ~https:(Some https) (Eio.Stdenv.net env)
 
 let setup_resource ~sw (module Resource : Resource_type) client =
   Resource.enable_cache ();
