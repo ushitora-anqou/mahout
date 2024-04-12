@@ -65,3 +65,7 @@ test:
 	$(MAKE) create-cluster
 	$(MAKE) helm-install-mahout
 	bash -o pipefail -c "OCAMLRUNPARAM=b KUBECONFIG=$(HOME)/.kube/config KUBECTL=$(KUBECTL) dune exec ./e2e.exe | jq"
+
+.PHONY: logs-deploy-mahout
+logs-deploy-mahout:
+	$(KUBECTL) logs -n mahout deploy/mahout

@@ -21,3 +21,5 @@ jobs:
 #     - name: Setup tmate session
 #       uses: mxschmitt/action-tmate@v3
       - run: opam exec -- make -C e2e test
+      - run: opam exec -- make -C e2e logs-deploy-mahout
+        if: always()
