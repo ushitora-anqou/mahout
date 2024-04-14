@@ -110,6 +110,18 @@ let check_schema_migrations_count ~expected =
     failwithf "check_schema_migrations_count: got %d, expected %d" count
       expected
 
+let check_deploy_annotation ~n deploy_name key expected_value =
+  let got_value =
+    kubectl
+      (Printf.sprintf
+         {|get -n %s deploy %s -o json | jq -r '.metadata.annotations."%s"'|} n
+         deploy_name key)
+    |> fst |> String.trim
+  in
+  if got_value <> expected_value then
+    failwithf "check_deploy_annotation: got '%s', expected '%s'" got_value
+      expected_value
+
 let setup () = ()
 
 let () =
@@ -123,6 +135,16 @@ let () =
       wait_deploy_available ~n:"e2e" "mastodon0-sidekiq";
       wait_deploy_available ~n:"e2e" "mastodon0-streaming";
       wait_deploy_available ~n:"e2e" "mastodon0-web";
+
+      check_deploy_annotation ~n:"e2e" "mastodon0-gateway-nginx"
+        "test.mahout.anqou.net/role" "gateway";
+      check_deploy_annotation ~n:"e2e" "mastodon0-sidekiq"
+        "test.mahout.anqou.net/role" "sidekiq";
+      check_deploy_annotation ~n:"e2e" "mastodon0-streaming"
+        "test.mahout.anqou.net/role" "streaming";
+      check_deploy_annotation ~n:"e2e" "mastodon0-web"
+        "test.mahout.anqou.net/role" "web";
+
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon.test"
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.1.9";

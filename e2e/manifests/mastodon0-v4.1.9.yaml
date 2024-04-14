@@ -12,12 +12,20 @@ spec:
         name: secret-env
   gateway:
     replicas: 1
+    annotations:
+      test.mahout.anqou.net/role: gateway
     image: "nginx:1.25.4"
   sidekiq:
     replicas: 1
+    annotations:
+      test.mahout.anqou.net/role: sidekiq
   streaming:
     replicas: 1
+    annotations:
+      test.mahout.anqou.net/role: streaming
   web:
     replicas: 1
+    annotations:
+      test.mahout.anqou.net/role: web
     periodicRestart:
       schedule: "* * * * *"

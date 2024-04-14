@@ -12,6 +12,7 @@ module V1alpha1 = struct
     module Web = struct
       type t = {
         replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
+        annotations : Yojson.Safe.t option; [@yojson.default None]
         periodic_restart : Periodic_restart.t option;
             [@yojson.default None] [@yojson.key "periodicRestart"]
       }
@@ -21,6 +22,7 @@ module V1alpha1 = struct
     module Sidekiq = struct
       type t = {
         replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
+        annotations : Yojson.Safe.t option; [@yojson.default None]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
@@ -28,6 +30,7 @@ module V1alpha1 = struct
     module Streaming = struct
       type t = {
         replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
+        annotations : Yojson.Safe.t option; [@yojson.default None]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
@@ -36,6 +39,7 @@ module V1alpha1 = struct
       type t = {
         replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
         image : string; [@yojson.default ""] [@yojson.key "image"]
+        annotations : Yojson.Safe.t option; [@yojson.default None]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end

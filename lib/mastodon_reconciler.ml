@@ -105,18 +105,28 @@ let create_or_update_mastodon_deployment client
   in
   let replicas = Option.value ~default:1l replicas in
 
-  let annotations = [] in
-  let annotations =
+  let deploy_annotations =
+    let spec = mastodon.spec |> Option.get in
+    (match kind with
+    | `Web -> (spec.web |> Option.get).annotations
+    | `Sidekiq -> (spec.sidekiq |> Option.get).annotations
+    | `Streaming -> (spec.streaming |> Option.get).annotations)
+    |> Option.fold ~none:[] ~some:Yojson.Safe.Util.to_assoc
+  in
+  let deploy_annotations = `Assoc deploy_annotations in
+
+  let pod_annotations = [] in
+  let pod_annotations =
     match
       ( kind,
         (Option.get mastodon.metadata).annotations |> Yojson.Safe.Util.to_assoc
         |> List.assoc_opt Label.web_restart_time_key )
     with
     | `Web, Some restartTime ->
-        (Label.web_restart_time_key, restartTime) :: annotations
-    | _ -> annotations
+        (Label.web_restart_time_key, restartTime) :: pod_annotations
+    | _ -> pod_annotations
   in
-  let annotations = `Assoc annotations in
+  let pod_annotations = `Assoc pod_annotations in
 
   let container =
     let open K.Container in
@@ -174,7 +184,8 @@ let create_or_update_mastodon_deployment client
   let body =
     K.Deployment.make
       ~metadata:
-        (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references ())
+        (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references
+           ~annotations:deploy_annotations ())
       ~spec:
         K.Deployment_spec.(
           make ~replicas
@@ -182,7 +193,8 @@ let create_or_update_mastodon_deployment client
             ~template:
               (K.Pod_template_spec.make
                  ~metadata:
-                   (K.Object_meta.make ~labels:(`Assoc labels) ~annotations ())
+                   (K.Object_meta.make ~labels:(`Assoc labels)
+                      ~annotations:pod_annotations ())
                  ~spec:(K.Pod_spec.make ~containers:[ container ] ())
                  ())
             ())
@@ -259,6 +271,12 @@ let create_or_update_gateway client
     (Option.get (Option.get mastodon.spec).gateway).replicas
     |> Option.value ~default:1l
   in
+
+  let deploy_annotations =
+    ((mastodon.spec |> Option.get).gateway |> Option.get).annotations
+    |> Option.fold ~none:[] ~some:Yojson.Safe.Util.to_assoc
+  in
+  let deploy_annotations = `Assoc deploy_annotations in
 
   let body =
     K.Config_map.make
@@ -348,7 +366,7 @@ let create_or_update_gateway client
     K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
       ~metadata:
         (K.Object_meta.make ~name:nginx_deploy_name ~namespace ~owner_references
-           ())
+           ~annotations:deploy_annotations ())
       ~spec:
         K.Deployment_spec.(
           make ~replicas
