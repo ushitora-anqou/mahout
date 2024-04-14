@@ -115,18 +115,24 @@ let create_or_update_mastodon_deployment client
   in
   let deploy_annotations = `Assoc deploy_annotations in
 
-  let pod_annotations = [] in
-  let pod_annotations =
-    match
-      ( kind,
-        (Option.get mastodon.metadata).annotations |> Yojson.Safe.Util.to_assoc
-        |> List.assoc_opt Label.web_restart_time_key )
-    with
-    | `Web, Some restartTime ->
-        (Label.web_restart_time_key, restartTime) :: pod_annotations
-    | _ -> pod_annotations
+  let pod_annotations old =
+    let annotations =
+      (match old with `Assoc x -> x | _ -> [])
+      |> List.remove_assoc Label.web_restart_time_key
+    in
+    let annotations =
+      match
+        ( kind,
+          (Option.get mastodon.metadata).annotations
+          |> Yojson.Safe.Util.to_assoc
+          |> List.assoc_opt Label.web_restart_time_key )
+      with
+      | `Web, Some restartTime ->
+          (Label.web_restart_time_key, restartTime) :: annotations
+      | _ -> annotations
+    in
+    `Assoc annotations
   in
-  let pod_annotations = `Assoc pod_annotations in
 
   let container =
     let open K.Container in
@@ -181,29 +187,38 @@ let create_or_update_mastodon_deployment client
           ()
   in
 
-  let body =
-    K.Deployment.make
-      ~metadata:
-        (K.Object_meta.make ~name:deploy_name ~namespace ~owner_references
-           ~annotations:deploy_annotations ())
-      ~spec:
-        K.Deployment_spec.(
-          make ~replicas
-            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
-            ~template:
-              (K.Pod_template_spec.make
-                 ~metadata:
-                   (K.Object_meta.make ~labels:(`Assoc labels)
-                      ~annotations:pod_annotations ())
-                 ~spec:(K.Pod_spec.make ~containers:[ container ] ())
-                 ())
-            ())
-      ()
-  in
-
   let* _ =
-    K.Deployment.create_or_update client ~name:deploy_name ~namespace (fun _ ->
-        body)
+    K.Deployment.create_or_update client ~name:deploy_name ~namespace (fun d ->
+        K.Deployment.with_ d
+          ~metadata:(fun x ->
+            Some
+              (K.Object_meta.with_ x
+                 ~name:(fun _ -> Some deploy_name)
+                 ~namespace:(fun _ -> Some namespace)
+                 ~owner_references:(fun _ -> owner_references)
+                 ~annotations:(fun _ -> deploy_annotations)
+                 ()))
+          ~spec:(fun x ->
+            Some
+              (K.Deployment_spec.with_ x
+                 ~replicas:(fun _ -> Some replicas)
+                 ~selector:(fun _ ->
+                   K.Label_selector.make ~match_labels:(`Assoc selector) ())
+                 ~template:(fun x ->
+                   K.Pod_template_spec.with_
+                     ~metadata:(fun x ->
+                       Some
+                         (K.Object_meta.with_ x
+                            ~labels:(fun _ -> `Assoc labels)
+                            ~annotations:pod_annotations ()))
+                     ~spec:(fun x ->
+                       Some
+                         (K.Pod_spec.with_ x
+                            ~containers:(fun _ -> [ container ])
+                            ()))
+                     x ())
+                 ()))
+          ())
     |> Result.map_error K.show_error
   in
 
@@ -362,25 +377,35 @@ let create_or_update_gateway client
           ]
       ()
   in
-  let body =
-    K.Deployment.make ~api_version:"apps/v1" ~kind:"Deployment"
-      ~metadata:
-        (K.Object_meta.make ~name:nginx_deploy_name ~namespace ~owner_references
-           ~annotations:deploy_annotations ())
-      ~spec:
-        K.Deployment_spec.(
-          make ~replicas
-            ~selector:(K.Label_selector.make ~match_labels:(`Assoc selector) ())
-            ~template:
-              (K.Pod_template_spec.make
-                 ~metadata:(K.Object_meta.make ~labels:(`Assoc labels) ())
-                 ~spec:pod_spec ())
-            ())
-      ()
-  in
   let* _ =
     K.Deployment.create_or_update client ~name:nginx_deploy_name ~namespace
-      (fun _ -> body)
+      (fun x ->
+        K.Deployment.with_ x
+          ~metadata:(fun x ->
+            Some
+              (K.Object_meta.with_ x
+                 ~name:(fun _ -> Some nginx_deploy_name)
+                 ~namespace:(fun _ -> Some namespace)
+                 ~owner_references:(fun _ -> owner_references)
+                 ~annotations:(fun _ -> deploy_annotations)
+                 ()))
+          ~spec:(fun x ->
+            Some
+              (K.Deployment_spec.with_ x
+                 ~replicas:(fun _ -> Some replicas)
+                 ~selector:(fun _ ->
+                   K.Label_selector.make ~match_labels:(`Assoc selector) ())
+                 ~template:(fun x ->
+                   K.Pod_template_spec.with_ x
+                     ~metadata:(fun x ->
+                       Some
+                         (K.Object_meta.with_ x
+                            ~labels:(fun _ -> `Assoc labels)
+                            ()))
+                     ~spec:(fun _ -> Some pod_spec)
+                     ())
+                 ()))
+          ())
     |> Result.map_error K.show_error
   in
 

@@ -1083,6 +1083,29 @@ module Make (B : Bare.S) = struct
     |> expect
 end
 
+module Object_meta = struct
+  include Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta
+
+  let with_ (x : Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta.t option)
+      ?name ?namespace ?owner_references ?annotations ?labels () =
+    let x = match x with None -> make () | Some x -> x in
+    {
+      x with
+      name = (match name with None -> x.name | Some f -> f x.name);
+      namespace =
+        (match namespace with None -> x.namespace | Some f -> f x.namespace);
+      owner_references =
+        (match owner_references with
+        | None -> x.owner_references
+        | Some f -> f x.owner_references);
+      annotations =
+        (match annotations with
+        | None -> x.annotations
+        | Some f -> f x.annotations);
+      labels = (match labels with None -> x.labels | Some f -> f x.labels);
+    }
+end
+
 module Config_map = struct
   include Make (Bare.Config_map)
 
@@ -1093,6 +1116,73 @@ module Deployment = struct
   include Make (Bare.Deployment)
 
   let make = Io_k8s_api_apps_v1_deployment.make
+
+  let with_ (x : Io_k8s_api_apps_v1_deployment.t option) ?metadata ?spec () =
+    let x = match x with None -> make () | Some x -> x in
+    {
+      x with
+      metadata =
+        (match metadata with None -> x.metadata | Some f -> f x.metadata);
+      spec = (match spec with None -> x.spec | Some f -> f x.spec);
+    }
+end
+
+module Deployment_spec = struct
+  include Io_k8s_api_apps_v1_deployment_spec
+
+  let with_ (x : t option) ?replicas ~selector ~template () =
+    let x =
+      match x with
+      | None -> make ~selector:(selector None) ~template:(template None) ()
+      | Some x ->
+          make
+            ~selector:(selector (Some x.selector))
+            ~template:(template (Some x.template))
+            ()
+    in
+    {
+      x with
+      replicas =
+        (match replicas with None -> x.replicas | Some f -> f x.replicas);
+    }
+end
+
+module Label_selector = struct
+  include Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector
+
+  let with_ (x : t option) ?match_labels () =
+    let x = match x with None -> make () | Some x -> x in
+    {
+      x with
+      match_labels =
+        (match match_labels with None -> x.match_labels | Some f -> f x);
+    }
+end
+
+module Pod_template_spec = struct
+  include Io_k8s_api_core_v1_pod_template_spec
+
+  let with_ (x : t option) ?metadata ?spec () =
+    let x = match x with None -> make () | Some x -> x in
+    {
+      metadata =
+        (match metadata with None -> x.metadata | Some f -> f x.metadata);
+      spec = (match spec with None -> x.spec | Some f -> f x.spec);
+    }
+end
+
+module Pod_spec = struct
+  include Io_k8s_api_core_v1_pod_spec
+
+  let with_ (x : t option) ?containers () =
+    let x = match x with None -> make () | Some x -> x in
+    {
+      x with
+      containers =
+        (match containers with
+        | None -> x.containers
+        | Some f -> f x.containers);
+    }
 end
 
 module Job = struct
@@ -1142,7 +1232,6 @@ module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
 module Container = Io_k8s_api_core_v1_container
 module Container_port = Io_k8s_api_core_v1_container_port
 module Cron_job_spec = Io_k8s_api_batch_v1_cron_job_spec
-module Deployment_spec = Io_k8s_api_apps_v1_deployment_spec
 module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
 module Env_from_source = Io_k8s_api_core_v1_env_from_source
 module Env_var = Io_k8s_api_core_v1_env_var
@@ -1150,11 +1239,7 @@ module Http_get_action = Io_k8s_api_core_v1_http_get_action
 module Job_spec = Io_k8s_api_batch_v1_job_spec
 module Job_template_spec = Io_k8s_api_batch_v1_job_template_spec
 module Key_to_path = Io_k8s_api_core_v1_key_to_path
-module Label_selector = Io_k8s_apimachinery_pkg_apis_meta_v1_label_selector
-module Object_meta = Io_k8s_apimachinery_pkg_apis_meta_v1_object_meta
 module Owner_reference = Io_k8s_apimachinery_pkg_apis_meta_v1_owner_reference
-module Pod_spec = Io_k8s_api_core_v1_pod_spec
-module Pod_template_spec = Io_k8s_api_core_v1_pod_template_spec
 module Policy_rule = Io_k8s_api_rbac_v1_policy_rule
 module Probe = Io_k8s_api_core_v1_probe
 module Role_ref = Io_k8s_api_rbac_v1_role_ref

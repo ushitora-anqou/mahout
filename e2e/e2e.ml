@@ -20,7 +20,7 @@ let consistently ?(count = 24) ?(interval = 5) f =
   in
   loop count
 
-let eventually ?(count = 60) ?(interval = 5) f =
+let eventually ?(count = 120) ?(interval = 5) f =
   let rec loop i =
     try f () with
     | e when i = 0 ->
@@ -82,6 +82,17 @@ let apply_manifest file_name =
 let delete_manifest file_name =
   kubectl (Printf.sprintf {|delete -f manifests/%s|} file_name) |> ignore
 
+let check_mastodon_languages ~host ~endpoint ~expected =
+  let got =
+    kubectl
+      (Printf.sprintf
+         {|exec deploy/toolbox -- curl --silent -H 'Host: %s' %s/api/v1/instance | jq -r .languages[]|}
+         host endpoint)
+    |> fst |> String.trim
+  in
+  if got <> expected then
+    failwithf "check_mastodon_languages: got %s, expected %s" got expected
+
 let check_mastodon_version ~host ~endpoint ~expected =
   let got =
     kubectl
@@ -121,6 +132,23 @@ let check_deploy_annotation ~n deploy_name key expected_value =
   if got_value <> expected_value then
     failwithf "check_deploy_annotation: got '%s', expected '%s'" got_value
       expected_value
+
+let check_web_pod_age ~smaller_than =
+  let stdout, _ =
+    kubectl
+      {|get pod -n e2e -l app.kubernetes.io/component=web -o json | jq -r '.items[].metadata.creationTimestamp'|}
+  in
+  let now = Ptime_clock.now () in
+  let b =
+    stdout |> String.split_on_char '\n'
+    |> List.for_all (fun create ->
+           if create = "" then true
+           else
+             let t, _, _ = Ptime.of_rfc3339 create |> Result.get_ok in
+             let dur = Ptime.diff now t |> Ptime.Span.to_int_s |> Option.get in
+             dur < smaller_than)
+  in
+  assert b
 
 let setup () = ()
 
@@ -186,25 +214,24 @@ let () =
 
       ());
 
-  (* Check that the age of a web Pod must be smaller than 90 seconds *)
-  consistently (fun () ->
-      let stdout, _ =
-        kubectl
-          {|get pod -n e2e -l app.kubernetes.io/component=web -o json | jq -r '.items[].metadata.creationTimestamp'|}
-      in
-      let now = Ptime_clock.now () in
-      let b =
-        stdout |> String.split_on_char '\n'
-        |> List.for_all (fun create ->
-               if create = "" then true
-               else
-                 let t, _, _ = Ptime.of_rfc3339 create |> Result.get_ok in
-                 let dur =
-                   Ptime.diff now t |> Ptime.Span.to_int_s |> Option.get
-                 in
-                 dur < 90)
-      in
-      assert b);
+  (* Change secret-env and check that the change is deployed *)
+  eventually (fun () ->
+      check_mastodon_languages ~host:"mastodon.test"
+        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"en");
+  kubectl
+    {|patch secret -n e2e secret-env -p='{"stringData":{"DEFAULT_LOCALE":"ja"}}'|}
+  |> ignore;
+  kubectl {|rollout restart -n e2e deploy mastodon0-web|} |> ignore;
+  kubectl {|rollout restart -n e2e deploy mastodon0-sidekiq|} |> ignore;
+  kubectl {|rollout restart -n e2e deploy mastodon0-streaming|} |> ignore;
+  eventually (fun () ->
+      check_mastodon_languages ~host:"mastodon.test"
+        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"ja");
+
+  (* Check that the web Pod is restarted periodically *)
+  apply_manifest "mastodon0-v4.2.0-restart.yaml";
+  eventually (fun () -> check_web_pod_age ~smaller_than:10);
+  consistently (fun () -> check_web_pod_age ~smaller_than:90);
 
   delete_manifest "mastodon0-v4.2.0.yaml";
   eventually (fun () ->

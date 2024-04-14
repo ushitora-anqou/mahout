@@ -27,5 +27,3 @@ spec:
     replicas: 1
     annotations:
       test.mahout.anqou.net/role: web
-    periodicRestart:
-      schedule: "* * * * *"
