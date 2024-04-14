@@ -80,7 +80,6 @@ spec:
                     type: integer
                 required:
                 - image
-                - replicas
                 type: object
               image:
                 type: string
@@ -94,8 +93,6 @@ spec:
                     type: object
                   replicas:
                     type: integer
-                required:
-                - replicas
                 type: object
               streaming:
                 properties:
@@ -105,8 +102,6 @@ spec:
                     type: object
                   replicas:
                     type: integer
-                required:
-                - replicas
                 type: object
               web:
                 properties:
@@ -121,17 +116,11 @@ spec:
                     type: object
                   replicas:
                     type: integer
-                required:
-                - replicas
                 type: object
             required:
-            - envFrom
             - gateway
             - image
             - serverName
-            - sidekiq
-            - streaming
-            - web
             type: object
           status:
             description: MastodonStatus defines the observed state of Mastodon
