@@ -21,20 +21,24 @@ metadata:
   name: mastodon
 spec:
   serverName: "mastodon.example"
-  image: "ghcr.io/mastodon/mastodon:v4.2.0"
+  image: "ghcr.io/mastodon/mastodon:v4.2.0" # Change here to the latest version
   envFrom:
     - secretRef:
         # Define necessary Mastodon's environment vairables such as LOCAL_DOMAIN.
         name: secret-env
+  gateway:
+    image: nginx:1
 ```
 Mahout will then start the necessary migration jobs and deployments for nginx, web, streaming, and sidekiq.
 
 When upgrading Mastodon, all you need to do is edit the `image` field in the `Mastodon` resource.
 Mahout will take care of the necessary DB migrations and roll out the new deployments.
 
-## More Examples
+## Features & Tips
 
-See our e2e tests, especially [the manifests](https://github.com/ushitora-anqou/mahout/blob/master/e2e/manifests/mastodon0-v4.2.0.yaml) used in the tests.
+- You can restart mastodon-web pods on a regular schedule by using the `periodicRestart` field. [See this test manifest](https://github.com/ushitora-anqou/mahout/blob/d8abd2c92a27064f6f4c3567548582b7992ae124/e2e/manifests/mastodon0-v4.2.0-restart.yaml#L30-L31) for details.
+- You can add your favourite annotations to the pods. [See this test manifest](https://github.com/ushitora-anqou/mahout/blob/d8abd2c92a27064f6f4c3567548582b7992ae124/e2e/manifests/mastodon0-v4.2.0-restart.yaml#L28-L29). This feature is especially useful in combination with [stakater/Reloader](https://github.com/stakater/Reloader) to reload configmaps and secrets specified in the Mastodon resources.
+- Mahout can work across namespaces, i.e. you can run Mahout in one namespace, and create Mastodon resources in another. Of course you can also put them in the same namespace.
 
 ## License
 
