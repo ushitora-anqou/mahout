@@ -1,3 +1,7 @@
+let ignore_not_found_error = function
+  | Ok _ | Error `Not_found -> Ok ()
+  | e -> e
+
 let get_deploy_name mastodon_name = function
   | `Web -> mastodon_name ^ "-web"
   | `Sidekiq -> mastodon_name ^ "-sidekiq"
@@ -449,6 +453,7 @@ let create_or_update_gateway client
                m "deleting unnecessary gateway cm"
                  [ ("name", `String name); ("namespace", `String namespace) ]);
            K.Config_map.delete client ~name ~namespace ~uid ()
+           |> ignore_not_found_error
            |> Result.map_error K.show_error)
          (Ok ())
   in
@@ -672,12 +677,12 @@ let string_of_job_status = function
   | `Failed -> "Failed"
 
 let delete_job client ~(mastodon : Mastodon.t) ~kind =
-  let ( let* ) = Result.bind in
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let job_name = get_job_name name kind in
-  let* _ = K.Job.delete client ~name:job_name ~namespace () in
-  Ok ()
+  K.Job.delete client ~name:job_name ~namespace ()
+  |> ignore_not_found_error
+  |> Result.map_error K.show_error
 
 let create_migration_job client ~(mastodon : Mastodon.t) ~image ~kind =
   let name = Option.get (Option.get mastodon.metadata).name in
@@ -864,10 +869,7 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
       in
       Ok ()
   | 12 | 30 ->
-      let* _ =
-        delete_job client ~mastodon ~kind:`PostMigration
-        |> Result.map_error K.show_error
-      in
+      let* _ = delete_job client ~mastodon ~kind:`PostMigration in
       Ok ()
   | 31 ->
       let* _ =
@@ -876,10 +878,7 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
       in
       Ok ()
   | 26 | 29 ->
-      let* _ =
-        delete_job client ~mastodon ~kind:`PreMigration
-        |> Result.map_error K.show_error
-      in
+      let* _ = delete_job client ~mastodon ~kind:`PreMigration in
       Ok ()
   | 34 -> Ok ()
   | _ ->
