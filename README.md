@@ -13,8 +13,7 @@ helm install --namespace mahout --repo https://ushitora-anqou.github.io/mahout m
 ```
 
 Create and apply a `Mastodon` resource for your server:
-```
----
+```yaml
 apiVersion: mahout.anqou.net/v1alpha1
 kind: Mastodon
 metadata:
