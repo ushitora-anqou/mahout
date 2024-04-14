@@ -48,7 +48,9 @@ let test_reconciler_runqueue () =
 let test_mastodon_crd_to_yojson () =
   let open Mahout.Net_anqou_mahout.V1alpha1.Mastodon in
   let got =
-    Spec.make ~server_name:"a" ~image:"b" ~web:(Web.make ~replicas:1l ()) ()
+    Spec.make ~server_name:"a" ~image:"b" ~web:(Web.make ~replicas:1l ())
+      ~gateway:(Gateway.make ~image:"c" ())
+      ()
     |> Spec.to_yojson
   in
   let expected =
@@ -57,6 +59,7 @@ let test_mastodon_crd_to_yojson () =
         ("serverName", `String "a");
         ("image", `String "b");
         ("web", `Assoc [ ("replicas", `Int 1) ]);
+        ("gateway", `Assoc [ ("image", `String "c") ]);
       ]
   in
   Printf.eprintf "got: %s\n" (Yojson.Safe.to_string got);
@@ -67,7 +70,9 @@ let test_mastodon_crd_to_yojson () =
 let test_mastodon_crd_of_yojson () =
   let open Mahout.Net_anqou_mahout.V1alpha1.Mastodon in
   let expected =
-    Spec.make ~server_name:"a" ~image:"b" ~web:(Web.make ~replicas:1l ()) ()
+    Spec.make ~server_name:"a" ~image:"b" ~web:(Web.make ~replicas:1l ())
+      ~gateway:(Gateway.make ~image:"c" ())
+      ()
   in
   let got =
     `Assoc
@@ -77,8 +82,8 @@ let test_mastodon_crd_of_yojson () =
         ("envFrom", `List []);
         ("web", `Assoc [ ("replicas", `Int 1) ]);
         ("sidekiq", `Null);
-        ("streaming", `Null);
-        (* no "gateway" field *)
+        ("gateway", `Assoc [ ("image", `String "c") ]);
+        (* no "streaming" field *)
       ]
     |> Spec.of_yojson |> Result.get_ok
   in

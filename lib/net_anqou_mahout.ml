@@ -55,8 +55,7 @@ module V1alpha1 = struct
             [@yojson.default None] [@yojson.key "sidekiq"]
         streaming : Streaming.t option;
             [@yojson.default None] [@yojson.key "streaming"]
-        gateway : Gateway.t option;
-            [@yojson.default None] [@yojson.key "gateway"]
+        gateway : Gateway.t; [@yojson.key "gateway"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end

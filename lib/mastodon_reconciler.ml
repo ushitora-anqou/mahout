@@ -229,7 +229,7 @@ let create_or_update_gateway client
     ~gw_nginx_conf_templ_cm =
   let ( let* ) = Result.bind in
 
-  let nginx_image = (Option.get (Option.get mastodon.spec).gateway).image in
+  let nginx_image = (Option.get mastodon.spec).gateway.image in
 
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
@@ -283,12 +283,11 @@ let create_or_update_gateway client
   in
 
   let replicas =
-    (Option.get (Option.get mastodon.spec).gateway).replicas
-    |> Option.value ~default:1l
+    (Option.get mastodon.spec).gateway.replicas |> Option.value ~default:1l
   in
 
   let deploy_annotations =
-    ((mastodon.spec |> Option.get).gateway |> Option.get).annotations
+    (mastodon.spec |> Option.get).gateway.annotations
     |> Option.fold ~none:[] ~some:Yojson.Safe.Util.to_assoc
   in
   let deploy_annotations = `Assoc deploy_annotations in
