@@ -1,0 +1,6 @@
+- `git tag x.y.z`
+- `git push --tags`
+- confirm a new Docker image is successfully created
+- update `version` & `appVersion` in `charts/mahout/Chart.yaml`
+- commit & push
+- run GHA workflow for releasing the helm charts on `master` branch
