@@ -91,9 +91,11 @@ let create_or_update_mastodon_deployment client
     ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image ~kind =
   let ( let* ) = Result.bind in
 
+  let spec = Option.get mastodon.spec in
+
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
-  let env_from = (Option.get mastodon.spec).env_from in
+  let env_from = spec.env_from in
 
   let deploy_name = get_deploy_name name kind in
   let selector, labels =
@@ -103,14 +105,13 @@ let create_or_update_mastodon_deployment client
 
   let replicas =
     match kind with
-    | `Sidekiq -> (Option.get (Option.get mastodon.spec).sidekiq).replicas
-    | `Streaming -> (Option.get (Option.get mastodon.spec).streaming).replicas
-    | `Web -> (Option.get (Option.get mastodon.spec).web).replicas
+    | `Sidekiq -> (Option.get spec.sidekiq).replicas
+    | `Streaming -> (Option.get spec.streaming).replicas
+    | `Web -> (Option.get spec.web).replicas
   in
   let replicas = Option.value ~default:1l replicas in
 
   let deploy_annotations =
-    let spec = mastodon.spec |> Option.get in
     (match kind with
     | `Web -> (spec.web |> Option.get).annotations
     | `Sidekiq -> (spec.sidekiq |> Option.get).annotations
@@ -138,15 +139,24 @@ let create_or_update_mastodon_deployment client
     `Assoc annotations
   in
 
+  let resources =
+    match kind with
+    | `Sidekiq -> (
+        match spec.sidekiq with None -> None | Some x -> x.resources)
+    | `Streaming -> (
+        match spec.streaming with None -> None | Some x -> x.resources)
+    | `Web -> ( match spec.web with None -> None | Some x -> x.resources)
+  in
+
   let container =
     let open K.Container in
     match kind with
     | `Sidekiq ->
-        make ~name:"sidekiq" ~image
+        make ~name:"sidekiq" ~image ?resources
           ~command:[ "bash"; "-c"; "bundle exec sidekiq" ]
           ~env_from ()
     | `Streaming ->
-        make ~name:"streaming" ~image
+        make ~name:"streaming" ~image ?resources
           ~command:[ "bash"; "-c"; "node ./streaming" ]
           ~env_from
           ~ports:
@@ -168,7 +178,7 @@ let create_or_update_mastodon_deployment client
                ())
           ()
     | `Web ->
-        make ~name:"web" ~image
+        make ~name:"web" ~image ?resources
           ~command:[ "bash"; "-c"; "bundle exec puma -C config/puma.rb" ]
           ~env_from
           ~ports:
@@ -340,6 +350,7 @@ let create_or_update_gateway client
         K.Container.
           [
             make ~name:"copy-assets" ~image
+              ?resources:(mastodon.spec |> Option.get).gateway.resources
               ~command:
                 [ "bash"; "-c"; "cp -ra /opt/mastodon/public/* /mnt/public/" ]
               ~volume_mounts:

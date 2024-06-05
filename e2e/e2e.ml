@@ -121,6 +121,34 @@ let check_schema_migrations_count ~expected =
     failwithf "check_schema_migrations_count: got %d, expected %d" count
       expected
 
+let check_deploy_resources ~n ?limits_cpu ?limits_memory ?requests_cpu
+    ?requests_memory deploy_name =
+  let got_resources =
+    kubectl
+      (Printf.sprintf
+         {|get -n %s deploy %s -o json | jq -r '.spec.template.spec.containers[0].resources'|}
+         n deploy_name)
+    |> fst |> String.trim |> Yojson.Safe.from_string
+    |> Yojson.Safe.Util.to_assoc
+  in
+  let check_value key1 key2 expected =
+    let got =
+      let ( let* ) = Option.bind in
+      let* v1 = List.assoc_opt key1 got_resources in
+      let* v2 = v1 |> Yojson.Safe.Util.to_assoc |> List.assoc_opt key2 in
+      Yojson.Safe.Util.to_string_option v2
+    in
+    if got <> expected then
+      failwithf "check_deploy_resources: got '%s', expected '%s'"
+        (match got with None -> "None" | Some x -> "Some " ^ x)
+        (match expected with None -> "None" | Some x -> "Some " ^ x)
+  in
+  check_value "limits" "cpu" limits_cpu;
+  check_value "limits" "memory" limits_memory;
+  check_value "requests" "cpu" requests_cpu;
+  check_value "requests" "memory" requests_memory;
+  ()
+
 let check_deploy_annotation ~n deploy_name key expected_value =
   let got_value =
     kubectl
@@ -163,6 +191,9 @@ let () =
       wait_deploy_available ~n:"e2e" "mastodon0-sidekiq";
       wait_deploy_available ~n:"e2e" "mastodon0-streaming";
       wait_deploy_available ~n:"e2e" "mastodon0-web";
+
+      check_deploy_resources ~n:"e2e" ~limits_cpu:"1" ~limits_memory:"1000Mi"
+        ~requests_cpu:"100m" ~requests_memory:"100Mi" "mastodon0-web";
 
       check_deploy_annotation ~n:"e2e" "mastodon0-gateway-nginx"
         "test.mahout.anqou.net/role" "gateway";

@@ -29,4 +29,3 @@ spec:
       test.mahout.anqou.net/role: web
     periodicRestart:
       schedule: "* * * * *"
-

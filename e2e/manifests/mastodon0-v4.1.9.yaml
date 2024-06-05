@@ -27,3 +27,10 @@ spec:
     replicas: 1
     annotations:
       test.mahout.anqou.net/role: web
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        cpu: "1"
+        memory: 1000Mi

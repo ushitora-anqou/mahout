@@ -1227,9 +1227,20 @@ module Role_binding = struct
   let make = Io_k8s_api_rbac_v1_role_binding.make
 end
 
+module Container = struct
+  include Io_k8s_api_core_v1_container
+
+  let with_ (x : t option) ?resources ~name () =
+    let x = match x with None -> make ~name:(name None) () | Some x -> x in
+    {
+      x with
+      resources =
+        (match resources with None -> x.resources | Some f -> f x.resources);
+    }
+end
+
 (* Not implemented *)
 module Config_map_volume_source = Io_k8s_api_core_v1_config_map_volume_source
-module Container = Io_k8s_api_core_v1_container
 module Container_port = Io_k8s_api_core_v1_container_port
 module Cron_job_spec = Io_k8s_api_batch_v1_cron_job_spec
 module Empty_dir_volume_source = Io_k8s_api_core_v1_empty_dir_volume_source
@@ -1249,6 +1260,7 @@ module Subject = Io_k8s_api_rbac_v1_subject
 module Tcp_socket_action = Io_k8s_api_core_v1_tcp_socket_action
 module Volume = Io_k8s_api_core_v1_volume
 module Volume_mount = Io_k8s_api_core_v1_volume_mount
+module Resource_requirements = Io_k8s_api_core_v1_resource_requirements
 
 let tls_authenticator =
   try
