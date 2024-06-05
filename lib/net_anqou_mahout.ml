@@ -25,6 +25,8 @@ module V1alpha1 = struct
       type t = {
         replicas : int32 option; [@yojson.default None] [@yojson.key "replicas"]
         annotations : Yojson.Safe.t option; [@yojson.default None]
+        periodic_restart : Periodic_restart.t option;
+            [@yojson.default None] [@yojson.key "periodicRestart"]
         resources : Resource_requirements.t option;
             [@yojson.default None] [@yojson.key "resources"]
       }

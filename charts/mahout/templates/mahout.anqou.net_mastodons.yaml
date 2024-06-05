@@ -141,6 +141,11 @@ spec:
                     additionalProperties:
                       type: string
                     type: object
+                  periodicRestart:
+                    properties:
+                      schedule:
+                        type: string
+                    type: object
                   replicas:
                     type: integer
                   resources:

@@ -121,22 +121,26 @@ let create_or_update_mastodon_deployment client
   let deploy_annotations = `Assoc deploy_annotations in
 
   let pod_annotations old =
-    let annotations =
-      (match old with `Assoc x -> x | _ -> [])
-      |> List.remove_assoc Label.web_restart_time_key
-    in
-    let annotations =
-      match
-        ( kind,
-          (Option.get mastodon.metadata).annotations
-          |> Yojson.Safe.Util.to_assoc
-          |> List.assoc_opt Label.web_restart_time_key )
-      with
-      | `Web, Some restartTime ->
-          (Label.web_restart_time_key, restartTime) :: annotations
-      | _ -> annotations
-    in
-    `Assoc annotations
+    let annotations = match old with `Assoc x -> x | _ -> [] in
+    match
+      List.assoc_opt kind
+        [
+          (`Web, Label.web_restart_time_key);
+          (`Sidekiq, Label.sidekiq_restart_time_key);
+        ]
+    with
+    | None -> `Assoc annotations
+    | Some label ->
+        let annotations = List.remove_assoc label annotations in
+        let annotations =
+          match
+            (Option.get mastodon.metadata).annotations
+            |> Yojson.Safe.Util.to_assoc |> List.assoc_opt label
+          with
+          | None -> annotations
+          | Some restartTime -> (label, restartTime) :: annotations
+        in
+        `Assoc annotations
   in
 
   let resources =
@@ -528,7 +532,7 @@ let create_or_update_restart_rbac client ~(mastodon : Mastodon.t)
   Ok ()
 
 let create_or_update_restart_cronjob client ~(mastodon : Mastodon.t)
-    ~service_account_name =
+    ~service_account_name kind =
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let owner_references = get_owner_references mastodon in
@@ -539,21 +543,34 @@ let create_or_update_restart_cronjob client ~(mastodon : Mastodon.t)
     |> Option.get
   in
 
-  let cronjob_name = Printf.sprintf "%s-restart-web" name in
+  let cronjob_name =
+    Printf.sprintf "%s-restart-%s" name
+      (match kind with `Web -> "web" | `Sidekiq -> "sidekiq")
+  in
   let suspend, schedule =
     match
       let ( let* ) = Option.bind in
       let* spec = mastodon.spec in
-      let* web = spec.web in
-      let* p = web.periodic_restart in
-      p.schedule
+      match kind with
+      | `Web ->
+          let* s = spec.web in
+          let* p = s.periodic_restart in
+          p.schedule
+      | `Sidekiq ->
+          let* s = spec.sidekiq in
+          let* p = s.periodic_restart in
+          p.schedule
     with
     | None -> (true, None)
     | Some sched -> (false, Some sched)
   in
   let schedule = schedule |> Option.value ~default:"0 0 * * *" in
 
-  let args = [ "restart"; "--name"; name; "--namespace"; namespace ] in
+  let target = match kind with `Web -> "web" | `Sidekiq -> "sidekiq" in
+
+  let args =
+    [ "restart"; "--name"; name; "--namespace"; namespace; "--target"; target ]
+  in
 
   let body =
     K.Cron_job.make
@@ -603,9 +620,11 @@ let create_or_update_stuff client ~mastodon ~image ~gw_nginx_conf_templ_cm =
   let* _ =
     create_or_update_restart_rbac client ~mastodon ~service_account_name
   in
-  let* _ =
+  let cronjob =
     create_or_update_restart_cronjob client ~mastodon ~service_account_name
   in
+  let* _ = cronjob `Web in
+  let* _ = cronjob `Sidekiq in
   Ok ()
 
 let image_of_deployment (deploy : K.Deployment.t) =

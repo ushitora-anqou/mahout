@@ -161,10 +161,12 @@ let check_deploy_annotation ~n deploy_name key expected_value =
     failwithf "check_deploy_annotation: got '%s', expected '%s'" got_value
       expected_value
 
-let check_web_pod_age ~smaller_than =
+let check_pod_age ~component ~smaller_than =
   let stdout, _ =
     kubectl
-      {|get pod -n e2e -l app.kubernetes.io/component=web -o json | jq -r '.items[].metadata.creationTimestamp'|}
+      (Printf.sprintf
+         {|get pod -n e2e -l app.kubernetes.io/component=%s -o json | jq -r '.items[].metadata.creationTimestamp'|}
+         component)
   in
   let now = Ptime_clock.now () in
   let b =
@@ -259,10 +261,12 @@ let () =
       check_mastodon_languages ~host:"mastodon.test"
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"ja");
 
-  (* Check that the web Pod is restarted periodically *)
+  (* Check that the web and sidekiq Pods are restarted periodically *)
   apply_manifest "mastodon0-v4.2.0-restart.yaml";
-  eventually (fun () -> check_web_pod_age ~smaller_than:10);
-  consistently (fun () -> check_web_pod_age ~smaller_than:90);
+  eventually (fun () -> check_pod_age ~component:"web" ~smaller_than:10);
+  consistently (fun () -> check_pod_age ~component:"web" ~smaller_than:90);
+  eventually (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:10);
+  consistently (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:90);
 
   delete_manifest "mastodon0-v4.2.0.yaml";
   eventually (fun () ->
