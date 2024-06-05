@@ -20,7 +20,9 @@ let () =
               $ Arg.(value & Arg.opt string "" & info [ "name" ] ~docv:"NAME")
               $ Arg.(
                   value & Arg.opt string ""
-                  & info [ "namespace" ] ~docv:"NAMESPACE"));
+                  & info [ "namespace" ] ~docv:"NAMESPACE")
+              $ Arg.(
+                  value & Arg.opt string "" & info [ "target" ] ~docv:"TARGET"));
         ])
   in
   exit (Cmd.eval cmd)

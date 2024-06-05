@@ -18,7 +18,7 @@ let controller gw_nginx_conf_templ_cm_name =
 
 let failwithf f = Printf.ksprintf failwith f
 
-let restart name namespace =
+let restart name namespace target =
   Eio_main.run @@ fun env ->
   Mirage_crypto_rng_eio.run (module Mirage_crypto_rng.Fortuna) env @@ fun () ->
   let client = K.make_client env in
@@ -49,7 +49,11 @@ let restart name namespace =
                    |> Ptime.of_float_s |> Option.get
                    |> Ptime.to_rfc3339 ~tz_offset_s:0 ~frac_s:3
                  in
-                 Hashtbl.replace h Label.web_restart_time_key
+                 Hashtbl.replace h
+                   (match target with
+                   | "web" -> Label.web_restart_time_key
+                   | "sidekiq" -> Label.sidekiq_restart_time_key
+                   | _ -> assert false)
                    (`String current_time);
                  h |> Hashtbl.to_seq |> List.of_seq);
           };
