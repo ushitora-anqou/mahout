@@ -196,6 +196,8 @@ let () =
 
       check_deploy_resources ~n:"e2e" ~limits_cpu:"1" ~limits_memory:"1000Mi"
         ~requests_cpu:"100m" ~requests_memory:"100Mi" "mastodon0-web";
+      check_deploy_resources ~n:"e2e" ~limits_memory:"100Mi"
+        ~requests_cpu:"100m" ~requests_memory:"100Mi" "mastodon0-gateway-nginx";
 
       check_deploy_annotation ~n:"e2e" "mastodon0-gateway-nginx"
         "test.mahout.anqou.net/role" "gateway";

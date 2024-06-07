@@ -15,6 +15,12 @@ spec:
     annotations:
       test.mahout.anqou.net/role: gateway
     image: "nginx:1.25.4"
+    resources:
+      requests:
+        cpu: 100m
+        memory: 100Mi
+      limits:
+        memory: 100Mi
   sidekiq:
     replicas: 1
     annotations:

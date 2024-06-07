@@ -354,7 +354,6 @@ let create_or_update_gateway client
         K.Container.
           [
             make ~name:"copy-assets" ~image
-              ?resources:(mastodon.spec |> Option.get).gateway.resources
               ~command:
                 [ "bash"; "-c"; "cp -ra /opt/mastodon/public/* /mnt/public/" ]
               ~volume_mounts:
@@ -366,6 +365,7 @@ let create_or_update_gateway client
         K.Container.
           [
             make ~name:"gateway" ~image:nginx_image
+              ?resources:(mastodon.spec |> Option.get).gateway.resources
               ~ports:K.Container_port.[ make ~container_port:80l () ]
               ~volume_mounts:
                 K.Volume_mount.
