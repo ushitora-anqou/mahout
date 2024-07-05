@@ -180,6 +180,15 @@ let check_pod_age ~component ~smaller_than =
   in
   assert b
 
+let count_pods ~generate_name =
+  let stdout, _ =
+    kubectl
+      (Printf.sprintf
+         {|get pod -n e2e -o json | jq '[.items[] | select(.metadata.generateName == "%s")] | length'|}
+         generate_name)
+  in
+  stdout |> String.trim |> int_of_string
+
 let setup () = ()
 
 let () =
@@ -193,6 +202,9 @@ let () =
       wait_deploy_available ~n:"e2e" "mastodon0-sidekiq";
       wait_deploy_available ~n:"e2e" "mastodon0-streaming";
       wait_deploy_available ~n:"e2e" "mastodon0-web";
+
+      assert (count_pods ~generate_name:"mastodon0-pre-migration-" = 0);
+      assert (count_pods ~generate_name:"mastodon0-post-migration-" = 0);
 
       check_deploy_resources ~n:"e2e" ~limits_cpu:"1" ~limits_memory:"1000Mi"
         ~requests_cpu:"100m" ~requests_memory:"100Mi" "mastodon0-web";

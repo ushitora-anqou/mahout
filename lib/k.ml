@@ -1070,12 +1070,13 @@ module Make (B : Bare.S) = struct
         B.list_for_all_namespaces ~sw client ()
         |> expect_one |> Result.map B.to_list
 
-  let delete client ?uid ?namespace ~name () =
+  let delete client ?propagation_policy ?uid ?namespace ~name () =
     let namespace = Option.value ~default:"" namespace in
     Eio.Switch.run @@ fun sw ->
-    B.delete_namespaced ~sw client ~name ~namespace
+    B.delete_namespaced ~sw client ~name ~namespace ?propagation_policy
       ~body:
         (Io_k8s_apimachinery_pkg_apis_meta_v1_delete_options.make
+           ?propagation_policy
            ~preconditions:
              (Io_k8s_apimachinery_pkg_apis_meta_v1_preconditions.make ?uid ())
            ())
