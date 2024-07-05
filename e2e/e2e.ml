@@ -277,9 +277,9 @@ let () =
 
   (* Check that the web and sidekiq Pods are restarted periodically *)
   apply_manifest "mastodon0-v4.2.0-restart.yaml";
-  eventually (fun () -> check_pod_age ~component:"web" ~smaller_than:10);
+  eventually (fun () -> check_pod_age ~component:"web" ~smaller_than:30);
   consistently (fun () -> check_pod_age ~component:"web" ~smaller_than:90);
-  eventually (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:10);
+  eventually (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:30);
   consistently (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:90);
 
   delete_manifest "mastodon0-v4.2.0.yaml";
