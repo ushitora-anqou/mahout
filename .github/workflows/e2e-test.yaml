@@ -9,17 +9,23 @@ permissions: read-all
 jobs:
   e2e-test:
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        kubernetes_version: ["1.30.0", "1.29.4", "1.28.9"]
+    env:
+      KUBERNETES_VERSION: ${{ matrix.kubernetes_version }}
     steps:
       - name: Checkout tree
         uses: actions/checkout@v4
       - name: Set-up OCaml
         uses: ocaml/setup-ocaml@v2
         with:
-          ocaml-compiler: "5.1.1"
+          ocaml-compiler: "5.2.0"
       - run: opam install . --deps-only --with-test
       - run: opam exec -- make -C e2e create-cluster
-#     - name: Setup tmate session
-#       uses: mxschmitt/action-tmate@v3
+      #     - name: Setup tmate session
+      #       uses: mxschmitt/action-tmate@v3
       - run: opam exec -- make -C e2e test
       - run: opam exec -- make -C e2e logs-deploy-mahout
         if: always()
