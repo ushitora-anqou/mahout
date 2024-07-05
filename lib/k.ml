@@ -1,5 +1,5 @@
 module Bare = struct
-  open K8s_1_28_client
+  open K8s_1_30_client
 
   exception Not_available
 
@@ -779,7 +779,7 @@ module Bare = struct
   end)
 end
 
-include K8s_1_28_client
+include K8s_1_30_client
 
 type error =
   [ `Connection_failure of string

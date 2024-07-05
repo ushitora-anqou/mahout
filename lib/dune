@@ -13,7 +13,7 @@
   eio_main
   fmt
   jingoo
-  k8s_1_28_client
+  k8s_1_30_client
   logs
   mirage-clock-unix
   mirage-crypto-rng

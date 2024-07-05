@@ -2,7 +2,7 @@
 
 Mahout is a Kubernetes operator to deploy Mastodon nicely on your cluster. Mahout is written in OCaml.
 
-Currently, Mahout supports Kubernetes 1.28 only.
+Currently, Mahout supports Kubernetes 1.28, 1.29, and 1.30.
 
 ## Quick Start
 
@@ -13,6 +13,7 @@ helm install --namespace mahout --repo https://ushitora-anqou.github.io/mahout m
 ```
 
 Create and apply a `Mastodon` resource for your server:
+
 ```yaml
 apiVersion: mahout.anqou.net/v1alpha1
 kind: Mastodon
@@ -28,6 +29,7 @@ spec:
   gateway:
     image: nginx:1
 ```
+
 Mahout will then start the necessary migration jobs and deployments for nginx, web, streaming, and sidekiq.
 
 When upgrading Mastodon, all you need to do is edit the `image` field in the `Mastodon` resource.
