@@ -710,7 +710,8 @@ let delete_job client ~(mastodon : Mastodon.t) ~kind =
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let job_name = get_job_name name kind in
-  K.Job.delete client ~name:job_name ~namespace ()
+  K.Job.delete client ~name:job_name ~namespace ~propagation_policy:"Background"
+    ()
   |> ignore_not_found_error
   |> Result.map_error K.show_error
 
