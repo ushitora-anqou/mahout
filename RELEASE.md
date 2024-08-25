@@ -4,3 +4,4 @@
 - update `version` & `appVersion` in `charts/mahout/Chart.yaml`
 - commit & push
 - run GHA workflow for releasing the helm charts on `master` branch
+  - https://github.com/ushitora-anqou/mahout/actions/workflows/helm-chart-release.yaml
