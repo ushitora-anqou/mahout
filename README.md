@@ -1,6 +1,6 @@
 # Mahout -- A Kubernetes Operator for Mastodon
 
-Mahout is a Kubernetes operator to deploy Mastodon nicely on your cluster. Mahout is written in OCaml.
+Mahout is a Kubernetes operator to deploy Mastodon nicely on your cluster. It's being used for [mstdn.anqou.net](https://mstdn.anqou.net/). Mahout is written in OCaml.
 
 Currently, Mahout supports Kubernetes 1.28, 1.29, and 1.30.
 
