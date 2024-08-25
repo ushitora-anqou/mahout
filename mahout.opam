@@ -63,5 +63,5 @@ pin-depends:[
   # - https://github.com/dinosaure/multipart_form/issues/39
   # - https://github.com/vbmithr/ocaml-websocket/issues/136
   [ "websocket.2.16" "git+https://github.com/ushitora-anqou/ocaml-websocket#74988ec5ec7d7c620e7d58c5509acd003107c513" ]
-  [ "yume.0.1.7" "git+https://github.com/ushitora-anqou/yume.git#0.1.7" ]
+  [ "yume.0.1.8" "git+https://github.com/ushitora-anqou/yume.git#0.1.8" ]
 ]
