@@ -1,3 +1,11 @@
+type deploy_image_map = {
+  gateway_image : string;
+  web_image : string;
+  sidekiq_image : string;
+  streaming_image : string;
+}
+[@@deriving yojson]
+
 let ignore_not_found_error = function
   | Ok _ | Error `Not_found -> Ok ()
   | e -> e
@@ -88,7 +96,7 @@ let create_or_update_mastodon_service client
   Ok ()
 
 let create_or_update_mastodon_deployment client
-    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image ~kind =
+    ~(mastodon : Net_anqou_mahout.V1alpha1.Mastodon.t) ~image_map ~kind =
   let ( let* ) = Result.bind in
 
   let spec = Option.get mastodon.spec in
@@ -96,6 +104,13 @@ let create_or_update_mastodon_deployment client
   let name = Option.get (Option.get mastodon.metadata).name in
   let namespace = Option.get (Option.get mastodon.metadata).namespace in
   let env_from = spec.env_from in
+
+  let image =
+    match kind with
+    | `Sidekiq -> image_map.sidekiq_image
+    | `Streaming -> image_map.streaming_image
+    | `Web -> image_map.web_image
+  in
 
   let deploy_name = get_deploy_name name kind in
   let selector, labels =
@@ -604,13 +619,16 @@ let create_or_update_restart_cronjob client ~(mastodon : Mastodon.t)
     | Some body0 -> { body0 with spec = body.spec })
   |> Result.map_error K.show_error
 
-let create_or_update_stuff client ~mastodon ~image ~gw_nginx_conf_templ_cm =
+let create_or_update_stuff client ~mastodon ~image_map ~gw_nginx_conf_templ_cm =
   let ( let* ) = Result.bind in
   let service_account_name = "default" in
-  let deploy = create_or_update_mastodon_deployment client ~mastodon ~image in
+  let deploy =
+    create_or_update_mastodon_deployment client ~mastodon ~image_map
+  in
   let svc = create_or_update_mastodon_service client ~mastodon in
   let* _ =
-    create_or_update_gateway client ~mastodon ~image ~gw_nginx_conf_templ_cm
+    create_or_update_gateway client ~mastodon ~image:image_map.gateway_image
+      ~gw_nginx_conf_templ_cm
   in
   let* _ = deploy ~kind:`Web in
   let* _ = deploy ~kind:`Sidekiq in
@@ -636,7 +654,7 @@ let image_of_deployment (deploy : K.Deployment.t) =
   in
   Option.get (List.hd containers).image
 
-let fetch_deployments_image client ~name ~namespace =
+let fetch_deployments_images client ~name ~namespace =
   let fetch_deploy_image kind =
     K.Deployment.get client ~namespace ~name:(get_deploy_name name kind) ()
     |> Result.map image_of_deployment
@@ -644,18 +662,15 @@ let fetch_deployments_image client ~name ~namespace =
   in
 
   let ( let* ) = Result.bind in
-  let* image0 = fetch_deploy_image `Gateway in
-  let* image1 = fetch_deploy_image `Web in
-  let* image2 = fetch_deploy_image `Sidekiq in
-  let* image3 = fetch_deploy_image `Streaming in
+  let* gateway_image = fetch_deploy_image `Gateway in
+  let* web_image = fetch_deploy_image `Web in
+  let* sidekiq_image = fetch_deploy_image `Sidekiq in
+  let* streaming_image = fetch_deploy_image `Streaming in
 
-  if image0 = image1 && image1 = image2 && image2 = image3 then Ok image0
-  else Error `NotCommon
+  Ok { gateway_image; web_image; sidekiq_image; streaming_image }
 
-let get_deployments_pod_statuses client ~name ~namespace ~image =
+let get_deployments_pod_statuses client ~name ~namespace ~image_map =
   let ( let* ) = Result.bind in
-
-  let image_label_value = Label.encode_deploy_image image in
 
   let* all_pods =
     K.Pod.list client ~namespace
@@ -671,7 +686,14 @@ let get_deployments_pod_statuses client ~name ~namespace ~image =
         Label_selector.
           [
             Eq (Label.mastodon_key, name);
-            Eq (Label.deploy_image_key, image_label_value);
+            In
+              ( Label.deploy_image_key,
+                [
+                  Label.encode_deploy_image image_map.gateway_image;
+                  Label.encode_deploy_image image_map.streaming_image;
+                  Label.encode_deploy_image image_map.sidekiq_image;
+                  Label.encode_deploy_image image_map.web_image;
+                ] );
           ]
       ()
   in
@@ -682,15 +704,15 @@ let get_deployments_pod_statuses client ~name ~namespace ~image =
   in
 
   Ok
-    (if List.length all_pods = List.length live_pods then `Ready image
-     else `NotReady image)
+    (if List.length all_pods = List.length live_pods then `Ready image_map
+     else `NotReady image_map)
 
 let get_deployments_status client ~name ~namespace =
-  match fetch_deployments_image client ~name ~namespace with
+  match fetch_deployments_images client ~name ~namespace with
   | Error (`K `Not_found) -> Ok `NotFound
   | Error (`K e) -> Error e
-  | Error `NotCommon -> Ok `NotCommon
-  | Ok image -> get_deployments_pod_statuses client ~name ~namespace ~image
+  | Ok image_map ->
+      get_deployments_pod_statuses client ~name ~namespace ~image_map
 
 let get_job_status client ~name ~namespace ~kind =
   match K.Job.get client ~name:(get_job_name name kind) ~namespace () with
@@ -784,11 +806,32 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
   in
 
   let spec = Option.get mastodon.spec in
-  let spec_image = spec.image in
-  let migrating_image =
+  let spec_image =
+    {
+      gateway_image = spec.image;
+      web_image = spec.image;
+      sidekiq_image = spec.image;
+      streaming_image =
+        (match spec.streaming with
+        | Some { image = Some image; _ } -> image
+        | _ -> spec.image);
+    }
+  in
+  let migrating_image_map =
     match mastodon.status with
-    | None -> None
-    | Some status -> status.migrating_image
+    | Some
+        {
+          migrating_image = Some image;
+          streaming = Some { migrating_image = Some streaming_image };
+        } ->
+        Some
+          {
+            gateway_image = image;
+            web_image = image;
+            sidekiq_image = image;
+            streaming_image;
+          }
+    | _ -> None
   in
   let* deployments_status =
     get_deployments_status client ~name ~namespace
@@ -804,26 +847,22 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
   in
 
   let current_state =
-    match (pre_mig_job, post_mig_job, deployments_status, migrating_image) with
+    match
+      (pre_mig_job, post_mig_job, deployments_status, migrating_image_map)
+    with
     | `NotFound, `NotFound, `NotFound, Some _ -> 1
     | `NotFound, `NotFound, `NotFound, None -> 2
-    | `NotFound, `NotFound, `NotCommon, Some _ -> 3
-    | `NotFound, `NotFound, `NotCommon, None -> 4
     | `NotFound, `NotFound, (`Ready version | `NotReady version), Some mig ->
         if version = mig then 5 else 6
     | `NotFound, `NotFound, (`Ready version | `NotReady version), None ->
         if version = spec_image then 7 else 33
     | `NotFound, `Completed, `NotFound, Some _ -> 8
     | `NotFound, `Completed, `NotFound, None -> 9
-    | `NotFound, `Completed, `NotCommon, Some _ -> 10
-    | `NotFound, `Completed, `NotCommon, None -> 11
     | `NotFound, `Completed, (`Ready version | `NotReady version), Some mig ->
         if version = mig then 12 else 13
     | `NotFound, `Completed, (`Ready _ | `NotReady _), None -> 14
     | `Completed, `NotFound, `NotFound, Some _ -> 15
     | `Completed, `NotFound, `NotFound, None -> 16
-    | `Completed, `NotFound, `NotCommon, Some _ -> 17
-    | `Completed, `NotFound, `NotCommon, None -> 18
     | `Completed, `NotFound, `Ready version, Some mig ->
         if version = mig then 31 else 20
     | `Completed, `NotFound, `NotReady version, Some mig ->
@@ -831,8 +870,6 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
     | `Completed, `NotFound, (`Ready _ | `NotReady _), None -> 21
     | `Completed, `Completed, `NotFound, Some _ -> 22
     | `Completed, `Completed, `NotFound, None -> 23
-    | `Completed, `Completed, `NotCommon, Some _ -> 24
-    | `Completed, `Completed, `NotCommon, None -> 25
     | `Completed, `Completed, (`Ready version | `NotReady version), Some mig ->
         if version = mig then 26 else 27
     | `Completed, `Completed, (`Ready _ | `NotReady _), None -> 28
@@ -844,16 +881,18 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
   Logg.info (fun m ->
       m "reconcile"
         [
-          ("spec_image", `String spec_image);
+          ("spec_image", deploy_image_map_to_yojson spec_image);
           ( "migrating_image",
-            `String (migrating_image |> Option.value ~default:"") );
+            match migrating_image_map with
+            | None -> `Assoc []
+            | Some x -> deploy_image_map_to_yojson x );
           ( "deployments_status",
-            `String
-              (match deployments_status with
-              | `NotFound -> "NotFound"
-              | `NotCommon -> "NotCommon"
-              | `NotReady s -> "NotReady " ^ s
-              | `Ready s -> "Ready " ^ s) );
+            match deployments_status with
+            | `NotFound -> `String "NotFound"
+            | `NotReady s ->
+                `List [ `String "NotReady"; deploy_image_map_to_yojson s ]
+            | `Ready s ->
+                `List [ `String "Ready"; deploy_image_map_to_yojson s ] );
           ("pre_mig_job", `String (string_of_job_status pre_mig_job));
           ("post_mig_job", `String (string_of_job_status post_mig_job));
           ("current_state", `Int current_state);
@@ -862,40 +901,59 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
   match current_state with
   | 1 ->
       let* _ =
-        create_migration_job client ~mastodon ~image:spec_image ~kind:`Post
+        create_migration_job client ~mastodon
+          ~image:(Option.get migrating_image_map).web_image ~kind:`Post
         |> Result.map_error K.show_error
       in
       Ok ()
   | 2 | 33 ->
       let* _ =
         Mastodon.update_status client
-          { mastodon with status = Some { migrating_image = Some spec_image } }
+          {
+            mastodon with
+            status =
+              Some
+                {
+                  migrating_image = Some spec_image.web_image;
+                  streaming =
+                    Some { migrating_image = Some spec_image.streaming_image };
+                };
+          }
         |> Result.map_error K.show_error
       in
       Ok ()
   | 5 ->
       let* _ =
         Mastodon.update_status client
-          { mastodon with status = Some { migrating_image = None } }
+          {
+            mastodon with
+            status =
+              Some
+                {
+                  migrating_image = None;
+                  streaming = Some { migrating_image = None };
+                };
+          }
         |> Result.map_error K.show_error
       in
       Ok ()
   | 6 ->
       let* _ =
-        create_migration_job client ~mastodon ~image:spec_image ~kind:`Pre
+        create_migration_job client ~mastodon
+          ~image:(Option.get migrating_image_map).web_image ~kind:`Pre
         |> Result.map_error K.show_error
       in
       Ok ()
   | 7 ->
       let* _ =
-        create_or_update_stuff client ~mastodon ~image:spec_image
+        create_or_update_stuff client ~mastodon ~image_map:spec_image
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
-  | 8 | 10 | 17 | 20 | 32 ->
+  | 8 | 20 | 32 ->
       let* _ =
         create_or_update_stuff client ~mastodon
-          ~image:(Option.get migrating_image)
+          ~image_map:(Option.get migrating_image_map)
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
@@ -904,7 +962,8 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
       Ok ()
   | 31 ->
       let* _ =
-        create_migration_job client ~mastodon ~image:spec_image ~kind:`Post
+        create_migration_job client ~mastodon
+          ~image:(Option.get migrating_image_map).web_image ~kind:`Post
         |> Result.map_error K.show_error
       in
       Ok ()

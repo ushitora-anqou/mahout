@@ -70,6 +70,7 @@ include K.Make (Bare)
 let make = Net_anqou_mahout.V1alpha1.Mastodon.make
 
 module Status = struct
-  let with_migrating_image x _status =
-    Net_anqou_mahout.V1alpha1.Mastodon.Status.{ migrating_image = x }
+  let with_migrating_image x status =
+    Net_anqou_mahout.V1alpha1.Mastodon.Status.
+      { status with migrating_image = x }
 end

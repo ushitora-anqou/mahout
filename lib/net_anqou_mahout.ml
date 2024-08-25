@@ -39,6 +39,7 @@ module V1alpha1 = struct
         annotations : Yojson.Safe.t option; [@yojson.default None]
         resources : Resource_requirements.t option;
             [@yojson.default None] [@yojson.key "resources"]
+        image : string option; [@yojson.default None] [@yojson.key "image"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
@@ -70,10 +71,20 @@ module V1alpha1 = struct
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end
 
+    module StreamingStatus = struct
+      type t = {
+        migrating_image : string option;
+            [@yojson.default None] [@yojson.key "migratingImage"]
+      }
+      [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
+    end
+
     module Status = struct
       type t = {
         migrating_image : string option;
             [@yojson.default None] [@yojson.key "migratingImage"]
+        streaming : StreamingStatus.t option;
+            [@yojson.default None] [@yojson.key "streaming"]
       }
       [@@deriving yojson, show, make] [@@yojson.allow_extra_fields]
     end

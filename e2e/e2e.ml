@@ -1,3 +1,5 @@
+[@@@warning "-32"]
+
 module Logg = Mahout.Logg
 
 exception Process_status_error of Unix.process_status * string * string
@@ -195,7 +197,7 @@ let () =
   Mahout.Logg.setup ~enable_trace:false @@ fun () ->
   setup ();
 
-  apply_manifest "mastodon0-v4.1.9.yaml";
+  apply_manifest "mastodon0-v4.2.12.yaml";
 
   eventually (fun () ->
       wait_deploy_available ~n:"e2e" "mastodon0-gateway-nginx";
@@ -222,14 +224,14 @@ let () =
 
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon.test"
-        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.1.9";
-      check_schema_migrations_count ~expected:395;
+        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.2.12";
+      check_schema_migrations_count ~expected:422;
       ());
 
-  apply_manifest "mastodon0-v4.2.0.yaml";
+  apply_manifest "mastodon0-v4.3.0b1.yaml";
 
   eventually (fun () ->
-      check_schema_migrations_count ~expected:417;
+      check_schema_migrations_count ~expected:460;
       ());
 
   eventually (fun () ->
@@ -239,8 +241,8 @@ let () =
       wait_deploy_available ~n:"e2e" "mastodon0-web";
       http_get "http://mastodon0-gateway.e2e.svc/health" |> ignore;
       check_mastodon_version ~host:"mastodon.test"
-        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.2.0";
-      check_schema_migrations_count ~expected:422;
+        ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"4.3.0-beta.1";
+      check_schema_migrations_count ~expected:468;
       ());
 
   apply_manifest "patched-gateway-nginx-conf.yaml";
@@ -276,13 +278,13 @@ let () =
         ~endpoint:"http://mastodon0-gateway.e2e.svc" ~expected:"ja");
 
   (* Check that the web and sidekiq Pods are restarted periodically *)
-  apply_manifest "mastodon0-v4.2.0-restart.yaml";
+  apply_manifest "mastodon0-v4.3.0b1-restart.yaml";
   eventually (fun () -> check_pod_age ~component:"web" ~smaller_than:30);
   consistently (fun () -> check_pod_age ~component:"web" ~smaller_than:90);
   eventually (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:30);
   consistently (fun () -> check_pod_age ~component:"sidekiq" ~smaller_than:90);
 
-  delete_manifest "mastodon0-v4.2.0.yaml";
+  delete_manifest "mastodon0-v4.3.0b1.yaml";
   eventually (fun () ->
       wait_not_found ~n:"e2e" "deploy" "mastodon0-gateway-nginx";
       wait_not_found ~n:"e2e" "deploy" "mastodon0-sidekiq";

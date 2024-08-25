@@ -6,7 +6,7 @@ metadata:
   namespace: e2e
 spec:
   serverName: "mastodon.test"
-  image: "ghcr.io/mastodon/mastodon:v4.1.9"
+  image: "ghcr.io/mastodon/mastodon:v4.2.12"
   envFrom:
     - secretRef:
         name: secret-env
@@ -14,7 +14,7 @@ spec:
     replicas: 1
     annotations:
       test.mahout.anqou.net/role: gateway
-    image: "nginx:1.25.4"
+    image: "nginx:1.27.1"
     resources:
       requests:
         cpu: 100m
