@@ -785,15 +785,32 @@ let create_migration_job client ~(mastodon : Mastodon.t) ~image ~kind =
   in
   K.Job.create client body
 
-type current_state =
-  | NoDeployments
-  | StartPreMigration
-  | RolloutDeployments
-  | StartPostMigration
-  | PostMigrationCompleted
-  | Migrating
-  | Normal
-[@@deriving show]
+let int_of_state = function
+  | `S1 -> 1
+  | `S2 -> 2
+  | `S5 -> 5
+  | `S6 -> 6
+  | `S7 -> 7
+  | `S8 -> 8
+  | `S9 -> 9
+  | `S12 -> 12
+  | `S13 -> 13
+  | `S14 -> 14
+  | `S15 -> 15
+  | `S16 -> 16
+  | `S20 -> 20
+  | `S21 -> 21
+  | `S22 -> 22
+  | `S23 -> 23
+  | `S26 -> 26
+  | `S27 -> 27
+  | `S28 -> 28
+  | `S29 -> 29
+  | `S30 -> 30
+  | `S31 -> 31
+  | `S32 -> 32
+  | `S33 -> 33
+  | `S34 -> 34
 
 type reconcile_args = { gw_nginx_conf_templ_cm_name : string }
 
@@ -850,32 +867,32 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
     match
       (pre_mig_job, post_mig_job, deployments_status, migrating_image_map)
     with
-    | `NotFound, `NotFound, `NotFound, Some _ -> 1
-    | `NotFound, `NotFound, `NotFound, None -> 2
+    | `NotFound, `NotFound, `NotFound, Some _ -> `S1
+    | `NotFound, `NotFound, `NotFound, None -> `S2
     | `NotFound, `NotFound, (`Ready version | `NotReady version), Some mig ->
-        if version = mig then 5 else 6
+        if version = mig then `S5 else `S6
     | `NotFound, `NotFound, (`Ready version | `NotReady version), None ->
-        if version = spec_image then 7 else 33
-    | `NotFound, `Completed, `NotFound, Some _ -> 8
-    | `NotFound, `Completed, `NotFound, None -> 9
+        if version = spec_image then `S7 else `S33
+    | `NotFound, `Completed, `NotFound, Some _ -> `S8
+    | `NotFound, `Completed, `NotFound, None -> `S9
     | `NotFound, `Completed, (`Ready version | `NotReady version), Some mig ->
-        if version = mig then 12 else 13
-    | `NotFound, `Completed, (`Ready _ | `NotReady _), None -> 14
-    | `Completed, `NotFound, `NotFound, Some _ -> 15
-    | `Completed, `NotFound, `NotFound, None -> 16
+        if version = mig then `S12 else `S13
+    | `NotFound, `Completed, (`Ready _ | `NotReady _), None -> `S14
+    | `Completed, `NotFound, `NotFound, Some _ -> `S15
+    | `Completed, `NotFound, `NotFound, None -> `S16
     | `Completed, `NotFound, `Ready version, Some mig ->
-        if version = mig then 31 else 20
+        if version = mig then `S31 else `S20
     | `Completed, `NotFound, `NotReady version, Some mig ->
-        if version = mig then 32 else 20
-    | `Completed, `NotFound, (`Ready _ | `NotReady _), None -> 21
-    | `Completed, `Completed, `NotFound, Some _ -> 22
-    | `Completed, `Completed, `NotFound, None -> 23
+        if version = mig then `S32 else `S20
+    | `Completed, `NotFound, (`Ready _ | `NotReady _), None -> `S21
+    | `Completed, `Completed, `NotFound, Some _ -> `S22
+    | `Completed, `Completed, `NotFound, None -> `S23
     | `Completed, `Completed, (`Ready version | `NotReady version), Some mig ->
-        if version = mig then 26 else 27
-    | `Completed, `Completed, (`Ready _ | `NotReady _), None -> 28
-    | `NotCompleted, _, _, _ | _, `NotCompleted, _, _ -> 34
-    | `Failed, _, _, _ -> 29
-    | _, `Failed, _, _ -> 30
+        if version = mig then `S26 else `S27
+    | `Completed, `Completed, (`Ready _ | `NotReady _), None -> `S28
+    | `NotCompleted, _, _, _ | _, `NotCompleted, _, _ -> `S34
+    | `Failed, _, _, _ -> `S29
+    | _, `Failed, _, _ -> `S30
   in
 
   Logg.info (fun m ->
@@ -895,18 +912,18 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
                 `List [ `String "Ready"; deploy_image_map_to_yojson s ] );
           ("pre_mig_job", `String (string_of_job_status pre_mig_job));
           ("post_mig_job", `String (string_of_job_status post_mig_job));
-          ("current_state", `Int current_state);
+          ("current_state", `Int (int_of_state current_state));
         ]);
 
   match current_state with
-  | 1 ->
+  | `S1 ->
       let* _ =
         create_migration_job client ~mastodon
           ~image:(Option.get migrating_image_map).web_image ~kind:`Post
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 2 | 33 ->
+  | `S2 | `S33 ->
       let* _ =
         Mastodon.update_status client
           {
@@ -922,7 +939,7 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 5 ->
+  | `S5 ->
       let* _ =
         Mastodon.update_status client
           {
@@ -937,43 +954,44 @@ let reconcile client ~name ~namespace { gw_nginx_conf_templ_cm_name }
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 6 ->
+  | `S6 ->
       let* _ =
         create_migration_job client ~mastodon
           ~image:(Option.get migrating_image_map).web_image ~kind:`Pre
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 7 ->
+  | `S7 ->
       let* _ =
         create_or_update_stuff client ~mastodon ~image_map:spec_image
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
-  | 8 | 20 | 32 ->
+  | `S8 | `S20 | `S32 ->
       let* _ =
         create_or_update_stuff client ~mastodon
           ~image_map:(Option.get migrating_image_map)
           ~gw_nginx_conf_templ_cm
       in
       Ok ()
-  | 12 | 30 ->
+  | `S12 | `S30 ->
       let* _ = delete_job client ~mastodon ~kind:`PostMigration in
       Ok ()
-  | 31 ->
+  | `S31 ->
       let* _ =
         create_migration_job client ~mastodon
           ~image:(Option.get migrating_image_map).web_image ~kind:`Post
         |> Result.map_error K.show_error
       in
       Ok ()
-  | 26 | 29 ->
+  | `S26 | `S29 ->
       let* _ = delete_job client ~mastodon ~kind:`PreMigration in
       Ok ()
-  | 34 -> Ok ()
+  | `S34 -> Ok ()
   | _ ->
       Logg.err (fun m ->
-          m "unexpected current state" [ ("current_state", `Int current_state) ]);
+          m "unexpected current state"
+            [ ("current_state", `Int (int_of_state current_state)) ]);
       Ok ()
 
 let reconcile client ~name ~namespace args =
