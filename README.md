@@ -1,3 +1,5 @@
+# MAHOUT IS ARCHIVED! Users should use [Magout](https://github.com/ushitora-anqou/magout), which supersedes Mahout.
+
 # Mahout -- A Kubernetes Operator for Mastodon
 
 Mahout is a Kubernetes operator to deploy Mastodon nicely on your cluster. It's being used for [mstdn.anqou.net](https://mstdn.anqou.net/). Mahout is written in OCaml.
